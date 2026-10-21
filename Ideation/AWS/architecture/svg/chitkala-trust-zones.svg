@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2016 756" width="2016" height="756" font-family="Amazon Ember, Inter, Arial, Helvetica, sans-serif" class="archviz-svg" data-uid="chitkala-trust-zones" role="img" aria-label="Trust zones, local and cloud — authority lives in grants, not in text">
+<title>Trust zones, local and cloud — authority lives in grants, not in text</title>
+<defs>
+<image id="chitkala-trust-zones-is-api-gateway" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEV2RtNpOseJVOb+/v6ATt1hNr2zmOapiOZeM7mOaNiZd9uDU9uCTeGbdeIAAAChhNzKt+59RuC6oerVx/Lk2vZdLcHr5PmXaelaK75iLMl/AH/Cq+x+VNF3RtWheuh5R9eegtl1RNN4RdZbMrjc0fNfMMGTW/F/f/+VXPSTW/RdM7t/AP9aMLerkt9mM7tcLq2ZZu6LXOdgMbwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA59lhLAAAAQHRSTlP+/v7///////7//////wD///7//////////wL//6f/yf8SSKf//6cCyUjJAkT/DxYPFk0AAAAAAAAAAAAAAAAA8WIFxwAAAzVJREFUeNql1wlz6iAQAOBdMURCQhPjUe9q7/bd///HvQViDkCbGmaasc7wuSzLoqDWSp0O0B5jM9LRF+PtXalXBZ/quANn9BRGL3/VK6yPhxRuFJZvf15B7fz5/YUXBScIjr6reIcdDBJe4OLoKcBQAYYKMFS4MBU9IS3S/gAKLhwhXfJlkAhO3zA2dWKAKWN5iAhMzxkNjp08GEATaXoVQDN9EWcNADWwjxcBwp8+iwGTFmAESUCGo3jGWJl1iDYgSjsdoB2BETSwhxFYYh8E6GPZLDMb2I1ACxK4BkajItXEPg0BMaUez1YHAANkYGYUxYbFaTiCGCEAjOnP5MACoyJmcdEA+CVg39IRSPPBBe8CGARyIUFmWf1Y5howVQ0ugCGAsYSSQu8sdVEJXUV7ArTgAxgASi7pRNCRkJwv9aM0EZiqjvsAfGUq6/yocmCL0gew2vy7i0m0uzC2RUkAuABeBKRodqE/IAxg3uV2YRaAywD6AMYbej1jYhqjrAD4BqB3UdCrUtJGniMwVd0T2LBFoudxzBZsY4Aqn/0Aqp1kpVcgATOKxQFk+mUEOVvoFTxRn1iwvIlgbIFzt7+SA86Y5LaOp+ADlXB1F3KzAsj1Pz5gBRfATh3QHqC9ZRoAasCeTRfABtBNqj4eBGDduirAnE2shw9Q/rZNQ0l8QJ9ND9DB1ADCBWB8vrMaYN4F5lD1GntQVh5QCQ3w3AFKvkVqIxK31FUQdENxAXCAbgRUeytqbHcroVuaZKbHNQDWdxZELeBhXgMbQesX9kGlkNCl5wPQAe41gE4O8NzXnBw0dzdEURQE/HshBIABohrAKiX9AegAyT3eBhiCgDKB5+d6CYgBAFHGZQAgIdrO9JcY6kI4rwB0AMQtzaavMAI8wCxDTK1xjqAlECDAzp6KzuKiljC5p+tMG0/6ZsK2QMBTNRu76Zm0BVpIZfB5c2dVQGi2BhxB1ySKn9u6xCtA8tBsA/iCNhygm1IHCAntcfULuQEGCZMeQg9gQAyPOEQodvADnRi+F8IJ1CPevop0p2D96+NmIT0c17BWvx8nUZ9V+MLuqD5B//z/93FLDIeTUmv1H1L1Nrtc2/bLAAAAAElFTkSuQmCC"/>
+<image id="chitkala-trust-zones-is-client" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEUAAAAlMkEiLj0iLj0iLj0+Pj4kKTQjLT4iLT4iLj0jMTwWNDUAVVUkKz0fHz8AAH8nLEwdKTsiLkAAf38jMD4jMD0jMD4kMD8fLz8kMEAfMT4AAFUiMD0lMUAjL0EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADNv0ixAAAAQHRSTlMA/vaw2QQUTIh8KwkDKggCDxVNAv55iaogPykDXoIrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEo43UQAAAXpJREFUeNrtl9uWgjAMRdNQ6H2kiHed//9MU9QFC11CozNPbF7JoaRNcwJAuJKFg6/R6K3OZqube7grBJMi/YSHQiATUVA4lCjk4RhssBnQ68eDFFjSEioUhpc6IzDcBU5RF5noeCKB+rEClZ9BlVZQ9QKIEuVM6FV8EhDKZaCeVyCarKP3QkDB7LPtQL0U8HMF/CKwCCwCi8Ai8PcCH17rnzYWlDm9WT73xjavN7cjgf381vxo0PuBwCYl5ieLlPDNTSCSR4rOVZk4F8kjRYB159Ikg86lrekJkusTZaDwlIVLweJSfc8sV5ZB/3274zndnU3RK7DITSJaCk/b2EozzdjuG9l229iZ7ZqTuHpotqeHnqjOqqcxoUq1sH8IlJN3kB6XY4Ch2Z4WGI8lo3L+F4E3dn/ja1i9xa3Cbjxw+Pt9UKPQvALQtySm7TRhmt/hWJZmNHM7QB7O6VByhj5ByfOpGAy3FgwFdwTDGX1N6PeISR/IG/+70CuIdTA/09xmkgAAAABJRU5ErkJggg=="/>
+<image id="chitkala-trust-zones-is-fargate" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEXldwzZaBHvhAj+/Pv65tPhawP21rfmhy3sqW3UXRHpmFDzxJn0y6bxu4nskzgAAADuolbecBThfCf43MPxsnT77eH8fgLljEL+kwXldQx/fwDodw3ldg31jATcdA3QXRX3jwTediPzigP/AADMZhHSXRbXYBbXYBf4kQbYYBb/mQDonWDziwDVXhfFXBcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKfKd7AAAAQHRSTlP+/v7////////9//////8A////////A//+pwLJSKcTpcn/RAEPRMBNTawP/xbSFgAAAAAAAAAAAAAAAAAAAAAAZE+NIwAAA09JREFUeNqll+nWqyAMRRMDguBU7dx+053n93+8G7ADWrUuzY+2q5pNSE6CQnEsivMJ+iwat/cfRbEtYFu8HmDAxgH7/cufYgvH1xPAPEK0f/+1hc8HgPmElwLOAEsIn+AASwj7F3hqT2J47g+LANHiCPL8CeKJe0qUjiPG3E1MJARRbEYQw+6lcy3522HKwXL0O0vQl5VvkeiBfAL2Adai2fstF5Zos+6tKGAPoWb3SLbrmRHVA4BHAnHIa9WuB8dAfSE4wAOBBK9H9o7wiRwBdAlUy2i9YYRPQ6SbetQjAOxGcC+EcsH4hIoxAHYA0tey5GyyZcp3xTgAHwFeAkTrq1aeAPCmoRAgxe2nBzwK8g5wBInSKBkAYCMgBKi8iwgAK1YlJy7FECDagJQF0t7IHbBC1OTyLkcAThC0DoMIIkBu/qxCCSMAAFfWOCAEgIxq1eRyDMCImmwfoCKxwm4ZewCcAkEKHgE7yrDpTck3oOwAZE7iOmgt5dAXwabClQsCS68+KaXTgXOWfuvltbVDSbVyIJQrJhNcOYTVRqmNUMpoy21B+trZgrL7vA+rwIukjODosdIxtSzW0X0w2ODMCgFoeKFaq0uL73SWxmxppnO/H/Z2s06U4anXAjDCLxxnZlc1V2RjrOEya66V7XOzA+Bc6lQ0UQvBq7PFsbj+k2rVPXkfAB7CaYtFmAIR27VRvYfnozuXMnGdAVWlGvOVlCB7z5C+CFam5qa6ZcD5R5w+m08DrNww3LjD6HaTspdillMAfLPYoWJKhrc2oFhJFiiZCYDUJc3XLA0AXFsvRzkFYKzXHlnXXc2A8AKx2URAlWjSSUU2QZVpQMn9LVPKeRPTAYYB6c6Lz3JLOYCSZhIgJo2/yfiW5GpqryjDuQUeBFMA2gmPLkq0SqVNBXle85eaIqRdU/VMXyj80TRZ98wfVCJ+6Fh/JDvei6aN4U1JVJafeOREKV97mwErihFr8ofW9F64A5IrQA4+zY0CyBqqubNmAlBfZgJ3JswCNCPOulk9TEjGCaiq5uDFuQDEvmeYcAtJsoyQLCW8MWAB4QBfHWA+4QzFm1xAOBRw/PJ3PuG0PfLL97+fODMPh1d++Xav/9+/zYnhdHav//8BYcgoohFrUscAAAAASUVORK5CYII="/>
+<image id="chitkala-trust-zones-is-iam" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEXZJy/lNDrQGyXrPUH++vrtQ0fiKzH41dfpdXnlaW7SExzwpKfshYnslZn76+zdMDcAAADufYHlU1j2w8XeSVDRCRL/AADlXWLvnqHcO0N/AADytrjdLDLjLTTKFCD0RUj1R0fNFiHdLTTkLjXkLDbQLi73RkjdMzPMFSC5FyLnOUXdWF/MESL/REQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJ2I8+AAAAQHRSTlP+/v7///7+////////////AP//////Af///wL/pcmnp0hIRKxNFskPyRYW/w8PAAAAAAAAAAAAAAAAAAAAAAAAqispDAAAArlJREFUeNql14eWqyAQANBhHFCwsZa4pmxvr/3/7z3QFFfRZGX2HDF75GYygCjordZvB8EWIrgEH8THk9YbDRv9/sqYWCPwx996A9vPAwOAdcLHvw1s9rb/WuFRw4sA8BCeYH8C1gmPph94CTCMNQL4CuArgK8AvgL4CuArOIAbux8FmAkxCZczAmQZ3hSlHAiD/pwoo9uiuAiX/hhRArk9y5eLwFKKxLkOA0BShKdzNGczt6lA3F0FmiRNZTAzHIFIlgGUYfc7swRWAaahnWxkTJTCAsDmgDwzjYWajBpYAJgbMMdY2ZHIMaF7ZwongLmB6FxKTrEZCQdwdwTYdQDtUAq4TGZ7uABsCuTjDMxfVB6DMxGVxRBg0wyUJKn6z7yrBoPkNIENkFIjhgAbAaptE0ra/lYhadetFdYtWzuHzfX8208wMcogHC8bbpYH2rA16AvRAWwGoOw+tnE8hlQAFIkNKVhgWz4LqA4Ia/NtCnNQpq1TkwGmXSoxCG5bKa4A9rQKKZM2qdgAwKUNbvrYNhhngCPAzuKSopCgyrJBDexdDl01QJwAQHEdUdX2AATFOfh5Jg4BnGSwozjLTDusQRelcAI4ziDfUVhhm9yVNoPmvh8TMzTRDIAjQFWUKOD9PID+kv4qNgPgEVA9gA0lCLksdtTfdXMTLB+uxjGAZ0B1n1r7f9XVYLLricgFHJdRFlbn4EW1I8cTCCwASNO1MBEWgKiO0u+ROLbepQxqrNX3cGzeOAPU0o7dtTCjYe4wEUwBxNZsJjaubbF2ggsXoP7cvL0PbvcDAJVCd0zr4MzAceFcHQbPUXD962YegWaBHwqAngKgpwDoKQB6CoBeAswCNwpmX3nwEtgentFDEOwF9IOHwPbm1ffv12qBHT63sNW/VuYgxOu7efm2r//PX2uEw5vWW/0fa3Q0ctarkO4AAAAASUVORK5CYII="/>
+<marker id="chitkala-trust-zones-ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#545B64"/></marker>
+<marker id="chitkala-trust-zones-mn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#E7157B"/></marker>
+<marker id="chitkala-trust-zones-mh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF9900"/></marker>
+<marker id="chitkala-trust-zones-mc0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0B8A6F"/></marker>
+<marker id="chitkala-trust-zones-mc1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#B4322A"/></marker>
+<filter id="chitkala-trust-zones-glow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#FF9900" flood-opacity=".9"/></filter>
+<filter id="chitkala-trust-zones-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F1B2D" flood-opacity=".12"/></filter>
+</defs>
+<style>
+.chitkala-trust-zones text{fill:#232F3E}
+.chitkala-trust-zones .fl .ln{fill:none;stroke:#545B64;stroke-width:1.7}
+.chitkala-trust-zones .fl.dsh .ln{stroke-dasharray:5 4}
+.chitkala-trust-zones .fl .ant{fill:none;stroke:#FF9900;stroke-width:3;stroke-dasharray:7 11;opacity:0}
+.chitkala-trust-zones .bdg circle{fill:#232F3E}
+.chitkala-trust-zones .bdg text{fill:#fff;font-weight:700;font-size:12px}
+.chitkala-trust-zones .future{opacity:.13;filter:grayscale(1)}
+.chitkala-trust-zones .deleted{opacity:.35;filter:grayscale(1)}
+.chitkala-trust-zones .new .ln{stroke:#E7157B;stroke-width:2.4}
+.chitkala-trust-zones .new .ant{opacity:1;stroke:#E7157B;animation:chitkala-trust-zones-ants 1.1s linear infinite}
+.chitkala-trust-zones .new .bdg circle{fill:#E7157B}
+.chitkala-trust-zones .nd.new .halo{opacity:1;animation:chitkala-trust-zones-pulse 1.6s ease-in-out infinite}
+.chitkala-trust-zones .nd .halo{opacity:0;fill:none;stroke:#E7157B;stroke-width:3}
+.chitkala-trust-zones .lg.new text{fill:#E7157B}
+.chitkala-trust-zones .lg.future{opacity:.25}
+.chitkala-trust-zones .cap text{fill:#fff}
+@keyframes chitkala-trust-zones-ants{to{stroke-dashoffset:-36}}
+@keyframes chitkala-trust-zones-pulse{0%,100%{stroke-opacity:.25}50%{stroke-opacity:1}}
+@media (prefers-reduced-motion:reduce){.chitkala-trust-zones *{animation:none!important}}
+.chitkala-trust-zones .fl.c0 .ln{stroke:#0B8A6F;stroke-width:2.2}.chitkala-trust-zones .fl.c1 .ln{stroke:#B4322A;stroke-width:2.2}.chitkala-trust-zones .fl .ant{animation:chitkala-trust-zones-ants 1.1s linear infinite}</style>
+<g class="chitkala-trust-zones">
+<rect x="0" y="0" width="2016" height="756" fill="#FFFFFF"/>
+<text x="36" y="44" font-size="22" font-weight="700">Trust zones, local and cloud — authority lives in grants, not in text</text>
+<text x="36" y="68" font-size="13" fill="#5F6B7A">The desktop core is the only writer of the vault. AWS services receive consented data, are confined per tenant, and send back only proposals.</text>
+<g class="cap"><rect x="36" y="82" width="1483" height="32" rx="7" fill="#232F3E"/>
+<rect x="36" y="110" width="0" height="4" rx="2" fill="#FF9900"><animate attributeName="width" values="0;1483" dur="16.80s" repeatCount="indefinite"/></rect>
+<text x="48" y="103" font-size="13" font-weight="700" style="fill:#FF9900">▶ NOW</text>
+<text x="108" y="103" font-size="13.5" opacity="0">1 · Content enters the core as data: parsed, sanitized and rendered in an isolated origin.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0057;0.1371;0.1429;1" dur="16.80s" begin="0.00s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">2 · Extensions ask the policy broker; a grant (principal + action + scope + expiry) decides.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0057;0.1371;0.1429;1" dur="16.80s" begin="2.40s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">3 · Only consented, scope-filtered data leaves the device, with a short-lived device JWT.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0057;0.1371;0.1429;1" dur="16.80s" begin="4.80s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">4 · API handlers assume a tenant-tagged session; IAM, KMS and row-level security confine each tenant.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0057;0.1371;0.1429;1" dur="16.80s" begin="7.20s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">5 · Agent tools and site builds run isolated, with no route back to devices.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0057;0.1371;0.1429;1" dur="16.80s" begin="9.60s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">6 · Results come back only as patch proposals the author reviews and the core commits.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0057;0.1371;0.1429;1" dur="16.80s" begin="12.00s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">7 · Injected text asking for tools or uploads gets nothing: it holds no grant.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0057;0.1371;0.1429;1" dur="16.80s" begin="14.40s" repeatCount="indefinite"/></text>
+</g>
+<g class="fl f1 built c0" data-n="1" data-stage="0">
+<path class="ln" d="M451.0,240.0 L540.0,240.0 L540.0,328.8 L629.0,328.8" marker-end="url(#chitkala-trust-zones-mc0)"/>
+<path class="ant" d="M451.0,240.0 L540.0,240.0 L540.0,328.8 L629.0,328.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="0.00s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="509.7" cy="240.0" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="0.00s" repeatCount="indefinite"/></circle><text x="509.7" y="244.0" text-anchor="middle">1</text></g></g>
+<g class="fl f2 built " data-n="2" data-stage="0">
+<path class="ln" d="M451.0,457.6 L540.0,457.6 L540.0,368.8 L629.0,368.8" marker-end="url(#chitkala-trust-zones-ma)"/>
+<path class="ant" d="M451.0,457.6 L540.0,457.6 L540.0,368.8 L629.0,368.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="2.40s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="509.7" cy="457.6" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="2.40s" repeatCount="indefinite"/></circle><text x="509.7" y="461.6" text-anchor="middle">2</text></g></g>
+<g class="fl f3 built " data-n="3" data-stage="0">
+<path class="ln" d="M988.6,326.8 L1081.8,326.8 L1081.8,240.0 L1175.0,240.0" marker-end="url(#chitkala-trust-zones-ma)"/>
+<path class="ant" d="M988.6,326.8 L1081.8,326.8 L1081.8,240.0 L1175.0,240.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="4.80s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1048.7" cy="326.8" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="4.80s" repeatCount="indefinite"/></circle><text x="1048.7" y="330.8" text-anchor="middle">3</text></g></g>
+<g class="fl f4 built " data-n="4" data-stage="0">
+<path class="ln" d="M1346.4,281.0 L1346.4,383.0" marker-end="url(#chitkala-trust-zones-ma)"/>
+<path class="ant" d="M1346.4,281.0 L1346.4,383.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="7.20s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1346.4" cy="303.4" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="7.20s" repeatCount="indefinite"/></circle><text x="1346.4" y="307.4" text-anchor="middle">4</text></g></g>
+<g class="fl f5 built " data-n="5" data-stage="0">
+<path class="ln" d="M1346.4,481.0 L1346.4,581.4" marker-end="url(#chitkala-trust-zones-ma)"/>
+<path class="ant" d="M1346.4,481.0 L1346.4,581.4" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="9.60s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1346.4" cy="503.1" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="9.60s" repeatCount="indefinite"/></circle><text x="1346.4" y="507.1" text-anchor="middle">5</text></g></g>
+<g class="fl f6 built c0 dsh" data-n="6" data-stage="0">
+<path class="ln" d="M1175.0,630.4 L1081.8,630.4 L1081.8,370.8 L988.6,370.8" marker-end="url(#chitkala-trust-zones-mc0)"/>
+<path class="ant" d="M1175.0,630.4 L1081.8,630.4 L1081.8,370.8 L988.6,370.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="12.00s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1081.8" cy="625.5" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="12.00s" repeatCount="indefinite"/></circle><text x="1081.8" y="629.5" text-anchor="middle">6</text></g></g>
+<g class="fl f7 built c1 dsh" data-n="7" data-stage="0">
+<path class="ln" d="M451.0,264.0 L506.4,264.0 L506.4,630.4 L629.0,630.4" marker-end="url(#chitkala-trust-zones-mc1)"/>
+<path class="ant" d="M451.0,264.0 L506.4,264.0 L506.4,630.4 L629.0,630.4" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="14.40s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="506.4" cy="328.4" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="14.40s" repeatCount="indefinite"/></circle><text x="506.4" y="332.4" text-anchor="middle">7</text></g></g>
+<g class="nd built" data-id="z3" data-stage="0">
+<rect class="halo" x="123.0" y="189.0" width="330.0" height="102.0" rx="12"/>
+<rect x="129.0" y="195.0" width="318.0" height="90.0" rx="9" fill="#FFFFFF" stroke="#B4322A" stroke-width="1.5" filter="url(#chitkala-trust-zones-shadow)"/>
+<path d="M129.0,223.0 V204.0 Q129.0,195.0 138.0,195.0 H438.0 Q447.0,195.0 447.0,204.0 V223.0 Z" fill="#B4322A"/>
+<text x="139.0" y="214.0" font-size="13" font-weight="700" style="fill:#FFFFFF">Zone 3 · Untrusted content</text>
+<text x="139.0" y="241.0" font-size="12.3">imported Markdown / HTML / MDX</text>
+<text x="139.0" y="257.0" font-size="12.3">web captures, repository files</text>
+<text x="139.0" y="273.0" font-size="12.3">treated as data, never instructions</text>
+</g>
+<g class="nd built" data-id="z4" data-stage="0">
+<rect class="halo" x="123.0" y="414.6" width="330.0" height="86.0" rx="12"/>
+<rect x="129.0" y="420.6" width="318.0" height="74.0" rx="9" fill="#FFFFFF" stroke="#B4322A" stroke-width="1.5" filter="url(#chitkala-trust-zones-shadow)"/>
+<path d="M129.0,448.6 V429.6 Q129.0,420.6 138.0,420.6 H438.0 Q447.0,420.6 447.0,429.6 V448.6 Z" fill="#B4322A"/>
+<text x="139.0" y="439.6" font-size="13" font-weight="700" style="fill:#FFFFFF">Zone 4 · Untrusted extensions</text>
+<text x="139.0" y="466.6" font-size="12.3">skills, plugins, MCP servers</text>
+<text x="139.0" y="482.6" font-size="12.3">signed manifests, scoped grants</text>
+</g>
+<g class="nd built" data-id="z1" data-stage="0">
+<rect class="halo" x="627.0" y="297.8" width="363.6" height="102.0" rx="12"/>
+<rect x="633.0" y="303.8" width="351.6" height="90.0" rx="9" fill="#FFFFFF" stroke="#3B48CC" stroke-width="1.5" filter="url(#chitkala-trust-zones-shadow)"/>
+<path d="M633.0,331.8 V312.8 Q633.0,303.8 642.0,303.8 H975.6 Q984.6,303.8 984.6,312.8 V331.8 Z" fill="#3B48CC"/>
+<rect x="638.0" y="306.8" width="22" height="22" rx="4" fill="#FFFFFF"/>
+<use href="#chitkala-trust-zones-is-client" x="638.0" y="306.8"/>
+<text x="667.0" y="322.8" font-size="13" font-weight="700" style="fill:#FFFFFF">Zones 1–2 · Trusted core + UI</text>
+<text x="643.0" y="349.8" font-size="12.3">Rust core: files, keychain, policy broker</text>
+<text x="643.0" y="365.8" font-size="12.3">atomic writes with revision CAS</text>
+<text x="643.0" y="381.8" font-size="12.3">the only writer of the vault</text>
+</g>
+<g class="nd built" data-id="never" data-stage="0">
+<rect class="halo" x="627.0" y="579.4" width="363.6" height="102.0" rx="12"/>
+<rect x="633.0" y="585.4" width="351.6" height="90.0" rx="9" fill="#FFFFFF" stroke="#334155" stroke-width="1.5" filter="url(#chitkala-trust-zones-shadow)"/>
+<path d="M633.0,613.4 V594.4 Q633.0,585.4 642.0,585.4 H975.6 Q984.6,585.4 984.6,594.4 V613.4 Z" fill="#334155"/>
+<text x="643.0" y="604.4" font-size="13" font-weight="700" style="fill:#FFFFFF">Never</text>
+<text x="643.0" y="631.4" font-size="12.3">zone 3/4 → core shortcuts</text>
+<text x="643.0" y="647.4" font-size="12.3">a cloud service writing the vault</text>
+<text x="643.0" y="663.4" font-size="12.3">a server reading sync bodies</text>
+</g>
+<g class="nd built" data-id="edge" data-stage="0">
+<rect class="halo" x="1173.0" y="197.0" width="346.8" height="86.0" rx="12"/>
+<rect x="1179.0" y="203.0" width="334.8" height="74.0" rx="9" fill="#FFFFFF" stroke="#6D28D9" stroke-width="1.5" filter="url(#chitkala-trust-zones-shadow)"/>
+<path d="M1179.0,231.0 V212.0 Q1179.0,203.0 1188.0,203.0 H1504.8 Q1513.8,203.0 1513.8,212.0 V231.0 Z" fill="#6D28D9"/>
+<rect x="1184.0" y="206.0" width="22" height="22" rx="4" fill="#FFFFFF"/>
+<use href="#chitkala-trust-zones-is-api-gateway" x="1184.0" y="206.0"/>
+<text x="1213.0" y="222.0" font-size="13" font-weight="700" style="fill:#FFFFFF">Zone 5 · AWS edge</text>
+<text x="1189.0" y="249.0" font-size="12.3">Cognito device JWT, WAF</text>
+<text x="1189.0" y="265.0" font-size="12.3">same capability check as the core</text>
+</g>
+<g class="nd built" data-id="ten" data-stage="0">
+<rect class="halo" x="1173.0" y="381.0" width="346.8" height="102.0" rx="12"/>
+<rect x="1179.0" y="387.0" width="334.8" height="90.0" rx="9" fill="#FFFFFF" stroke="#C7520E" stroke-width="1.5" filter="url(#chitkala-trust-zones-shadow)"/>
+<path d="M1179.0,415.0 V396.0 Q1179.0,387.0 1188.0,387.0 H1504.8 Q1513.8,387.0 1513.8,396.0 V415.0 Z" fill="#C7520E"/>
+<rect x="1184.0" y="390.0" width="22" height="22" rx="4" fill="#FFFFFF"/>
+<use href="#chitkala-trust-zones-is-iam" x="1184.0" y="390.0"/>
+<text x="1213.0" y="406.0" font-size="13" font-weight="700" style="fill:#FFFFFF">Tenant isolation</text>
+<text x="1189.0" y="433.0" font-size="12.3">IAM session tags → ABAC</text>
+<text x="1189.0" y="449.0" font-size="12.3">per-tenant KMS key</text>
+<text x="1189.0" y="465.0" font-size="12.3">Aurora row-level security</text>
+</g>
+<g class="nd built" data-id="exe" data-stage="0">
+<rect class="halo" x="1173.0" y="579.4" width="346.8" height="102.0" rx="12"/>
+<rect x="1179.0" y="585.4" width="334.8" height="90.0" rx="9" fill="#FFFFFF" stroke="#C7520E" stroke-width="1.5" filter="url(#chitkala-trust-zones-shadow)"/>
+<path d="M1179.0,613.4 V594.4 Q1179.0,585.4 1188.0,585.4 H1504.8 Q1513.8,585.4 1513.8,594.4 V613.4 Z" fill="#C7520E"/>
+<rect x="1184.0" y="588.4" width="22" height="22" rx="4" fill="#FFFFFF"/>
+<use href="#chitkala-trust-zones-is-fargate" x="1184.0" y="588.4"/>
+<text x="1213.0" y="604.4" font-size="13" font-weight="700" style="fill:#FFFFFF">Execution isolation</text>
+<text x="1189.0" y="631.4" font-size="12.3">Fargate sandbox, no egress</text>
+<text x="1189.0" y="647.4" font-size="12.3">CodeBuild, no vault access</text>
+<text x="1189.0" y="663.4" font-size="12.3">Guardrails on model context</text>
+</g>
+<g opacity="0"><circle r="7.5" fill="#0B8A6F" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-trust-zones-glow)"/><rect x="-21.0" y="-27" width="42.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">data</text><animateMotion path="M451.0,240.0 L540.0,240.0 L540.0,328.8 L629.0,328.8" dur="16.80s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1171;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1171;0.1173;1" dur="16.80s" begin="0.00s" repeatCount="indefinite"/></g>
+<circle cx="629.0" cy="328.8" r="10" fill="none" stroke="#0B8A6F" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.1136;0.1699;1" dur="16.80s" begin="0.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.1135;0.1136;0.1699;1" dur="16.80s" begin="0.00s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-trust-zones-glow)"/><rect x="-24.5" y="-27" width="49.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">grant</text><animateMotion path="M451.0,457.6 L540.0,457.6 L540.0,368.8 L629.0,368.8" dur="16.80s" begin="2.40s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1171;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1171;0.1173;1" dur="16.80s" begin="2.40s" repeatCount="indefinite"/></g>
+<circle cx="629.0" cy="368.8" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.1136;0.1699;1" dur="16.80s" begin="2.40s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.1135;0.1136;0.1699;1" dur="16.80s" begin="2.40s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-trust-zones-glow)"/><rect x="-17.5" y="-27" width="35.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">JWT</text><animateMotion path="M988.6,326.8 L1081.8,326.8 L1081.8,240.0 L1175.0,240.0" dur="16.80s" begin="4.80s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1171;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1171;0.1173;1" dur="16.80s" begin="4.80s" repeatCount="indefinite"/></g>
+<circle cx="1175.0" cy="240.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.1136;0.1699;1" dur="16.80s" begin="4.80s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.1135;0.1136;0.1699;1" dur="16.80s" begin="4.80s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-trust-zones-glow)"/><rect x="-21.0" y="-27" width="42.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">tags</text><animateMotion path="M1346.4,281.0 L1346.4,383.0" dur="16.80s" begin="7.20s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1171;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1171;0.1173;1" dur="16.80s" begin="7.20s" repeatCount="indefinite"/></g>
+<circle cx="1346.4" cy="383.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.1136;0.1699;1" dur="16.80s" begin="7.20s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.1135;0.1136;0.1699;1" dur="16.80s" begin="7.20s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-trust-zones-glow)"/><animateMotion path="M1346.4,481.0 L1346.4,581.4" dur="16.80s" begin="9.60s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1171;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1171;0.1173;1" dur="16.80s" begin="9.60s" repeatCount="indefinite"/></g>
+<circle cx="1346.4" cy="581.4" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.1136;0.1699;1" dur="16.80s" begin="9.60s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.1135;0.1136;0.1699;1" dur="16.80s" begin="9.60s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#0B8A6F" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-trust-zones-glow)"/><rect x="-24.5" y="-27" width="49.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">patch</text><animateMotion path="M1175.0,630.4 L1081.8,630.4 L1081.8,370.8 L988.6,370.8" dur="16.80s" begin="12.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1171;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1171;0.1173;1" dur="16.80s" begin="12.00s" repeatCount="indefinite"/></g>
+<circle cx="988.6" cy="370.8" r="10" fill="none" stroke="#0B8A6F" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.1136;0.1699;1" dur="16.80s" begin="12.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.1135;0.1136;0.1699;1" dur="16.80s" begin="12.00s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#B4322A" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-trust-zones-glow)"/><rect x="-31.5" y="-27" width="63.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">blocked</text><animateMotion path="M451.0,264.0 L506.4,264.0 L506.4,630.4 L629.0,630.4" dur="16.80s" begin="14.40s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1171;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1171;0.1173;1" dur="16.80s" begin="14.40s" repeatCount="indefinite"/></g>
+<circle cx="629.0" cy="630.4" r="10" fill="none" stroke="#B4322A" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.1136;0.1699;1" dur="16.80s" begin="14.40s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.1135;0.1136;0.1699;1" dur="16.80s" begin="14.40s" repeatCount="indefinite"/></circle>
+<rect x="1542.6000000000001" y="0" width="473.39999999999986" height="756" fill="#F2F3F3"/>
+<text x="1554.6000000000001" y="44" font-size="15" font-weight="700">How it flows</text>
+<g class="lg l1 built" data-n="1"><g class="lb"><circle cx="1565.6000000000001" cy="72" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="0.00s" repeatCount="indefinite"/></circle><text x="1565.6000000000001" y="76" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">1</text></g>
+<text x="1584.6000000000001" y="76" font-size="12.5">Content enters the core as data: parsed, sanitized and</text>
+<text x="1584.6000000000001" y="91" font-size="12.5">rendered in an isolated origin.</text>
+</g>
+<g class="lg l2 built" data-n="2"><g class="lb"><circle cx="1565.6000000000001" cy="111" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="2.40s" repeatCount="indefinite"/></circle><text x="1565.6000000000001" y="115" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">2</text></g>
+<text x="1584.6000000000001" y="115" font-size="12.5">Extensions ask the policy broker; a grant (principal +</text>
+<text x="1584.6000000000001" y="130" font-size="12.5">action + scope + expiry) decides.</text>
+</g>
+<g class="lg l3 built" data-n="3"><g class="lb"><circle cx="1565.6000000000001" cy="150" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="4.80s" repeatCount="indefinite"/></circle><text x="1565.6000000000001" y="154" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">3</text></g>
+<text x="1584.6000000000001" y="154" font-size="12.5">Only consented, scope-filtered data leaves the device,</text>
+<text x="1584.6000000000001" y="169" font-size="12.5">with a short-lived device JWT.</text>
+</g>
+<g class="lg l4 built" data-n="4"><g class="lb"><circle cx="1565.6000000000001" cy="189" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="7.20s" repeatCount="indefinite"/></circle><text x="1565.6000000000001" y="193" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">4</text></g>
+<text x="1584.6000000000001" y="193" font-size="12.5">API handlers assume a tenant-tagged session; IAM, KMS and</text>
+<text x="1584.6000000000001" y="208" font-size="12.5">row-level security confine each tenant.</text>
+</g>
+<g class="lg l5 built" data-n="5"><g class="lb"><circle cx="1565.6000000000001" cy="228" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="9.60s" repeatCount="indefinite"/></circle><text x="1565.6000000000001" y="232" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">5</text></g>
+<text x="1584.6000000000001" y="232" font-size="12.5">Agent tools and site builds run isolated, with no route</text>
+<text x="1584.6000000000001" y="247" font-size="12.5">back to devices.</text>
+</g>
+<g class="lg l6 built" data-n="6"><g class="lb"><circle cx="1565.6000000000001" cy="267" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="12.00s" repeatCount="indefinite"/></circle><text x="1565.6000000000001" y="271" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">6</text></g>
+<text x="1584.6000000000001" y="271" font-size="12.5">Results come back only as patch proposals the author</text>
+<text x="1584.6000000000001" y="286" font-size="12.5">reviews and the core commits.</text>
+</g>
+<g class="lg l7 built" data-n="7"><g class="lb"><circle cx="1565.6000000000001" cy="306" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1386;0.1429;1" dur="16.80s" begin="14.40s" repeatCount="indefinite"/></circle><text x="1565.6000000000001" y="310" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">7</text></g>
+<text x="1584.6000000000001" y="310" font-size="12.5">Injected text asking for tools or uploads gets nothing: it</text>
+<text x="1584.6000000000001" y="325" font-size="12.5">holds no grant.</text>
+</g>
+</g></svg>

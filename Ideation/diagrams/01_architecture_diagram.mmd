@@ -1,0 +1,33 @@
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant UI as CHITKALA UI
+    participant V as Vault Service
+    participant IDX as Index + Graph
+    participant R as Retrieval
+    participant A as Agent Runtime
+    participant P as Patch Engine
+    participant PUB as Publisher
+    U->>UI: Select existing Obsidian vault
+    UI->>V: inventory/import(dry_run=true)
+    V-->>UI: Compatibility and collisions report
+    U->>UI: Approve copy-based import
+    UI->>V: Import preserving originals
+    V->>IDX: Index files + links + metadata
+    U->>UI: Ask a cross-document question
+    UI->>R: Search with scope + revision
+    R-->>UI: Source-grounded answer + citations
+    U->>UI: Create an article from this research
+    UI->>A: Draft plan with allowed sources
+    A->>R: Retrieve supporting passages
+    A->>P: Create proposed file diff
+    P-->>UI: Preview content + citation verification
+    U->>UI: Approve changes
+    UI->>P: Apply patch with revision preconditions
+    P->>V: Atomic write
+    V->>IDX: Change event / reindex
+    IDX-->>UI: Indexed revision acknowledged
+    U->>UI: Preview public site
+    UI->>PUB: Build from approved publish manifest
+    PUB-->>UI: Static site preview + findings
+    U->>UI: Publish

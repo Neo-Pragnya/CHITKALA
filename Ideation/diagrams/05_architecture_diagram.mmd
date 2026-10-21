@@ -1,0 +1,8 @@
+flowchart LR
+    D1[Article A] -->|wikilink| D2[Article B]
+    D1 -->|discusses| E1[Concept: RAG]
+    D2 -->|supports| E1
+    D3[Article C] -->|contradicts: suggested| E1
+    RUN[Agent Run 421] -->|read| D1
+    RUN -->|proposed edit| D3
+    D3 -->|revision| REV[Revision hash]

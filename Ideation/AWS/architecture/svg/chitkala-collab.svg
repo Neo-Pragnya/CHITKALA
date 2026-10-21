@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1698 786" width="1698" height="786" font-family="Amazon Ember, Inter, Arial, Helvetica, sans-serif" class="archviz-svg" data-uid="chitkala-collab" role="img" aria-label="Real-time collaboration (Later) — a relay that forwards encrypted CRDT updates">
+<title>Real-time collaboration (Later) — a relay that forwards encrypted CRDT updates</title>
+<defs>
+<image id="chitkala-collab-ic-alb" width="54" height="54" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEUAAABrPclxQNVpO8VoO8R5PL1oO8VoO8UAAP9pPMVVVappN8doPMR/AH9/f/9VVf9dPr3/AP8/P79XK65tRNFpSbV/AP9/f39mOr9/KtR/P/+qAKpVAFVtJJFIJJH///+qVf8zM5kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADbl8axAAAAQHRSTlMA+P7PkAYwswFwAxBMAgIDCAEEBw4IAgInBgQDAwcHAQMFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVCHTAwAABAhJREFUeNqtV9l25CgMpcxqMLZrS9Lp7ume///J0RWLsV1Lcmr0kCKArrVLCLGjqOnPbHol5YFJStWbmTZ1FM8peuIeFHi7SkBRA2H4ZxDuJIQhbmaS0ioiC0mwIZUR4uQe8Xuw49v4oAllOxiIBDkA4R/xzz0rrTJz9EQxg7Bah36+i+DehcEd2YP7NI1VWDdOJ2D0fGzE+0016EP8+f5K5va7K86Tc67pBl/e85+hvSUlpzt2chOZyMIS5z3Cm9A2gZOZ4/g27uhtjOwkCGE1MazoKAL0M2J84ug4CgNDBGJphRt/WDYPgpCu2JtE8AhHNrX9MbaKTkIxKvjpj+qaKKzR2KlyDmkVMTX+h2If4iQyAKJwS+BhALr2webyC79h/RN/kkBvlddVAiAkBl89LAFYeBggxJ+xoZ8xNAD0SyLLEi2T6LuDXVRKAGsrk5daALpsD12feN4d5AkufgcgugAlKPphAQUFFpt+BQBiw6qevQ4PRvc9ABfhS0SG3gqQAbz2DWm/ASgi0A6QtHMbgIduZBGc5tgTYsDJJDYAw442AIheukYL+jGrIsMAN2gDgPCjLTHLTp7XwiIubgH0Yq3YmVjnBLPR+FLlJgOr+s9lY5UkPNlyWJlgRQauukMTmY/8p3BlU17GT8101XRloB+mz3FbxAwcSXoEcbdZAOBuE6II6CQANgcUm20VWNapIrUE5kNnNyV2VZGWDrk3dhS2Owjs+z3AviLuATwu3gM4bzU+fxHAwd5IpqsOSy4FfUUy4cw9l0AgEsNWgoBIFDclaIxIad8TUY9QfW/KfhSm7yleLM6aQpGMuHLjlByQphP5x+XE/Su7vLnJ3BwHSyBNwCwkq2ZaLhm1VN8cSKtQZgkMk+0WAC87m3ZbCXIot8nkPo+qk794TQD6yEaIR00AvPlLdur46VbJ1KTzkcuL/C1O3gOg1dUK70/it0QJyWbM6dwWFH25kA0M/asDAYSQmmkgXW2gIU/T1+zlolcFpZa01PiZhlCs1ue5h0eCoZxzVpWSVosqV7KUNb1JSQSbk/hpauyMqufQuRbVUta5YWKyBEBZWVjzgGmTvqvKCgC1rNfGwgCGGwAAhmy7bM0hAbxxlQNAbSy1tTHAMM8fGWDWcwGgZQYI88y+00trq821SHB5JEEoEizNtbb3c7aBfWQDm21wbtp7GTCuay90xQu2rFsvXJsBo444nsY3rqPSXPIqx0HavQ713K9GnDpkiXgJWofzv2hOWCH6qPkFrNGW/kmrKNZD1jLm+ZqoS4VpBg1Xr2/GvGXQDI6Jq0hZNcu0CPtBcz3qPqGbo+7Lw/Zm3H/4Jrs97r/+4Hj9yfP6o+v1Z9//8PB8/en7+uP7+8///wBztDLQn8CMQQAAAABJRU5ErkJggg=="/>
+<image id="chitkala-collab-ic-client" width="54" height="54" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEUAAAAlMkEiLj0iLj0iLj0+Pj4kKTQjLT4iLT4iLj0jMTwWNDUAVVUkKz0fHz8AAH8nLEwdKTsiLkAAf38jMD4jMD0jMD4kMD8fLz8kMEAfMT4AAFUiMD0lMUAjL0EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADNv0ixAAAAQHRSTlMA/vaw2QQUTIh8KwkDKggCDxVNAv55iaogPykDXoIrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEo43UQAAAXpJREFUeNrtl9uWgjAMRdNQ6H2kiHed//9MU9QFC11CozNPbF7JoaRNcwJAuJKFg6/R6K3OZqube7grBJMi/YSHQiATUVA4lCjk4RhssBnQ68eDFFjSEioUhpc6IzDcBU5RF5noeCKB+rEClZ9BlVZQ9QKIEuVM6FV8EhDKZaCeVyCarKP3QkDB7LPtQL0U8HMF/CKwCCwCi8Ai8PcCH17rnzYWlDm9WT73xjavN7cjgf381vxo0PuBwCYl5ieLlPDNTSCSR4rOVZk4F8kjRYB159Ikg86lrekJkusTZaDwlIVLweJSfc8sV5ZB/3274zndnU3RK7DITSJaCk/b2EozzdjuG9l229iZ7ZqTuHpotqeHnqjOqqcxoUq1sH8IlJN3kB6XY4Ch2Z4WGI8lo3L+F4E3dn/ja1i9xa3Cbjxw+Pt9UKPQvALQtySm7TRhmt/hWJZmNHM7QB7O6VByhj5ByfOpGAy3FgwFdwTDGX1N6PeISR/IG/+70CuIdTA/09xmkgAAAABJRU5ErkJggg=="/>
+<image id="chitkala-collab-ic-dynamodb" width="54" height="54" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEU6R8xCV9lHZef8/f40PMM9UdZEXuA1Ob3n6fmvt+1qdttYZ9iNmObT1/WZo+h2huS7xPIAAABibdZXc+07V+BneeJ5g93FyvKkq+mBjOFBTs4AAH/d4PeDit1AU9dBVNoAf/8AAP85UdBCVNszNro/VNVLbvBNcfV/kOlNcPREVd00OLtfcd9Ed+4hL8QzM7uLkN5Ocvc1N8A1OMA+UNNFaOcuLq01N740OMAAAAAAAAAAAAAAAAAAAAAAAAAAAACwPXlAAAAAQHRSTlP+/v7//v7+/v///////////wD//v////////8C//+oyQIBFk2lRKXJ/0gPRP8P/w//rMCspBYW0k0AAAAAAAAAMDsqaQAAA/lJREFUeNqll2e3mzgQhkeMRFBBopjidkvaJtlke/v/v2xHAmyaSY49536wOdbDO1VzIT/m+btnNrOYLNq28qfPef6Sw2v+9onF7B5C+fvf+QscvzzHgrF7CCTi2wvkT6vnf5DwMYcP7Jb9EOEz/MXEA4TyIwgmHiCUEdD5RwgRgNggRN83uEUQg31HA6wQBADTZeWcca4qo1jsdtuACUGAqEyW4NVOmSlvI2BGAGZSfyrNpDXGWpl1X8024EIAR+9uTOndGJ5HFXnjot16SmBCAIcoNX1bpqIkq6rbAE+gmkzQTU8zUY7CgdnuJgC8gAIzPksnSIpHbynKDQC9GRQmGqYCIkxY5+COWG4LAB6AifOfxgKM0CEQMbE2YtADEp8yzQangoA+lsKteLAAtLqhWCWZNa76WmkvAAZAtuLBAiA5lVIzBL3SFwFEwIQCMa/JBQCM9a3gjJXSjgQw8Ymcs9aa24ADpVECogLWPxkLELKXVca3APRmRK3sJAVeQFda0SfjLGK7i24DYI90ZMgjCcDEmxPdhABGpSTiLUDtNUrVp1Gn/jiiHRLRnd92obZJmAGtqfoGTVF3CsL753NyCtAhjartZgD4Q0Jj2rdXiplYTNopoPC9EKRo5VwQTmHpPBANNmI5q6cA3wv11aEAyLAKmciwWZv2CwXkvy3YqEW7UvBdfb3DRoQ5oGWhXhppnCKroKLamp8fE+YAyTnby8tQTjnNAAjnp4PiQlgCTOvdV6EZpIIEacC2eNKgV2+9ZRp9L4yfNADWJ8edVu/NKeCAWChzuKSAgUHDw/kq1MWSMAXw2vcCHwFSZIbOcz8txdrdPQOcQy/U7FrbKfWX4nRfLAGBsHBBGZ+CpKGbbb+nMkx9TFS6NxSMtf1hKoCC+AvVo226PCY8wzBf/JRNktUNpHN4APheoAf0xwpV7wtKIta+jvykSFZ3GOB8AkA8X5k+pi7MN9biOoARgI8BJ/qhLQ4dlxep8moclXeyAeCjGLSH0AupNLXvhXpvs5OPhmFJIm4C+CiI9EXJdHwjY9qqEMQNAL8q4FZSEGig7MMlsFfdPce2FfQE3vVC4T+On/vfeQViA9BrSFDp8/SyCVcWUFNksLYVXwCBQCWP9jBOzDDrmrA5rGiANzOCX7LOesxlyi9uqV7fiuHNjADnbqbL1pDZtlvzmto7srbTEmBKoHfr3+R40UzlmfXRWCF4wIwQipNpaoa6VoVmoSoPALBKCIA5AeZ5HO9yM0IHWCPcsDmhB9xPoDQ+RoD3/BEN8RP8PADuIsQf4PX9/QQRP+Vw/PXfewkifv5yhGP+z5/8rjgw9vQ2fwX/7/9/f9yj4fldnh/z/wHdnD3N4V7M9AAAAABJRU5ErkJggg=="/>
+<image id="chitkala-collab-ic-elasticache" width="54" height="54" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEU5R8xCV9lIZuf8/P40PMM9UdZEXeE1Ob2iq+vU2Paste9oeuJyhebFyvJVZdlqdtzd4fk6WOK7wvBATs/l6PmLluYAAACapepTc/FhbNcAAH+BjOJAU9dBVNoAAP9+h94Af/9NcfVEVd1CVNtNcPSBid85UdBLbvA/VNUzNroxT+BOcvdFaOc0OMA1N8AuLq1Ed+41OMA+UNMdM80/YOczM7s0OLs1N74AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzZJFsAAAAQHRSTlP+/v7//v7+/v//////////////////AP/+/wL/qMkB/wLJD01I/xalRKX/rBZNwBYPrKT//w9E0gAAAAAAAAAAZykmdQAAA6tJREFUeNqll4eSozgQhrsVWCQkwRCdJmzOe/nu/d/sWgLbgIXHZf6qAYytrzpLA+2ubd8/4kwJiV3X5u2Htn1p4an9dMAE7yFsvv9oX2D37jGRiPcQyIjfX6A9RNffSPjcwhdc0k2ED/AnyhWEzWeQKFcQNgxo/RoCA5DrCLCWAK8QXs0DnAlwlpzoYabk7zkAwnqXe2ULMmNt5gDwAMVvlroAQADoJo1KT9RpXlwCwAPqTMCSJP19CyEwdcwC+sG249w1ShVFoayz4a4a079QrPT3QnWMc20iACKIhjd68NIMdz1/YRvePbAYgJzIPcDRg+UZL6nKN1ynPJNOagKoB5ZseNlxswAAtDyfAlgPQAgAyR4YL+mBJRFABSmlB8oJIPMuEEAOgISRHZYcS2IW1DzFEcACVbKhCnLoZDkCMM3rqAuK06UH0NU5XxzUIn5gAMsYt5IhXSkSvEjiABwsoGWAWVeq2se9VjY1KB1DHxQCsGXAYIGEvOT9WlKg8DKTtwN8PIuUnB/GFTNpQZGTASCTVwFAATMyNEgvekajeCPxRkDK93/BdLBIKlN9C0DzbfCgc+fJ4u+OGiUF3FwHVEAVwJVIQ8+nJncUBucyk4ZZof3IUN6MK4C9VZoAppmNF2pLAmhqT7xugSCRC7kAlzXa+jRa3RgnISMX+q6lQsLTrJ5WIvrh05EFOeB0nKA0BOjCSCIL5GnaTwDiOVRPD5gpWFD0o6EOgCTiwkeKfr4lQImjMugLoSQATeeNDoDTjjMCFMd4hSzo/OyEdEYfs9CX+HnPGgEa28tnQfsGqK0OM9mGD5os0NYq/5NOnggjgBgEBNhCno4SqbSROQHksbjO+2ZkgFchiH7EubBZUTX5Tz4LkZ03tgX0WajGSUQ/cS8AuATo+EfaYapJFsU+AiACiKgFvpkm3wzNdEmg0EUBvpmec+olH4h9H9AYAH3sYzF4njfT3iwDRAQgAPMm9d1kS91QUYn8CkBcBDHvC2O6710BiLkFW1FRGquQyj4brwAmBBp/JfavqqBgQsmba4CpDXZopuMXSJsuV9FD8QkwJTRDM2l/vglbS90AxE7F8CZKEJB3tj7msFaptyd6KoY3cUKoD3RbkuvbAuMnUgIsEKYdWsHCmdYDbiGMj7CXgDWEHrCCMADuJ1Aa1xHgq1hjQ3KAf4+AuwjJF3j6ej9BJocWdv/8dy9BJo/vdrBrf/tD3BUHxMOn9gn8v/8/f91jw+P7tt21/wN/AkI9/rnvUQAAAABJRU5ErkJggg=="/>
+<image id="chitkala-collab-ic-fargate" width="54" height="54" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEXldwzZaBHvhAj+/Pv65tPhawP21rfmhy3sqW3UXRHpmFDzxJn0y6bxu4nskzgAAADuolbecBThfCf43MPxsnT77eH8fgLljEL+kwXldQx/fwDodw3ldg31jATcdA3QXRX3jwTediPzigP/AADMZhHSXRbXYBbXYBf4kQbYYBb/mQDonWDziwDVXhfFXBcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKfKd7AAAAQHRSTlP+/v7////////9//////8A////////A//+pwLJSKcTpcn/RAEPRMBNTawP/xbSFgAAAAAAAAAAAAAAAAAAAAAAZE+NIwAAA09JREFUeNqll+nWqyAMRRMDguBU7dx+053n93+8G7ADWrUuzY+2q5pNSE6CQnEsivMJ+iwat/cfRbEtYFu8HmDAxgH7/cufYgvH1xPAPEK0f/+1hc8HgPmElwLOAEsIn+AASwj7F3hqT2J47g+LANHiCPL8CeKJe0qUjiPG3E1MJARRbEYQw+6lcy3522HKwXL0O0vQl5VvkeiBfAL2Adai2fstF5Zos+6tKGAPoWb3SLbrmRHVA4BHAnHIa9WuB8dAfSE4wAOBBK9H9o7wiRwBdAlUy2i9YYRPQ6SbetQjAOxGcC+EcsH4hIoxAHYA0tey5GyyZcp3xTgAHwFeAkTrq1aeAPCmoRAgxe2nBzwK8g5wBInSKBkAYCMgBKi8iwgAK1YlJy7FECDagJQF0t7IHbBC1OTyLkcAThC0DoMIIkBu/qxCCSMAAFfWOCAEgIxq1eRyDMCImmwfoCKxwm4ZewCcAkEKHgE7yrDpTck3oOwAZE7iOmgt5dAXwabClQsCS68+KaXTgXOWfuvltbVDSbVyIJQrJhNcOYTVRqmNUMpoy21B+trZgrL7vA+rwIukjODosdIxtSzW0X0w2ODMCgFoeKFaq0uL73SWxmxppnO/H/Z2s06U4anXAjDCLxxnZlc1V2RjrOEya66V7XOzA+Bc6lQ0UQvBq7PFsbj+k2rVPXkfAB7CaYtFmAIR27VRvYfnozuXMnGdAVWlGvOVlCB7z5C+CFam5qa6ZcD5R5w+m08DrNww3LjD6HaTspdillMAfLPYoWJKhrc2oFhJFiiZCYDUJc3XLA0AXFsvRzkFYKzXHlnXXc2A8AKx2URAlWjSSUU2QZVpQMn9LVPKeRPTAYYB6c6Lz3JLOYCSZhIgJo2/yfiW5GpqryjDuQUeBFMA2gmPLkq0SqVNBXle85eaIqRdU/VMXyj80TRZ98wfVCJ+6Fh/JDvei6aN4U1JVJafeOREKV97mwErihFr8ofW9F64A5IrQA4+zY0CyBqqubNmAlBfZgJ3JswCNCPOulk9TEjGCaiq5uDFuQDEvmeYcAtJsoyQLCW8MWAB4QBfHWA+4QzFm1xAOBRw/PJ3PuG0PfLL97+fODMPh1d++Xav/9+/zYnhdHav//8BYcgoohFrUscAAAAASUVORK5CYII="/>
+<image id="chitkala-collab-ic-s3" width="54" height="54" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEVRli5EiiYxehs7gyL7/Po6hBpvplaJtXXW5tBcoDWmyJi40614qmVBix43fiAAAABbmESVvYXD2rpjnkucwYzh7NywzaQAfwBiqjhEiibK3sJEjCbk7uF/fwApcxZFfyJcoDRfpDYqdRYqdBdEiCJ/sGlEiiYiaBdmqjM/hyUfbwVFkSddoTgidyJcli5gpjiArnBgpTgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZ+8dHAAAAQHRSTlP+/v7////////9//////8A/////////wL+p//J/wKnFqXJSMkP/0gWD0T/TUQPFqz/TQAAAAAAAAAAAAAAAAAAJPuYCgAAA5JJREFUeNqll4lyozAMhmVZtqmBcJOj1/bY7n29/8utDGmKMU6TRtNppyT6RpZ+SQaKdVH8uBZ7gxPtiu3hX1HcFrAu7rcA4gOEzebP7+IW1s/Xb+5nEQA2D19vodh6/mfFAJtPBXwTczsnD5ufsBUXEDgEEEJcFMMi4Kw8iAsJ0SO4v7mz47QrkAsApZSAUmfG2Wet+Yt5FCNl4A1ZWyfkWZIaHQVI39uMvkmd2rYypmptuuuGR6mJAN4Iqkmdb28acOdwNqQBQBv3CbXLgAPBsndVsm9YCaZoZnR6ETASFH8hE0pGqykcQi8CnJPKqBbquB5yQ8kygAnYUobvKUolFAFIgYZPqNQxggDOUhyQuVJpTuFiFkQumorrmUQBqqSENdD1WSnkWMOBkbticiFbJ5Ca8xQBMIISlaV75VmnYd00/MtUth6klFjQZPMoQBIJVEJXaUeBsbo0q6slE41AuAzLIXrJreRE3LPZ1hhdsq8TZG5jOhiy2FOzL8I+B692yKaojwKqUAjKL6QIZDDNAdex8gAqS1Lw60ndHLCaABrqUbyJQAInz+J0TDW0m4sT8QBQQDsGyLfmHjtYHQhCU5oHAJwI4cbrbtkPFbSNG3GOoAwZFQIOp8CEuJunhBKgcvpjgbsIlCU7bzCcEDClEr0YlPtxQy4xwHrOh5GSB4DXU3BDa5cEf04yQtdDn7lmZkQlQsBI4IY2KGVA4AYt7ZANItV0pEUIWO3raFEuEVwYY58lVU1WhYAhBgSqJzUJF4YZG2spgoGA3NAoowRQ3MzAi2opB+MpDnWMxFCxDOZjDqcErAlQRgksAx2M2QkAJVpqpoAZQdVUBpPWBxhuaBkndATBrPYBmhtaRglASTitp4AVlpTOABOCLKlWAQE98+s4I7gqqmBj+AC8IRklDM0c7Bz0z7DjyS4jBFdFFWy9GaB/begFAq//UgV7cwaouKHlapng9ka4eWeAjNrvkRA4w7Sw/XFeBh5aOB2U7Mzzlj/RybQIB8IMgGXnrmOlmD7jeZjZG36+dCmdA1CO97xu1/Mt7y/f82w6XvzqTMkTACsXhen9i+ZN3WagUJwUwYDgQETZZIM1fN8YziFOBDBitfL+V2MmpTwVgNNlcaS7jwOWIWcCEN8lwN1FBNjC4zuA46eAFyjuLiDAlt+dfz3hR08B189rfvn+cvdRwva+WIN7/X98+sgprl+KYl38B5j6MGaRiHbDAAAAAElFTkSuQmCC"/>
+<image id="chitkala-collab-is-ecs" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEXldgzaaBDvhAj+/PrhawLrmEfoiCv65dHvtoTTXhD0xJPyuHvecBTkjUT31bTtqGkAAAD33cb0y6ftkzb8fgL77uP+kwXvpVrldQx/fwDodw3ldg3hfCfedSX1jATcdA33jwTQXRXrroDzigPVXhf/mQD/AADYYBbXYBbFXBf4kQbMZhHziwDXYBfon2fSXRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABc7ZtDAAAAQHRSTlP+/v7////////9////////AP///wP//v+nAslI//+nE8ml/0TSDwGswBZNDxZN/0QAAAAAAAAAAAAAAAAAAAAAifdyZQAAAv5JREFUeNq1lwnTojAMhhNaKCByeut37n3//3+3SUEK2AILsx3HQYc8Td6kCUB+zvPrBWzLG1+v3/N8l8MufzmBY40DDofnn/kOzi8XgGUE7/D6aQefTwDLCc85XAHWED7ACdYQDs8wuSZ8gLWEKeP6sxRQpcLzVFqNIcZ2j4UQVUVfsQcLABshlBJBIBQhMqcTLnOfzGKIGRCzK8p3IKzWMkiFoNBlDdBiiDKwEgAfzSGkHY982QBomyN5tLFJAYhD82xP99Y/7h5wKhuqBdAjSL+g4APZB2hEExc8ArATfMk3yftvA9AIrexACg3AfvCtfSOiNGVJuR1IUQM0QW5pg9CY6x25DvxuYXNKK3gAMAFDSpXs57IEqDNoEJTS2AIgAm5EgCYZtFXh32sq9NqjCRXlyAJA9sCXbS6F2Gfdqs5aH/wxADa5HKjhte7MA8Sip0Zzsu8F4QIkBNjWANHG0llHIWoh5gAKtJywQsBsgJKWM6r+NwA1IOEczgCAE4AMKKYB4AQkMwHgAlBFWLPwAIA1ADOzhgD8FwA4AcoO8IcAsAMSuwd0QtJgAIAuIDKAffDYrEEedWOQPQDYAOQKHeZ+s65SRQeMW2I2A4Bb6u2ZcUIGPGcpAH2hiD4FQMx4HDbNltsTNQifO4KsCuEEvIsgMmcrZCMqbOT2xP7rCDIps9R3elA+mbOJPGRCPY+oO8r73FHDXtNJ41boyA2C9xbacaOGEpkTgE9hHblBZCwdyu7g3vtuAEZ6gAYdws3vJIPVjIf1hYOlO3pXitacm30ayClAhO9dKZKkISA5pyzN+gFAiKeSx4j5g+/iwZ2Brc+gbXEllncpEtBixlZzBwDxN0uRNDLQ3C86uZgF0JWotBS3klKH6HogROe6sRRbGvpik6D7gRRHFj9wkRg3jsMJiMYImO3JB91pcRmgtkUcIWA0gZgiRGsJbwRYQTjBHwYsJ1whf5MrCKcczj8+Lidcdmd6+f72BRfqcHqhl29+/f/1dYkPlyu//v8F4Mona9rirwMAAAAASUVORK5CYII="/>
+<marker id="chitkala-collab-ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#545B64"/></marker>
+<marker id="chitkala-collab-mn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#E7157B"/></marker>
+<marker id="chitkala-collab-mh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF9900"/></marker>
+<filter id="chitkala-collab-glow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#FF9900" flood-opacity=".9"/></filter>
+<filter id="chitkala-collab-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F1B2D" flood-opacity=".12"/></filter>
+</defs>
+<style>
+.chitkala-collab text{fill:#232F3E}
+.chitkala-collab .fl .ln{fill:none;stroke:#545B64;stroke-width:1.7}
+.chitkala-collab .fl.dsh .ln{stroke-dasharray:5 4}
+.chitkala-collab .fl .ant{fill:none;stroke:#FF9900;stroke-width:3;stroke-dasharray:7 11;opacity:0}
+.chitkala-collab .bdg circle{fill:#232F3E}
+.chitkala-collab .bdg text{fill:#fff;font-weight:700;font-size:12px}
+.chitkala-collab .future{opacity:.13;filter:grayscale(1)}
+.chitkala-collab .deleted{opacity:.35;filter:grayscale(1)}
+.chitkala-collab .new .ln{stroke:#E7157B;stroke-width:2.4}
+.chitkala-collab .new .ant{opacity:1;stroke:#E7157B;animation:chitkala-collab-ants 1.1s linear infinite}
+.chitkala-collab .new .bdg circle{fill:#E7157B}
+.chitkala-collab .nd.new .halo{opacity:1;animation:chitkala-collab-pulse 1.6s ease-in-out infinite}
+.chitkala-collab .nd .halo{opacity:0;fill:none;stroke:#E7157B;stroke-width:3}
+.chitkala-collab .lg.new text{fill:#E7157B}
+.chitkala-collab .lg.future{opacity:.25}
+.chitkala-collab .cap text{fill:#fff}
+@keyframes chitkala-collab-ants{to{stroke-dashoffset:-36}}
+@keyframes chitkala-collab-pulse{0%,100%{stroke-opacity:.25}50%{stroke-opacity:1}}
+@media (prefers-reduced-motion:reduce){.chitkala-collab *{animation:none!important}}
+.chitkala-collab .fl .ant{animation:chitkala-collab-ants 1.1s linear infinite}</style>
+<g class="chitkala-collab">
+<rect x="0" y="0" width="1698" height="786" fill="#FFFFFF"/>
+<text x="36" y="44" font-size="22" font-weight="700">Real-time collaboration (Later) — a relay that forwards encrypted CRDT updates</text>
+<text x="36" y="68" font-size="13" fill="#5F6B7A">Collaboration is a separate product from sync. The relay orders and stores Yjs updates it cannot read; a client writes the canonical Markdown checkpoint.</text>
+<g class="cap"><rect x="36" y="82" width="1164" height="32" rx="7" fill="#232F3E"/>
+<rect x="36" y="110" width="0" height="4" rx="2" fill="#FF9900"><animate attributeName="width" values="0;1164" dur="19.20s" repeatCount="indefinite"/></rect>
+<text x="48" y="103" font-size="13" font-weight="700" style="fill:#FF9900">▶ NOW</text>
+<text x="108" y="103" font-size="13.5" opacity="0">1 · Author A joins the session; the relay verifies the JWT and the per-document grant on connect.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0050;0.1200;0.1250;1" dur="19.20s" begin="0.00s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">2 · Author B joins the same document room.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0050;0.1200;0.1250;1" dur="19.20s" begin="2.40s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">3 · The connection is pinned to one relay task.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0050;0.1200;0.1250;1" dur="19.20s" begin="4.80s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">4 · Updates and presence fan out across tasks through ElastiCache pub/sub.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0050;0.1200;0.1250;1" dur="19.20s" begin="7.20s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">5 · Encrypted Yjs updates are appended in order (document, sequence); the relay cannot read them.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0050;0.1200;0.1250;1" dur="19.20s" begin="9.60s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">6 · The log is compacted into encrypted state snapshots for fast joins.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0050;0.1200;0.1250;1" dur="19.20s" begin="12.00s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">7 · Peers receive each other&#x27;s updates; cursors and presence are ephemeral.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0050;0.1200;0.1250;1" dur="19.20s" begin="14.40s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">8 · The session leader periodically writes the canonical Markdown snapshot and commits it through normal encrypted sync.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0050;0.1200;0.1250;1" dur="19.20s" begin="16.80s" repeatCount="indefinite"/></text>
+</g>
+<g class="gp built" data-id="cloud" data-stage="0">
+<rect x="256.0" y="172.0" width="778.0" height="574.4" rx="4" fill="none" stroke="#232F3E" stroke-width="1.6" stroke-dasharray=""/>
+<text x="266.0" y="191.0" font-size="12.5" font-weight="700" fill="#232F3E">AWS Cloud · collaboration service (separate RFC)</text></g>
+<g class="gp built" data-id="ecs" data-stage="0">
+<rect x="566.8" y="408.8" width="148.0" height="120.0" rx="4" fill="#FFF7EF" stroke="#ED7100" stroke-width="1.4" stroke-dasharray="6 4"/>
+<use href="#chitkala-collab-is-ecs" x="572.8" y="411.8"/>
+<text x="600.8" y="427.8" font-size="12.5" font-weight="700" fill="#B35400">ECS cluster · Fargate tasks across AZs</text></g>
+<g class="fl f1 built " data-n="1" data-stage="0">
+<path class="ln" d="M151.0,366.4 L254.4,366.4 L254.4,468.8 L357.8,468.8" marker-end="url(#chitkala-collab-ma)"/>
+<path class="ant" d="M151.0,366.4 L254.4,366.4 L254.4,468.8 L357.8,468.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="0.00s" repeatCount="indefinite"/></path>
+<text x="254.4" y="427.1" font-size="10.5" text-anchor="middle" fill="#5F6B7A" font-style="italic">join</text>
+<g class="bdg"><circle cx="219.0" cy="366.4" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="0.00s" repeatCount="indefinite"/></circle><text x="219.0" y="370.4" text-anchor="middle">1</text></g></g>
+<g class="fl f2 built " data-n="2" data-stage="0">
+<path class="ln" d="M151.0,571.2 L254.4,571.2 L254.4,468.8 L357.8,468.8" marker-end="url(#chitkala-collab-ma)"/>
+<path class="ant" d="M151.0,571.2 L254.4,571.2 L254.4,468.8 L357.8,468.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="2.40s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="219.0" cy="571.2" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="2.40s" repeatCount="indefinite"/></circle><text x="219.0" y="575.2" text-anchor="middle">2</text></g></g>
+<g class="fl f3 built " data-n="3" data-stage="0">
+<path class="ln" d="M419.8,468.8 L609.8,468.8" marker-end="url(#chitkala-collab-ma)"/>
+<path class="ant" d="M419.8,468.8 L609.8,468.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="4.80s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="461.6" cy="468.8" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="4.80s" repeatCount="indefinite"/></circle><text x="461.6" y="472.8" text-anchor="middle">3</text></g></g>
+<g class="fl f4 built " data-n="4" data-stage="0">
+<path class="ln" d="M640.8,437.8 L640.8,308.8 L861.8,308.8" marker-end="url(#chitkala-collab-ma)"/>
+<path class="ant" d="M640.8,437.8 L640.8,308.8 L861.8,308.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="7.20s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="640.8" cy="360.8" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="7.20s" repeatCount="indefinite"/></circle><text x="640.8" y="364.8" text-anchor="middle">4</text></g></g>
+<g class="fl f5 built " data-n="5" data-stage="0">
+<path class="ln" d="M671.8,468.8 L861.8,468.8" marker-end="url(#chitkala-collab-ma)"/>
+<path class="ant" d="M671.8,468.8 L861.8,468.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="9.60s" repeatCount="indefinite"/></path>
+<text x="776.3" y="462.8" font-size="10.5" text-anchor="middle" fill="#5F6B7A" font-style="italic">update</text>
+<g class="bdg"><circle cx="713.6" cy="468.8" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="9.60s" repeatCount="indefinite"/></circle><text x="713.6" y="472.8" text-anchor="middle">5</text></g></g>
+<g class="fl f6 built " data-n="6" data-stage="0">
+<path class="ln" d="M640.8,527.8 L640.8,628.8 L861.8,628.8" marker-end="url(#chitkala-collab-ma)"/>
+<path class="ant" d="M640.8,527.8 L640.8,628.8 L861.8,628.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="12.00s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="640.8" cy="598.6" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="12.00s" repeatCount="indefinite"/></circle><text x="640.8" y="602.6" text-anchor="middle">6</text></g></g>
+<g class="fl f7 built " data-n="7" data-stage="0">
+<path class="ln" d="M357.8,482.8 L254.4,482.8 L254.4,585.2 L151.0,585.2" marker-end="url(#chitkala-collab-ma)"/>
+<path class="ant" d="M357.8,482.8 L254.4,482.8 L254.4,585.2 L151.0,585.2" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="14.40s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="289.8" cy="482.8" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="14.40s" repeatCount="indefinite"/></circle><text x="289.8" y="486.8" text-anchor="middle">7</text></g></g>
+<g class="fl f8 built " data-n="8" data-stage="0">
+<path class="ln" d="M120.0,335.4 L120.0,296.0 L357.8,296.0" marker-end="url(#chitkala-collab-ma)"/>
+<path class="ant" d="M120.0,335.4 L120.0,296.0 L357.8,296.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="16.80s" repeatCount="indefinite"/></path>
+<text x="233.1" y="290.0" font-size="10.5" text-anchor="middle" fill="#5F6B7A" font-style="italic">checkpoint</text>
+<g class="bdg"><circle cx="141.6" cy="296.0" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="16.80s" repeatCount="indefinite"/></circle><text x="141.6" y="300.0" text-anchor="middle">8</text></g></g>
+<g class="nd built" data-id="a" data-stage="0">
+<rect class="halo" x="86.0" y="332.4" width="68" height="68" rx="10"/>
+<use href="#chitkala-collab-ic-client" x="93.0" y="339.4"/>
+<text x="120.0" y="408.4" font-size="12" font-weight="700" text-anchor="middle">Author A</text>
+<text x="120.0" y="421.4" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">session leader</text>
+</g>
+<g class="nd built" data-id="b" data-stage="0">
+<rect class="halo" x="86.0" y="537.2" width="68" height="68" rx="10"/>
+<use href="#chitkala-collab-ic-client" x="93.0" y="544.2"/>
+<text x="120.0" y="613.2" font-size="12" font-weight="700" text-anchor="middle">Author B</text>
+<text x="120.0" y="626.2" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">peer</text>
+</g>
+<g class="nd built" data-id="alb" data-stage="0">
+<rect class="halo" x="354.8" y="434.8" width="68" height="68" rx="10"/>
+<use href="#chitkala-collab-ic-alb" x="361.8" y="441.8"/>
+<text x="388.8" y="510.8" font-size="12" font-weight="700" text-anchor="middle">Application LB</text>
+<text x="388.8" y="523.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">WebSocket · TLS</text>
+</g>
+<g class="nd built" data-id="relay" data-stage="0">
+<rect class="halo" x="606.8" y="434.8" width="68" height="68" rx="10"/>
+<use href="#chitkala-collab-ic-fargate" x="613.8" y="441.8"/>
+<text x="640.8" y="510.8" font-size="12" font-weight="700" text-anchor="middle">Yjs relay</text>
+<text x="640.8" y="523.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">room per document</text>
+</g>
+<g class="nd built" data-id="redis" data-stage="0">
+<rect class="halo" x="858.8" y="274.8" width="68" height="68" rx="10"/>
+<use href="#chitkala-collab-ic-elasticache" x="865.8" y="281.8"/>
+<text x="892.8" y="350.8" font-size="12" font-weight="700" text-anchor="middle">ElastiCache</text>
+<text x="892.8" y="363.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">pub/sub · presence</text>
+</g>
+<g class="nd built" data-id="ddb" data-stage="0">
+<rect class="halo" x="858.8" y="434.8" width="68" height="68" rx="10"/>
+<use href="#chitkala-collab-ic-dynamodb" x="865.8" y="441.8"/>
+<text x="892.8" y="510.8" font-size="12" font-weight="700" text-anchor="middle">Update log</text>
+<text x="892.8" y="523.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">doc · seq · ciphertext</text>
+</g>
+<g class="nd built" data-id="s3" data-stage="0">
+<rect class="halo" x="858.8" y="594.8" width="68" height="68" rx="10"/>
+<use href="#chitkala-collab-ic-s3" x="865.8" y="601.8"/>
+<text x="892.8" y="670.8" font-size="12" font-weight="700" text-anchor="middle">State snapshots</text>
+<text x="892.8" y="683.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">compacted · encrypted</text>
+</g>
+<g class="nd built" data-id="sync" data-stage="0">
+<rect class="halo" x="354.8" y="262.0" width="68" height="68" rx="10"/>
+<use href="#chitkala-collab-ic-s3" x="361.8" y="269.0"/>
+<text x="388.8" y="338.0" font-size="12" font-weight="700" text-anchor="middle">Sync bucket</text>
+<text x="388.8" y="351.0" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">see sync diagram</text>
+</g>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-collab-glow)"/><animateMotion path="M151.0,366.4 L254.4,366.4 L254.4,468.8 L357.8,468.8" dur="19.20s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1025;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1025;0.1027;1" dur="19.20s" begin="0.00s" repeatCount="indefinite"/></g>
+<circle cx="357.8" cy="468.8" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0994;0.1486;1" dur="19.20s" begin="0.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0993;0.0994;0.1486;1" dur="19.20s" begin="0.00s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-collab-glow)"/><animateMotion path="M151.0,571.2 L254.4,571.2 L254.4,468.8 L357.8,468.8" dur="19.20s" begin="2.40s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1025;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1025;0.1027;1" dur="19.20s" begin="2.40s" repeatCount="indefinite"/></g>
+<circle cx="357.8" cy="468.8" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0994;0.1486;1" dur="19.20s" begin="2.40s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0993;0.0994;0.1486;1" dur="19.20s" begin="2.40s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-collab-glow)"/><animateMotion path="M419.8,468.8 L609.8,468.8" dur="19.20s" begin="4.80s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1025;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1025;0.1027;1" dur="19.20s" begin="4.80s" repeatCount="indefinite"/></g>
+<circle cx="609.8" cy="468.8" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0994;0.1486;1" dur="19.20s" begin="4.80s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0993;0.0994;0.1486;1" dur="19.20s" begin="4.80s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-collab-glow)"/><animateMotion path="M640.8,437.8 L640.8,308.8 L861.8,308.8" dur="19.20s" begin="7.20s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1025;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1025;0.1027;1" dur="19.20s" begin="7.20s" repeatCount="indefinite"/></g>
+<circle cx="861.8" cy="308.8" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0994;0.1486;1" dur="19.20s" begin="7.20s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0993;0.0994;0.1486;1" dur="19.20s" begin="7.20s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-collab-glow)"/><animateMotion path="M671.8,468.8 L861.8,468.8" dur="19.20s" begin="9.60s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1025;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1025;0.1027;1" dur="19.20s" begin="9.60s" repeatCount="indefinite"/></g>
+<circle cx="861.8" cy="468.8" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0994;0.1486;1" dur="19.20s" begin="9.60s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0993;0.0994;0.1486;1" dur="19.20s" begin="9.60s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-collab-glow)"/><animateMotion path="M640.8,527.8 L640.8,628.8 L861.8,628.8" dur="19.20s" begin="12.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1025;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1025;0.1027;1" dur="19.20s" begin="12.00s" repeatCount="indefinite"/></g>
+<circle cx="861.8" cy="628.8" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0994;0.1486;1" dur="19.20s" begin="12.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0993;0.0994;0.1486;1" dur="19.20s" begin="12.00s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-collab-glow)"/><animateMotion path="M357.8,482.8 L254.4,482.8 L254.4,585.2 L151.0,585.2" dur="19.20s" begin="14.40s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1025;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1025;0.1027;1" dur="19.20s" begin="14.40s" repeatCount="indefinite"/></g>
+<circle cx="151.0" cy="585.2" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0994;0.1486;1" dur="19.20s" begin="14.40s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0993;0.0994;0.1486;1" dur="19.20s" begin="14.40s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-collab-glow)"/><animateMotion path="M120.0,335.4 L120.0,296.0 L357.8,296.0" dur="19.20s" begin="16.80s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.1025;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.1025;0.1027;1" dur="19.20s" begin="16.80s" repeatCount="indefinite"/></g>
+<circle cx="357.8" cy="296.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0994;0.1486;1" dur="19.20s" begin="16.80s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0993;0.0994;0.1486;1" dur="19.20s" begin="16.80s" repeatCount="indefinite"/></circle>
+<rect x="1224.0" y="0" width="474.0" height="786" fill="#F2F3F3"/>
+<text x="1236.0" y="44" font-size="15" font-weight="700">How it flows</text>
+<g class="lg l1 built" data-n="1"><g class="lb"><circle cx="1247.0" cy="72" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="0.00s" repeatCount="indefinite"/></circle><text x="1247.0" y="76" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">1</text></g>
+<text x="1266.0" y="76" font-size="12.5">Author A joins the session; the relay verifies the JWT and</text>
+<text x="1266.0" y="91" font-size="12.5">the per-document grant on connect.</text>
+</g>
+<g class="lg l2 built" data-n="2"><g class="lb"><circle cx="1247.0" cy="111" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="2.40s" repeatCount="indefinite"/></circle><text x="1247.0" y="115" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">2</text></g>
+<text x="1266.0" y="115" font-size="12.5">Author B joins the same document room.</text>
+</g>
+<g class="lg l3 built" data-n="3"><g class="lb"><circle cx="1247.0" cy="135" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="4.80s" repeatCount="indefinite"/></circle><text x="1247.0" y="139" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">3</text></g>
+<text x="1266.0" y="139" font-size="12.5">The connection is pinned to one relay task.</text>
+</g>
+<g class="lg l4 built" data-n="4"><g class="lb"><circle cx="1247.0" cy="159" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="7.20s" repeatCount="indefinite"/></circle><text x="1247.0" y="163" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">4</text></g>
+<text x="1266.0" y="163" font-size="12.5">Updates and presence fan out across tasks through</text>
+<text x="1266.0" y="178" font-size="12.5">ElastiCache pub/sub.</text>
+</g>
+<g class="lg l5 built" data-n="5"><g class="lb"><circle cx="1247.0" cy="198" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="9.60s" repeatCount="indefinite"/></circle><text x="1247.0" y="202" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">5</text></g>
+<text x="1266.0" y="202" font-size="12.5">Encrypted Yjs updates are appended in order (document,</text>
+<text x="1266.0" y="217" font-size="12.5">sequence); the relay cannot read them.</text>
+</g>
+<g class="lg l6 built" data-n="6"><g class="lb"><circle cx="1247.0" cy="237" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="12.00s" repeatCount="indefinite"/></circle><text x="1247.0" y="241" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">6</text></g>
+<text x="1266.0" y="241" font-size="12.5">The log is compacted into encrypted state snapshots for</text>
+<text x="1266.0" y="256" font-size="12.5">fast joins.</text>
+</g>
+<g class="lg l7 built" data-n="7"><g class="lb"><circle cx="1247.0" cy="276" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="14.40s" repeatCount="indefinite"/></circle><text x="1247.0" y="280" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">7</text></g>
+<text x="1266.0" y="280" font-size="12.5">Peers receive each other&#x27;s updates; cursors and presence</text>
+<text x="1266.0" y="295" font-size="12.5">are ephemeral.</text>
+</g>
+<g class="lg l8 built" data-n="8"><g class="lb"><circle cx="1247.0" cy="315" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.1212;0.1250;1" dur="19.20s" begin="16.80s" repeatCount="indefinite"/></circle><text x="1247.0" y="319" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">8</text></g>
+<text x="1266.0" y="319" font-size="12.5">The session leader periodically writes the canonical</text>
+<text x="1266.0" y="334" font-size="12.5">Markdown snapshot and commits it through normal encrypted</text>
+<text x="1266.0" y="349" font-size="12.5">sync.</text>
+</g>
+</g></svg>

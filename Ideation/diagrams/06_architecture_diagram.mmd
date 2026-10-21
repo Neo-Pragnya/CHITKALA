@@ -1,0 +1,14 @@
+flowchart TB
+    Q[User query + active context] --> ROUTE[Intent classification / deterministic filters]
+    ROUTE --> FTS[SQLite FTS5 + title / metadata]
+    ROUTE --> VEC[Embedding similarity]
+    ROUTE --> GRAPH[Graph neighbors and references]
+    FTS --> UNION[Merge + dedupe by source span]
+    VEC --> UNION
+    GRAPH --> UNION
+    UNION --> RANK[RRF / reranker / recency + scope]
+    RANK --> GUARD[Permission, revision, context budget]
+    GUARD --> CITED[Retrieved context with source IDs]
+    CITED --> MODEL[Model with citation instructions]
+    MODEL --> CHECK[Claim/citation verifier]
+    CHECK --> ANSWER[Answer + citation navigator + caveats]

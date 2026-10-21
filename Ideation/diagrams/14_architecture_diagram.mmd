@@ -1,0 +1,10 @@
+flowchart LR
+    M0[M0: Foundations] --> M1[M1: Vault + Editor + Graph]
+    M1 --> M2[M2: RAG + Safe AI Writing]
+    M2 --> M3[M3: Hypermedia + Canvas]
+    M3 --> M4[M4: Skills + Publishing]
+    M4 --> M5[M5: Sync + Ecosystem]
+    M1 -. optional parallel spike .-> MDX[Sandbox proof-of-concept]
+    M1 -. optional parallel spike .-> SYNC[Conflict simulation]
+    MDX --> M3
+    SYNC --> M5

@@ -1,0 +1,14 @@
+flowchart TD
+    A[Local committed revision] --> B[Encrypt payload + manifest]
+    B --> C[Remote object store]
+    C --> D[Other device fetch + verify]
+    D --> E{Revision ancestry}
+    E -->|Fast forward| F[Apply atomic update]
+    E -->|Same content| G[Deduplicate]
+    E -->|Diverged| H[Three-way merge attempt]
+    H --> I{Conflict free?}
+    I -->|Yes| J[New merged revision + history]
+    I -->|No| K[Conflict copy + user decision]
+    F --> L[Incremental reindex]
+    J --> L
+    K --> L

@@ -1,0 +1,11 @@
+flowchart TB
+    U[Human author] --> DESK[CHITKALA desktop]
+    DESK --> VAULT[(User-owned Markdown vault)]
+    DESK --> CACHE[(Local SQLite / cache)]
+    DESK --> LLM[Opt-in local / remote model]
+    DESK --> PLUGIN[Approved skills / tools / MCP]
+    DESK --> PUB[Local site builder]
+    DESK -. opt in .-> SYNC[Sync service or adapter]
+    DESK -. export .-> GIT[Git / S3-compatible / static hosting]
+    PUB --> SITE[Published static site]
+    SYNC -. optional .-> DEVICE[Other client device]

@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    participant A as Agent
+    participant P as Patch service
+    participant UI as Review UI
+    participant F as Filesystem
+    participant I as Indexer
+    A->>P: propose(diff, base_revision, evidence)
+    P->>P: validate paths, format, syntax, policy
+    P-->>UI: Human-readable diff + confidence/evidence
+    UI->>P: Approved patch ID + exact hash
+    P->>F: compare-and-swap against base revision
+    alt Content unchanged
+      F->>F: atomic temp write + rename + journal
+      F-->>P: committed revision hash
+      P->>I: enqueue delta
+      I-->>P: index revision complete
+      P-->>UI: Success and provenance
+    else Concurrent change detected
+      F-->>P: version conflict
+      P-->>UI: Three-way merge / regenerate proposal
+    end

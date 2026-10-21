@@ -1,0 +1,26 @@
+apiVersion: chitkala.dev/v1alpha1
+kind: Skill
+metadata:
+  id: org.chitkala.write-research-article
+  name: Research Article Writer
+  version: 0.1.0
+  author: CHITKALA contributors
+spec:
+  description: Draft a sourced article into a proposed Markdown patch
+  entrypoint: skills/article-writer/SKILL.md
+  inputSchema: schemas/article-request.json
+  outputSchema: schemas/article-proposal.json
+  requiredCapabilities:
+    - action: vault.read
+      scope: user-selected-documents
+    - action: index.query
+      scope: user-selected-vault
+    - action: patch.propose
+      scope: drafts/**
+  approvalPolicy: always-before-write
+  budgets:
+    maxWallTimeSeconds: 180
+    maxToolCalls: 30
+    maxOutputTokens: 12000
+  compatibility:
+    chitkala: ">=0.3.0 <1.0.0"

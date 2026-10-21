@@ -1,0 +1,289 @@
+openapi: 3.1.0
+info:
+  title: CHITKALA Optional Service API
+  version: 0.1.0-proposal
+  description: >-
+    Proposed optional local/self-hosted HTTP surface. Desktop primarily uses
+    typed Tauri IPC with equivalent domain contracts. No deployment implied.
+servers:
+  - url: http://127.0.0.1:8765/v1
+    description: Developer-only local transport; must require an auth boundary when enabled.
+tags:
+  - name: Vaults
+  - name: Documents
+  - name: Search
+  - name: Agents
+  - name: Publishing
+paths:
+  /vaults/{vaultId}/documents/{documentId}:
+    get:
+      tags: [Documents]
+      operationId: readDocument
+      summary: Read a vault-scoped document and its current revision
+      parameters:
+        - $ref: '#/components/parameters/VaultId'
+        - $ref: '#/components/parameters/DocumentId'
+      responses:
+        '200':
+          description: Authorized document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /search:
+    post:
+      tags: [Search]
+      operationId: searchVault
+      summary: Search a vault under caller's read scopes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SearchRequest'}
+      responses:
+        '200':
+          description: Search results with revision anchors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hits:
+                    type: array
+                    items: {$ref: '#/components/schemas/SearchHit'}
+                required: [hits]
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /patches:
+    post:
+      tags: [Documents]
+      operationId: proposePatch
+      summary: Stage an edit; does not change canonical files
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/PatchProposalRequest'}
+      responses:
+        '201':
+          description: Created proposal awaiting review
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PatchProposal'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /patches/{proposalId}/apply:
+    post:
+      tags: [Documents]
+      operationId: applyApprovedPatch
+      summary: Apply a human-approved patch using revision compare-and-swap
+      parameters:
+        - name: proposalId
+          in: path
+          required: true
+          schema: {type: string}
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reviewerId: {type: string}
+                approvedProposalHash: {type: string}
+              required: [reviewerId, approvedProposalHash]
+      responses:
+        '200':
+          description: Atomic commit created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  committedRevision: {type: string}
+                  documentId: {type: string}
+                required: [committedRevision, documentId]
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /agent-runs:
+    post:
+      tags: [Agents]
+      operationId: createAgentRun
+      summary: Start budgeted workflow under explicit capability grants
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vaultId: {type: string}
+                agentId: {type: string}
+                goal: {type: string}
+                scopeIds:
+                  type: array
+                  items: {type: string}
+              required: [vaultId, agentId, goal, scopeIds]
+      responses:
+        '202':
+          description: Accepted; may await permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  runId: {type: string}
+                  status: {type: string}
+                required: [runId, status]
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent-runs/{runId}/events:
+    get:
+      tags: [Agents]
+      operationId: getAgentEvents
+      summary: SSE stream of authorized agent run events
+      parameters:
+        - name: runId
+          in: path
+          required: true
+          schema: {type: string}
+        - name: afterSequence
+          in: query
+          schema: {type: integer, minimum: 0}
+      responses:
+        '200':
+          description: Agent event stream
+          content:
+            text/event-stream:
+              schema: {type: string}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /publications/previews:
+    post:
+      tags: [Publishing]
+      operationId: buildPublishPreview
+      summary: Create a public-only build preview; never deploys
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vaultId: {type: string}
+                manifestHash: {type: string}
+              required: [vaultId, manifestHash]
+      responses:
+        '202':
+          description: Preview build accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  previewId: {type: string}
+                  status: {type: string}
+                required: [previewId, status]
+        '403': {$ref: '#/components/responses/Forbidden'}
+components:
+  parameters:
+    VaultId:
+      name: vaultId
+      in: path
+      required: true
+      schema: {type: string}
+    DocumentId:
+      name: documentId
+      in: path
+      required: true
+      schema: {type: string}
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: {type: string, minLength: 8, maxLength: 128}
+  schemas:
+    Error:
+      type: object
+      properties:
+        code: {type: string}
+        message: {type: string}
+        requestId: {type: string}
+        retryable: {type: boolean}
+      required: [code, message, retryable]
+    Document:
+      type: object
+      properties:
+        vaultId: {type: string}
+        documentId: {type: string}
+        path: {type: string}
+        format: {type: string, enum: [md, mdx, html, canvas, other]}
+        revision: {type: string}
+        content: {type: string}
+      required: [vaultId, documentId, path, format, revision, content]
+    SearchRequest:
+      type: object
+      properties:
+        vaultId: {type: string}
+        query: {type: string, minLength: 1}
+        mode: {type: string, enum: [lexical, semantic, hybrid, graph]}
+        limit: {type: integer, minimum: 1, maximum: 100, default: 20}
+        includeCitations: {type: boolean, default: true}
+      required: [vaultId, query, mode]
+    SourceCitation:
+      type: object
+      properties:
+        documentId: {type: string}
+        revision: {type: string}
+        chunkId: {type: string}
+        startByte: {type: integer, minimum: 0}
+        endByte: {type: integer, minimum: 1}
+        quotedTextHash: {type: string}
+      required: [documentId, revision, chunkId, startByte, endByte, quotedTextHash]
+    SearchHit:
+      type: object
+      properties:
+        documentId: {type: string}
+        title: {type: string}
+        path: {type: string}
+        revision: {type: string}
+        score: {type: number}
+        citation: {$ref: '#/components/schemas/SourceCitation'}
+      required: [documentId, title, path, revision, score]
+    PatchProposalRequest:
+      type: object
+      properties:
+        vaultId: {type: string}
+        documentId: {type: string}
+        baseRevision: {type: string}
+        operation: {type: string, enum: [create-file, replace-section, edit-range, rename]}
+        newMarkdown: {type: string}
+      required: [vaultId, baseRevision, operation]
+    PatchProposal:
+      type: object
+      properties:
+        proposalId: {type: string}
+        proposalHash: {type: string}
+        status: {type: string, enum: [pending, approved, rejected, expired, committed, conflict]}
+      required: [proposalId, proposalHash, status]
+  responses:
+    Forbidden:
+      description: Caller lacks capability grant
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    NotFound:
+      description: Resource not found or not visible to caller
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}
+    Conflict:
+      description: Revision changed or proposal is no longer valid
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/Error'}

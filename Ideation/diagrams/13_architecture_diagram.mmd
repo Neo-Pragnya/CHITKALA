@@ -1,0 +1,11 @@
+flowchart LR
+    PR[Pull request] --> LINT[Lint + typecheck]
+    PR --> UNIT[Unit + property tests]
+    PR --> SCA[Licenses + vulnerability scan]
+    LINT --> BUILD[Desktop / web builds]
+    UNIT --> BUILD
+    SCA --> BUILD
+    BUILD --> E2E[Golden vault / E2E]
+    E2E --> SEC[Security gates]
+    SEC --> ART[Versioned artifacts + SBOM]
+    ART --> RELEASE[Signed release / changelog]

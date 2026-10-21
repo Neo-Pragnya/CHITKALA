@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="aurora">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="CHITKALA — Open-source, local-first Creative Hypermedia Intelligence Toolkit for Knowledge & Agentic Learning Automation. Technical design and implementation specification.">
+<title>CHITKALA · Technical Design</title>
+<style>
+:root{color-scheme:dark;--bg:#0B0E18;--surface:#121828;--side:#0E1422;--raised:#1C2437;--edge:#303951;--text:#EDF0FA;--muted:#A8B5CD;--lav:#B9A0FF;--teal:#7AD7CA;--warm:#FFC79A;--code:#0D1320;--shadow:0 15px 55px rgba(0,0,0,.23)}
+html[data-theme="parchment"]{color-scheme:light;--bg:#F4F0E9;--surface:#FFFDF9;--side:#F6F1EA;--raised:#EEE6DF;--edge:#DAD0C4;--text:#322F30;--muted:#6D6662;--lav:#845A96;--teal:#3E8B7C;--warm:#B56945;--code:#F2ECE5;--shadow:0 12px 42px rgba(70,46,30,.09)}
+html[data-theme="atlas"]{color-scheme:dark;--bg:#07171A;--surface:#0B2225;--side:#0B1C1F;--raised:#163238;--edge:#285055;--text:#EFFCF8;--muted:#A4C6C3;--lav:#FFC37D;--teal:#67E3D3;--warm:#EE95A2;--code:#091B1D;--shadow:0 15px 55px rgba(0,0,0,.26)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.72}a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}button,input,select{font:inherit} ::selection{background:var(--lav);color:var(--bg)}
+.topbar{position:sticky;top:0;z-index:20;height:68px;background:color-mix(in srgb,var(--bg) 91%,transparent);backdrop-filter:blur(20px);border-bottom:1px solid var(--edge);display:flex;align-items:center;gap:20px;padding:0 26px}.brand{display:flex;align-items:center;gap:12px;white-space:nowrap;font-weight:800;letter-spacing:.08em;color:var(--text)}.brand .logo{display:grid;place-items:center;width:35px;height:35px;border-radius:12px;background:linear-gradient(135deg,var(--lav),var(--teal));color:#101628;font-weight:900}.topbar .spacer{flex:1}.tag{font-size:11px;font-weight:700;letter-spacing:.09em;color:var(--muted);border:1px solid var(--edge);border-radius:20px;padding:5px 9px}.theme-picker{background:var(--raised);color:var(--text);border:1px solid var(--edge);padding:8px 10px;border-radius:9px;max-width:150px}.search{border:1px solid var(--edge);border-radius:10px;padding:9px 12px;width:min(330px,30vw);background:var(--surface);color:var(--text)}.progress{height:3px;position:absolute;bottom:0;left:0;width:0;background:linear-gradient(90deg,var(--lav),var(--teal),var(--warm));transition:width .1s}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:calc(100vh - 68px)}aside{position:sticky;top:68px;height:calc(100vh - 68px);overflow:auto;background:var(--side);border-right:1px solid var(--edge);padding:22px 14px 60px}.as-title{margin:0 12px 16px;color:var(--muted);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700}aside nav{display:flex;flex-direction:column;gap:3px}aside nav a{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;border-radius:8px;padding:9px 11px;line-height:1.25}aside nav a:hover,aside nav a.active{background:var(--raised);color:var(--text);text-decoration:none}aside nav a.active{box-shadow:inset 2px 0 var(--teal)}.nav-num{font-size:10px;color:var(--teal);font-weight:800;width:23px;flex-shrink:0}aside .footer{font-size:11px;color:var(--muted);padding:26px 14px}
+main{min-width:0;max-width:1110px;width:100%;margin:0 auto;padding:35px clamp(20px,5vw,78px) 120px}.hero{border:1px solid var(--edge);border-radius:22px;background:radial-gradient(ellipse at 92% 5%,color-mix(in srgb,var(--lav) 14%,transparent),transparent 56%),radial-gradient(ellipse at 1% 90%,color-mix(in srgb,var(--teal) 11%,transparent),transparent 46%),var(--surface);padding:clamp(26px,5vw,56px);margin-bottom:28px;box-shadow:var(--shadow)}.eyebrow{font-size:11px;letter-spacing:.18em;font-weight:800;color:var(--teal);text-transform:uppercase}.hero h1{font-size:clamp(32px,5vw,62px);letter-spacing:-.05em;line-height:1.04;margin:14px 0 14px;font-weight:750}.hero p{font-size:clamp(14px,1.6vw,18px);color:var(--muted);max-width:740px;margin:6px 0}.hero .buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}.pill{padding:9px 13px;border-radius:9px;border:1px solid var(--edge);color:var(--text);background:var(--raised);font-size:12px;font-weight:650}.pill:hover{text-decoration:none;border-color:var(--lav)}.pill.primary{background:var(--lav);border-color:var(--lav);color:var(--bg)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:18px 0 34px}.stat{border:1px solid var(--edge);background:var(--surface);border-radius:12px;padding:14px 16px}.stat strong{font-size:19px;color:var(--lav);display:block}.stat span{font-size:11px;color:var(--muted)}
+.content{font-size:14.5px}.content>h1:first-of-type{display:none}.content h2{scroll-margin-top:93px;padding-top:32px;margin-top:66px;border-top:1px solid var(--edge);font-size:clamp(22px,2.7vw,31px);font-weight:750;letter-spacing:-.028em}.content h3{scroll-margin-top:92px;margin-top:31px;font-size:19px;color:var(--lav);letter-spacing:-.012em}.content h4{font-size:16px;color:var(--teal);margin:23px 0 7px}.content p{margin:14px 0}.content strong{color:var(--text)}.content blockquote{margin:24px 0;padding:10px 20px;border-left:3px solid var(--lav);background:var(--surface);border-radius:0 10px 10px 0}.content blockquote p{margin:8px 0}.content hr{border:0;border-top:1px solid var(--edge);margin:32px 0}.content ul,.content ol{padding-left:25px}.content li{margin:5px 0}.content li::marker{color:var(--teal)}.content pre{max-width:100%;overflow:auto;background:var(--code);border:1px solid var(--edge);border-radius:11px;padding:23px 20px;line-height:1.52;position:relative;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;tab-size:2}.content pre.code-block{padding-top:34px}.lang-tag{position:absolute;right:13px;top:8px;font-size:9px;letter-spacing:.11em;color:var(--muted);font-family:inherit}.content code:not(pre code){background:var(--raised);padding:2px 5px;border-radius:4px;color:var(--warm);font-size:.92em}.content table{border-collapse:separate;border-spacing:0;display:block;overflow-x:auto;width:100%;border:1px solid var(--edge);border-radius:12px;margin:22px 0 30px;font-size:12.5px}.content th{background:var(--raised);color:var(--text);font-weight:750;white-space:nowrap}.content th,.content td{text-align:left;border-bottom:1px solid var(--edge);padding:11px 14px;vertical-align:top;min-width:75px}.content tr:last-child td{border-bottom:0}.content tr:nth-child(even) td{background:color-mix(in srgb,var(--surface) 82%,transparent)}.content .mermaid{background:var(--surface);border:1px solid var(--edge);padding:25px;overflow:auto;max-height:750px}.content pre.mermaid svg{max-width:100%;height:auto}.content input[type=checkbox]{accent-color:var(--teal)}
+#mobileNavBtn{display:none;color:var(--text);background:var(--raised);border:1px solid var(--edge);border-radius:8px;padding:8px 10px}.muted-note{font-size:11px;color:var(--muted);text-align:center;margin:50px auto 0} .print{cursor:pointer;color:var(--text);border:1px solid var(--edge);background:var(--raised);padding:8px 10px;border-radius:9px;font-size:12px}
+@media(max-width:930px){.layout{grid-template-columns:1fr}aside{position:fixed;top:68px;bottom:0;left:0;width:290px;z-index:19;transform:translateX(-110%);transition:transform .2s;height:auto;box-shadow:var(--shadow)}body.open-nav aside{transform:translateX(0)}#mobileNavBtn{display:block}.topbar{gap:10px;padding:0 13px}.topbar .tag{display:none}.search{width:220px}main{padding:20px 20px 70px}}@media(max-width:550px){.search{display:none}.stats{grid-template-columns:repeat(2,1fr)}.hero{padding:22px}.brand span:last-child{font-size:12px}.theme-picker{max-width:108px}}
+@media print{.topbar,aside,.buttons,.stats,.footer{display:none!important}.layout{display:block}main{max-width:100%;padding:0}.hero{box-shadow:none}.content h2{break-before:page}.content pre{white-space:pre-wrap;overflow-wrap:anywhere}.content table{display:table;width:100%;font-size:10px}}
+</style></head><body>
+<header class="topbar"><button id="mobileNavBtn" aria-label="Toggle contents">☰</button><a href="#top" class="brand"><span class="logo">C</span><span>CHITKALA</span></a><span class="tag">TECHNICAL DESIGN · V1.0 DRAFT</span><div class="spacer"></div><input class="search" id="search" placeholder="Find section or term…" aria-label="Search in document"><select class="theme-picker" id="theme" aria-label="Theme"><option value="aurora">Aurora</option><option value="parchment">Parchment</option><option value="atlas">Atlas</option></select><button class="print" onclick="window.print()">Print</button><div class="progress" id="progress"></div></header>
+<div class="layout"><aside><p class="as-title">Table of contents</p><nav id="nav"><a href="#1-executive-summary"><span class="nav-num">01</span>🎯 Executive Summary</a>
+<a href="#2-goals-non-goals-and-success-criteria"><span class="nav-num">02</span>🧭 Goals, Non-goals, and Success Criteria</a>
+<a href="#3-personas-end-to-end-user-journeys"><span class="nav-num">03</span>👥 Personas &amp; End-to-End User Journeys</a>
+<a href="#4-feature-inventory-prioritization"><span class="nav-num">04</span>🧩 Feature Inventory &amp; Prioritization</a>
+<a href="#5-architecture-overview"><span class="nav-num">05</span>🏛️ Architecture Overview</a>
+<a href="#6-repository-vault-layout-portability"><span class="nav-num">06</span>🗂️ Repository, Vault Layout &amp; Portability</a>
+<a href="#7-document-editing-hypermedia-rendering"><span class="nav-num">07</span>✍️ Document Editing, Hypermedia &amp; Rendering</a>
+<a href="#8-knowledge-graph-backlinks-semantic-modeling"><span class="nav-num">08</span>🕸️ Knowledge Graph, Backlinks &amp; Semantic Modeling</a>
+<a href="#9-search-retrieval-memory-rag"><span class="nav-num">09</span>🧠 Search, Retrieval, Memory &amp; RAG</a>
+<a href="#10-agent-architecture-skills-tool-execution"><span class="nav-num">10</span>🤖 Agent Architecture, Skills &amp; Tool Execution</a>
+<a href="#11-canvas-mind-maps-visual-intelligence"><span class="nav-num">11</span>🎨 Canvas, Mind Maps &amp; Visual Intelligence</a>
+<a href="#12-data-storage-schema-event-processing"><span class="nav-num">12</span>🧱 Data Storage, Schema &amp; Event Processing</a>
+<a href="#13-apis-ipc-extension-contracts"><span class="nav-num">13</span>🔌 APIs, IPC &amp; Extension Contracts</a>
+<a href="#14-sync-collaboration-multi-device-architecture"><span class="nav-num">14</span>☁️ Sync, Collaboration &amp; Multi-Device Architecture</a>
+<a href="#15-publishing-astro-shareable-knowledge-sites"><span class="nav-num">15</span>🌐 Publishing, Astro &amp; Shareable Knowledge Sites</a>
+<a href="#16-ux-architecture-design-system"><span class="nav-num">16</span>🎛️ UX Architecture &amp; Design System</a>
+<a href="#17-security-privacy-abuse-resistance"><span class="nav-num">17</span>🔐 Security, Privacy &amp; Abuse Resistance</a>
+<a href="#18-testing-qa-evaluation-observability"><span class="nav-num">18</span>🧪 Testing, QA, Evaluation &amp; Observability</a>
+<a href="#19-cicd-development-environment-release-engineering"><span class="nav-num">19</span>⚙️ CI/CD, Development Environment &amp; Release Engineering</a>
+<a href="#20-cost-hosting-and-sustainability"><span class="nav-num">20</span>💸 Cost, Hosting and Sustainability</a>
+<a href="#21-roadmap-sequencing-delivery-dependencies"><span class="nav-num">21</span>🗓️ Roadmap, Sequencing &amp; Delivery Dependencies</a>
+<a href="#22-architecture-decision-records-adrs"><span class="nav-num">22</span>📋 Architecture Decision Records (ADRs)</a>
+<a href="#23-future-extensions-ecosystem-connections"><span class="nav-num">23</span>🧠 Future Extensions &amp; Ecosystem Connections</a>
+<a href="#24-acceptance-scenarios-for-the-initial-public-alpha"><span class="nav-num">24</span>✅ Acceptance Scenarios for the Initial Public Alpha</a>
+<a href="#25-immediate-action-plan-first-engineering-iteration"><span class="nav-num">25</span>🗺️ Immediate Action Plan (First Engineering Iteration)</a>
+<a href="#26-research-references-validation-notes"><span class="nav-num">26</span>📚 Research References &amp; Validation Notes</a></nav><p class="footer">Portable sources · Human-approved agents · Open architecture<br>© CHITKALA design draft</p></aside><main id="top">
+<section class="hero"><div class="eyebrow">OPEN SOURCE · LOCAL FIRST · AGENTIC KNOWLEDGE</div><h1>Knowledge that<br>thinks with you.</h1><p><strong>CHITKALA</strong> — Creative Hypermedia Intelligence Toolkit for Knowledge &amp; Agentic Learning Automation.</p><p>A full technical blueprint for a portable, visual, AI-native knowledge operating system.</p><div class="buttons"><a class="pill primary" href="#1-executive-summary">Explore architecture ↓</a><a class="pill" href="#5-architecture-overview">System design</a><a class="pill" href="#21-roadmap-sequencing-delivery-dependencies">Delivery plan</a></div></section>
+<section class="stats"><div class="stat"><strong>26</strong><span>Technical sections</span></div><div class="stat"><strong>14</strong><span>Mermaid diagrams</span></div><div class="stat"><strong>12,946</strong><span>Document words</span></div><div class="stat"><strong>100%</strong><span>File-first philosophy</span></div></section>
+<article class="content" id="article"><h1 id="chitkala-technical-design-implementation-specification">🪷 CHITKALA — Technical Design &amp; Implementation Specification</h1>
+<blockquote>
+<p><strong>CHITKALA</strong> — <strong>C</strong>reative <strong>H</strong>ypermedia <strong>I</strong>ntelligence <strong>T</strong>oolkit for <strong>K</strong>nowledge &amp; <strong>A</strong>gentic <strong>L</strong>earning <strong>A</strong>utomation<br />
+<strong>Positioning:</strong> <em>The open-source, local-first living knowledge operating system.</em><br />
+<strong>Product promise:</strong> <em>Think · Connect · Create · Evolve.</em><br />
+<strong>Primary repository artifact:</strong> this document is intentionally Obsidian-compatible Markdown, with Mermaid fenced diagrams and implementation-ready contracts.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+  <th>Field</th>
+  <th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Product name</td>
+  <td><strong>CHITKALA</strong></td>
+</tr>
+<tr>
+  <td>Full expansion</td>
+  <td><strong>Creative Hypermedia Intelligence Toolkit for Knowledge &amp; Agentic Learning Automation</strong></td>
+</tr>
+<tr>
+  <td>License recommendation</td>
+  <td><strong>Apache-2.0</strong>, subject to contributor/legal review</td>
+</tr>
+<tr>
+  <td>Launch shape</td>
+  <td>Local-first desktop app; optional self-hosted services; web companion later</td>
+</tr>
+<tr>
+  <td>Canonical content</td>
+  <td>Plain <code>.md</code> / <code>.mdx</code> / assets stored in user-owned vaults</td>
+</tr>
+<tr>
+  <td>Default security</td>
+  <td>No autonomous file, shell, remote-network, or publish privileges without explicit grants</td>
+</tr>
+<tr>
+  <td>Main languages</td>
+  <td>TypeScript/React + Rust; optional Python worker SDK, not a mandatory local runtime</td>
+</tr>
+<tr>
+  <td>Intended audience</td>
+  <td>Writers, researchers, developers, educators, knowledge workers, and agent builders</td>
+</tr>
+<tr>
+  <td>Document status</td>
+  <td>Proposed design, <em>not</em> a claim of implemented functionality</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!important] Naming distinction
+The phrase <strong>“Agentic Learning Automation”</strong> is a product umbrella, not a claim that every model continually trains itself. In CHITKALA, <em>learning</em> means the controlled improvement of the <strong>knowledge system</strong>—ingestion, indexing, retrieval, user-approved summaries, preferences, relationships, and evaluable workflows. Model fine-tuning, online training, and autonomous self-modification are <strong>not</strong> implied and are not part of the core MVP.</p>
+</blockquote>
+<hr />
+<h2 id="contents">📑 Contents</h2>
+<ul>
+<li><a href="#1-executive-summary">1. 🎯 Executive Summary</a></li>
+<li><a href="#2-goals-non-goals-and-success-criteria">2. 🧭 Goals, Non-goals, and Success Criteria</a></li>
+<li><a href="#3-personas-end-to-end-user-journeys">3. 👥 Personas &amp; End-to-End User Journeys</a></li>
+<li><a href="#4-feature-inventory-prioritization">4. 🧩 Feature Inventory &amp; Prioritization</a></li>
+<li><a href="#5-architecture-overview">5. 🏛️ Architecture Overview</a></li>
+<li><a href="#6-repository-vault-layout-portability">6. 🗂️ Repository, Vault Layout &amp; Portability</a></li>
+<li><a href="#7-document-editing-hypermedia-rendering">7. ✍️ Document Editing, Hypermedia &amp; Rendering</a></li>
+<li><a href="#8-knowledge-graph-backlinks-semantic-modeling">8. 🕸️ Knowledge Graph, Backlinks &amp; Semantic Modeling</a></li>
+<li><a href="#9-search-retrieval-memory-rag">9. 🧠 Search, Retrieval, Memory &amp; RAG</a></li>
+<li><a href="#10-agent-architecture-skills-tool-execution">10. 🤖 Agent Architecture, Skills &amp; Tool Execution</a></li>
+<li><a href="#11-canvas-mind-maps-visual-intelligence">11. 🎨 Canvas, Mind Maps &amp; Visual Intelligence</a></li>
+<li><a href="#12-data-storage-schema-event-processing">12. 🧱 Data Storage, Schema &amp; Event Processing</a></li>
+<li><a href="#13-apis-ipc-extension-contracts">13. 🔌 APIs, IPC &amp; Extension Contracts</a></li>
+<li><a href="#14-sync-collaboration-multi-device-architecture">14. ☁️ Sync, Collaboration &amp; Multi-Device Architecture</a></li>
+<li><a href="#15-publishing-astro-shareable-knowledge-sites">15. 🌐 Publishing, Astro &amp; Shareable Knowledge Sites</a></li>
+<li><a href="#16-ux-architecture-design-system">16. 🎛️ UX Architecture &amp; Design System</a></li>
+<li><a href="#17-security-privacy-abuse-resistance">17. 🔐 Security, Privacy &amp; Abuse Resistance</a></li>
+<li><a href="#18-testing-qa-evaluation-observability">18. 🧪 Testing, QA, Evaluation &amp; Observability</a></li>
+<li><a href="#19-cicd-development-environment-release-engineering">19. ⚙️ CI/CD, Development Environment &amp; Release Engineering</a></li>
+<li><a href="#20-cost-hosting-and-sustainability">20. 💸 Cost, Hosting and Sustainability</a></li>
+<li><a href="#21-roadmap-sequencing-delivery-dependencies">21. 🗓️ Roadmap, Sequencing &amp; Delivery Dependencies</a></li>
+<li><a href="#22-architecture-decision-records-adrs">22. 📋 Architecture Decision Records (ADRs)</a></li>
+<li><a href="#23-future-extensions-ecosystem-connections">23. 🧠 Future Extensions &amp; Ecosystem Connections</a></li>
+<li><a href="#24-acceptance-scenarios-for-the-initial-public-alpha">24. ✅ Acceptance Scenarios for the Initial Public Alpha</a></li>
+<li><a href="#25-immediate-action-plan-first-engineering-iteration">25. 🗺️ Immediate Action Plan (First Engineering Iteration)</a></li>
+<li><a href="#26-research-references-validation-notes">26. 📚 Research References &amp; Validation Notes</a></li>
+</ul>
+<hr />
+<h2 id="1-executive-summary">1. 🎯 Executive Summary</h2>
+<h3 id="11-product-thesis">1.1 Product thesis</h3>
+<p>Obsidian establishes a useful model: plain files, personal ownership, cross-linked knowledge, and extensibility. CHITKALA keeps those strengths while treating knowledge as an <strong>active substrate for cognition and creation</strong>. A person should be able to import an existing vault, ask a grounded question, inspect supporting passages, ask an agent to draft a new article, review a patch, accept it, watch the article enter the index and graph, render interactive content, and publish a safe static version—all within one coherent workspace.</p>
+<p>CHITKALA is <strong>not merely another notes app</strong>. It combines:</p>
+<ol>
+<li><strong>Knowledge OS:</strong> portable notes, metadata, backlinks, graph, tasks, search, structured collections.</li>
+<li><strong>Hypermedia authoring:</strong> Markdown, MDX, restricted HTML, rich embeds, diagrams, interactive components.</li>
+<li><strong>AI intelligence:</strong> hybrid retrieval, source-grounded answers, semantic memory, controlled knowledge synthesis.</li>
+<li><strong>Agentic automation:</strong> scoped skills, explicit tools, workflows, human-review gates, auditable writes.</li>
+<li><strong>Creative canvas:</strong> mind maps, graph-to-canvas projection, visual flows, whiteboards, dashboards.</li>
+<li><strong>Publishing &amp; sync:</strong> exportable static sites, staging previews, optional personal sync and collaborative services.</li>
+</ol>
+<h3 id="12-the-differentiator">1.2 The differentiator</h3>
+<p><strong>Own the files. Connect the ideas. Delegate the work. Verify the results.</strong></p>
+<p>Users must remain productive with no network, no paid subscription, and no model API key. Agents should make the workspace better without undermining the human author's authority.</p>
+<h3 id="13-product-principles">1.3 Product principles</h3>
+<table>
+<thead>
+<tr>
+  <th>#</th>
+  <th>Principle</th>
+  <th>Engineering implication</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>P01</td>
+  <td>User-owned knowledge</td>
+  <td>File-based canonical documents; export is always available</td>
+</tr>
+<tr>
+  <td>P02</td>
+  <td>Local-first</td>
+  <td>Viewing, editing, backlinks, graph and keyword search operate offline</td>
+</tr>
+<tr>
+  <td>P03</td>
+  <td>Source-grounded intelligence</td>
+  <td>AI answers cite concrete file revisions and passages</td>
+</tr>
+<tr>
+  <td>P04</td>
+  <td>Human control</td>
+  <td>Side-effectful actions are staged, previewed and authorized</td>
+</tr>
+<tr>
+  <td>P05</td>
+  <td>Rebuildable intelligence</td>
+  <td>Search/vector/graph indexes are caches, not the only copy of user content</td>
+</tr>
+<tr>
+  <td>P06</td>
+  <td>Extensibility</td>
+  <td>Capability-based plugin, model, renderer, skill and tool interfaces</td>
+</tr>
+<tr>
+  <td>P07</td>
+  <td>Honest compatibility</td>
+  <td>Preserve Obsidian conventions; report unsupported plugin syntax explicitly</td>
+</tr>
+<tr>
+  <td>P08</td>
+  <td>Provider neutrality</td>
+  <td>Local and hosted models behind contracts, no provider lock-in</td>
+</tr>
+<tr>
+  <td>P09</td>
+  <td>Open-source viability</td>
+  <td>Inspect licensing, API stability and contribution costs before adding dependencies</td>
+</tr>
+<tr>
+  <td>P10</td>
+  <td>Accessible by design</td>
+  <td>Keyboard-first, screen-reader support, WCAG 2.2 AA targets</td>
+</tr>
+</tbody>
+</table>
+<h3 id="14-bounded-scope-and-launch-position">1.4 Bounded scope and launch position</h3>
+<p><strong>Desktop-first</strong> is recommended because unrestricted local vault access is essential and browser sandbox capabilities vary. A React UI can later be shared with a browser/PWA implementation, but the web app must use a dedicated document-storage adapter instead of assuming desktop filesystem privileges.</p>
+<p><strong>No requirement to operate centralized infrastructure</strong> for the MVP. A managed cloud is an optional future convenience, not a prerequisite.</p>
+<hr />
+<h2 id="2-goals-non-goals-and-success-criteria">2. 🧭 Goals, Non-goals, and Success Criteria</h2>
+<h3 id="21-product-goals">2.1 Product goals</h3>
+<table>
+<thead>
+<tr>
+  <th>ID</th>
+  <th>Goal</th>
+  <th>Acceptance definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>G01</td>
+  <td>Import Obsidian vaults without destructive changes</td>
+  <td>A copy-based import preserves all source files and assets, produces detailed compatibility report</td>
+</tr>
+<tr>
+  <td>G02</td>
+  <td>Provide excellent writing UX</td>
+  <td>Source editor, readable preview, backlinks, tags, nested/tabbed panes, autosave, undo</td>
+</tr>
+<tr>
+  <td>G03</td>
+  <td>Build connected knowledge</td>
+  <td>Resolvable wikilinks, headings, embeds, link updates on rename, typed graph projection</td>
+</tr>
+<tr>
+  <td>G04</td>
+  <td>Query vault semantically</td>
+  <td>Source-grounded answers, lexical fallback, selectable retrieval scope, citation navigation</td>
+</tr>
+<tr>
+  <td>G05</td>
+  <td>Automate article creation safely</td>
+  <td>Agent produces plan and patch; user approves; system commits atomically then reindexes</td>
+</tr>
+<tr>
+  <td>G06</td>
+  <td>Render creative documents</td>
+  <td>Mermaid, math, MDX with trusted components, sandboxed user code and live previews</td>
+</tr>
+<tr>
+  <td>G07</td>
+  <td>Offer visual thinking</td>
+  <td>Connected mind maps, node canvases, diagram export and reference preserving links</td>
+</tr>
+<tr>
+  <td>G08</td>
+  <td>Support extensible agents</td>
+  <td>Portable skills, tool manifests, permissions, schedules/manual triggers, audit logs</td>
+</tr>
+<tr>
+  <td>G09</td>
+  <td>Publish portable content</td>
+  <td>Static-site build, staging preview, asset fingerprinting, opt-in public content manifest</td>
+</tr>
+<tr>
+  <td>G10</td>
+  <td>Enable low-cost personal use</td>
+  <td>Entire offline baseline works without recurring payment</td>
+</tr>
+</tbody>
+</table>
+<h3 id="22-explicit-non-goals-at-initial-launch">2.2 Explicit non-goals at initial launch</h3>
+<ul>
+<li>Perfect compatibility with arbitrary Obsidian community plugins, proprietary UI or internal application data.</li>
+<li>Automatic arbitrary Python/JavaScript execution inside imported notes.</li>
+<li>Zero-click public publishing or external-account mutation by AI agents.</li>
+<li>Real-time multi-user co-editing in the first core release.</li>
+<li>An always-on SaaS cluster as a fundamental requirement.</li>
+<li>Building a novel foundational LLM, vector database, or browser runtime.</li>
+<li>Treating AI-generated text as verified knowledge without provenance.</li>
+<li>Guaranteeing that a specific existing Obsidian subscription price can be replicated profitably.</li>
+</ul>
+<h3 id="23-initial-nonfunctional-requirements-proposed-targets-not-measured-claims">2.3 Initial nonfunctional requirements (proposed targets, not measured claims)</h3>
+<table>
+<thead>
+<tr>
+  <th>Dimension</th>
+  <th>Target / test condition</th>
+  <th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Offline readiness</td>
+  <td>Edit/render/backlinks/FTS available with network disabled after vault is loaded</td>
+  <td>P0</td>
+</tr>
+<tr>
+  <td>Cold launch</td>
+  <td>Desktop shell interactive in <strong>≤ 3 s p95</strong> on defined reference hardware, 10k notes</td>
+  <td>P1</td>
+</tr>
+<tr>
+  <td>Local full-text query</td>
+  <td><strong>≤ 200 ms p95</strong> for a typical 10k-note synthetic vault, warm index</td>
+  <td>P1</td>
+</tr>
+<tr>
+  <td>Save durability</td>
+  <td>File safely committed within <strong>≤ 1 s</strong> of debounce expiry; explicit Save immediately</td>
+  <td>P0</td>
+</tr>
+<tr>
+  <td>Index consistency</td>
+  <td>Changed document appears in FTS/backlinks within <strong>≤ 2 s p95</strong></td>
+  <td>P0</td>
+</tr>
+<tr>
+  <td>AI groundedness</td>
+  <td><strong>≥ 95%</strong> of displayed citation links resolve to the exact indexed source revision in tests</td>
+  <td>P0</td>
+</tr>
+<tr>
+  <td>Agent integrity</td>
+  <td>No unauthorized file modification under adversarial tool/prompt tests</td>
+  <td>P0</td>
+</tr>
+<tr>
+  <td>Crash recoverability</td>
+  <td>Last committed file bytes preserved; recover pending draft from journal</td>
+  <td>P0</td>
+</tr>
+<tr>
+  <td>CPU/memory</td>
+  <td>Profile against defined 5k/10k/50k document fixtures; publish results, no premature fixed promise</td>
+  <td>P1</td>
+</tr>
+<tr>
+  <td>Accessibility</td>
+  <td>Keyboard reachable core workflows; WCAG 2.2 AA acceptance audit</td>
+  <td>P1</td>
+</tr>
+<tr>
+  <td>Privacy</td>
+  <td>No vault content or telemetry uploaded without scoped explicit consent</td>
+  <td>P0</td>
+</tr>
+<tr>
+  <td>Backup/export</td>
+  <td>Full vault restore tests, manifest checksums, optional encrypted backup</td>
+  <td>P0</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>[!note] Benchmark protocol
+Publish the device specification, document distribution, average attachment size, warm/cold index state, model latency exclusions, OS, and exact benchmark scripts. Optimize based on evidence rather than prematurely introducing infrastructure.</p>
+</blockquote>
+<hr />
+<h2 id="3-personas-end-to-end-user-journeys">3. 👥 Personas &amp; End-to-End User Journeys</h2>
+<h3 id="31-personas">3.1 Personas</h3>
+<table>
+<thead>
+<tr>
+  <th>Persona</th>
+  <th>Primary use</th>
+  <th>Core experience</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Writer / publisher</td>
+  <td>Long-form Markdown/MDX articles</td>
+  <td>Editing, preview, citations, safe publish</td>
+</tr>
+<tr>
+  <td>Researcher</td>
+  <td>Cross-document synthesis</td>
+  <td>Hybrid RAG, graph, references, note provenance</td>
+</tr>
+<tr>
+  <td>Software engineer</td>
+  <td>Architecture and knowledge base</td>
+  <td>Code, Mermaid, scripts, agent tools, Git export</td>
+</tr>
+<tr>
+  <td>Educator</td>
+  <td>Learning material and knowledge courses</td>
+  <td>Visual explanations, structured notes, publishing</td>
+</tr>
+<tr>
+  <td>Visual thinker</td>
+  <td>Canvas, mind maps and knowledge maps</td>
+  <td>Spatial organization linked to durable documents</td>
+</tr>
+<tr>
+  <td>Open-source contributor</td>
+  <td>Extend and self-host</td>
+  <td>SDK, documented interfaces, governance, repeatable dev environment</td>
+</tr>
+</tbody>
+</table>
+<h3 id="32-journey-a-import-ask-write-index-publish">3.2 Journey A — Import → Ask → Write → Index → Publish</h3>
+<pre class="mermaid" data-source="diagram">sequenceDiagram
+    autonumber
+    actor U as User
+    participant UI as CHITKALA UI
+    participant V as Vault Service
+    participant IDX as Index + Graph
+    participant R as Retrieval
+    participant A as Agent Runtime
+    participant P as Patch Engine
+    participant PUB as Publisher
+    U-&gt;&gt;UI: Select existing Obsidian vault
+    UI-&gt;&gt;V: inventory/import(dry_run=true)
+    V--&gt;&gt;UI: Compatibility and collisions report
+    U-&gt;&gt;UI: Approve copy-based import
+    UI-&gt;&gt;V: Import preserving originals
+    V-&gt;&gt;IDX: Index files + links + metadata
+    U-&gt;&gt;UI: Ask a cross-document question
+    UI-&gt;&gt;R: Search with scope + revision
+    R--&gt;&gt;UI: Source-grounded answer + citations
+    U-&gt;&gt;UI: Create an article from this research
+    UI-&gt;&gt;A: Draft plan with allowed sources
+    A-&gt;&gt;R: Retrieve supporting passages
+    A-&gt;&gt;P: Create proposed file diff
+    P--&gt;&gt;UI: Preview content + citation verification
+    U-&gt;&gt;UI: Approve changes
+    UI-&gt;&gt;P: Apply patch with revision preconditions
+    P-&gt;&gt;V: Atomic write
+    V-&gt;&gt;IDX: Change event / reindex
+    IDX--&gt;&gt;UI: Indexed revision acknowledged
+    U-&gt;&gt;UI: Preview public site
+    UI-&gt;&gt;PUB: Build from approved publish manifest
+    PUB--&gt;&gt;UI: Static site preview + findings
+    U-&gt;&gt;UI: Publish
+</pre>
+<p><strong>Definition of success:</strong> no source file is overwritten without approval, citations continue to resolve, and private notes are not implicitly published.</p>
+<h3 id="33-journey-b-visual-thinking">3.3 Journey B — Visual thinking</h3>
+<p>User selects five concept notes → creates a canvas → drags a graph neighborhood onto the canvas → adds handwritten annotation and a Mermaid architecture diagram → links a region of the canvas back to an article heading → requests an agent to produce a summary → reviews proposed article updates. The canvas stores <strong>references to document IDs</strong>, not copies of note bodies.</p>
+<h3 id="34-journey-c-offlinelocal-llm">3.4 Journey C — Offline/local LLM</h3>
+<p>Airplane mode → open vault and retrieve keyword search → edit notes → optionally query a configured <em>locally running</em> model → stage and commit edits → queue sync attempts when network returns. If local model is unavailable, the UI states so and retains all non-AI functionality.</p>
+<h3 id="35-journey-d-skills-and-permissions">3.5 Journey D — Skills and permissions</h3>
+<p>Install a community skill → inspect its manifest and provenance → grant <code>vault.read</code> to a named collection → run dry-run with fixed test inputs → review requested <code>vault.write</code> action → optionally grant a one-run write permission → track execution trace and revoke permissions later.</p>
+<hr />
+<h2 id="4-feature-inventory-prioritization">4. 🧩 Feature Inventory &amp; Prioritization</h2>
+<p>Legend: <strong>M0</strong> = foundations, <strong>M1</strong> = useful alpha, <strong>M2</strong> = intelligent alpha, <strong>M3</strong> = creative beta, <strong>M4</strong> = publishing/agent beta, <strong>M5</strong> = sync/ecosystem.</p>
+<table>
+<thead>
+<tr>
+  <th>Domain</th>
+  <th>Requirement</th>
+  <th style="text-align:right">Earliest milestone</th>
+  <th>Dependency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Vaults</td>
+  <td>Open/create/copy-import vault, asset browser, undo</td>
+  <td style="text-align:right">M1</td>
+  <td>Filesystem core</td>
+</tr>
+<tr>
+  <td>Compatibility</td>
+  <td>Frontmatter, wikilinks, aliases, embeds, heading/block refs</td>
+  <td style="text-align:right">M1</td>
+  <td>Parser + resolver</td>
+</tr>
+<tr>
+  <td>Editing</td>
+  <td>CodeMirror source view, preview, tabs/stacked panes, undo</td>
+  <td style="text-align:right">M1</td>
+  <td>UI shell</td>
+</tr>
+<tr>
+  <td>Document graphs</td>
+  <td>Backlinks, outgoing links, unlinked references, neighborhood</td>
+  <td style="text-align:right">M1</td>
+  <td>Relational edge index</td>
+</tr>
+<tr>
+  <td>Search</td>
+  <td>FTS5, metadata filters, fuzzy filename matching</td>
+  <td style="text-align:right">M1</td>
+  <td>SQLite</td>
+</tr>
+<tr>
+  <td>AI Q&amp;A</td>
+  <td>Hybrid search, chunk citations, model adapters</td>
+  <td style="text-align:right">M2</td>
+  <td>Retrieval + adapters</td>
+</tr>
+<tr>
+  <td>AI creation</td>
+  <td>Plan, article draft, patch review, atomic write</td>
+  <td style="text-align:right">M2</td>
+  <td>Agent + patch service</td>
+</tr>
+<tr>
+  <td>Graph semantics</td>
+  <td>Concept entities, typed edges, suggested relations</td>
+  <td style="text-align:right">M3</td>
+  <td>Graph projection</td>
+</tr>
+<tr>
+  <td>Hypermedia</td>
+  <td>Markdown/MDX-safe components, sandbox HTML/JS</td>
+  <td style="text-align:right">M3</td>
+  <td>Renderer registry</td>
+</tr>
+<tr>
+  <td>Canvas</td>
+  <td>Node/mind map, Excalidraw-compatible spatial adapter</td>
+  <td style="text-align:right">M3</td>
+  <td>Workspace document type</td>
+</tr>
+<tr>
+  <td>Skills</td>
+  <td>Manifests, tool permissioning, run trace, approval broker</td>
+  <td style="text-align:right">M4</td>
+  <td>Agent runtime</td>
+</tr>
+<tr>
+  <td>Publishing</td>
+  <td>Astro-compatible static export, preview, deployment adapters</td>
+  <td style="text-align:right">M4</td>
+  <td>Build sandbox</td>
+</tr>
+<tr>
+  <td>Sync</td>
+  <td>Encrypted multi-device file sync and version reconciliation</td>
+  <td style="text-align:right">M5</td>
+  <td>Identity + sync protocol</td>
+</tr>
+<tr>
+  <td>Collaboration</td>
+  <td>Yjs-backed live sessions and server persistence</td>
+  <td style="text-align:right">Later</td>
+  <td>Sync + CRDT strategy</td>
+</tr>
+<tr>
+  <td>Mobile</td>
+  <td>Reading / light editing</td>
+  <td style="text-align:right">Later</td>
+  <td>Mobile filesystem abstraction</td>
+</tr>
+<tr>
+  <td>Marketplace</td>
+  <td>Discovery, package signatures, moderation and compatibility</td>
+  <td style="text-align:right">Later</td>
+  <td>Stable SDK, governance</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-architecture-overview">5. 🏛️ Architecture Overview</h2>
+<h3 id="51-system-context">5.1 System context</h3>
+<pre class="mermaid" data-source="diagram">flowchart TB
+    U[Human author] --&gt; DESK[CHITKALA desktop]
+    DESK --&gt; VAULT[(User-owned Markdown vault)]
+    DESK --&gt; CACHE[(Local SQLite / cache)]
+    DESK --&gt; LLM[Opt-in local / remote model]
+    DESK --&gt; PLUGIN[Approved skills / tools / MCP]
+    DESK --&gt; PUB[Local site builder]
+    DESK -. opt in .-&gt; SYNC[Sync service or adapter]
+    DESK -. export .-&gt; GIT[Git / S3-compatible / static hosting]
+    PUB --&gt; SITE[Published static site]
+    SYNC -. optional .-&gt; DEVICE[Other client device]
+</pre>
+<h3 id="52-component-architecture-and-trust-boundaries">5.2 Component architecture and trust boundaries</h3>
+<pre class="mermaid" data-source="diagram">flowchart TB
+    subgraph UI[Desktop Frontend - React / TypeScript]
+        SHELL[Workspace shell]
+        EDITOR[Editor + preview]
+        GRAPHUI[Graph / canvas / visualization]
+        CHAT[Chat / agent studio]
+        REVIEW[Diff review + approvals]
+    end
+    subgraph CORE[Local Trusted Core - Tauri / Rust]
+        ACL[Permission broker]
+        FS[Vault + file transactions]
+        PARSE[Parser + document resolver]
+        EVENT[Event journal + invalidation]
+        INDEX[SQLite metadata + FTS5 + edge graph]
+        VEC[Embeddings store adapter]
+        AUDIT[Run / audit store]
+    end
+    subgraph WORK[Isolated worker / process boundary]
+        RET[Retriever + citation resolver]
+        AGENT[Agent orchestrator]
+        EXEC[Sandboxed tool executor]
+        BUILD[MDX / publishing build]
+    end
+    subgraph OPT[Optional external systems]
+        MODEL[Hosted model endpoint]
+        REMOTESYNC[Sync transport]
+        HOST[Static hosting]
+    end
+    SHELL --&gt; FS
+    EDITOR --&gt; FS
+    GRAPHUI --&gt; INDEX
+    CHAT --&gt; RET
+    CHAT --&gt; AGENT
+    REVIEW --&gt; ACL
+    FS --&gt; PARSE --&gt; EVENT --&gt; INDEX
+    EVENT --&gt; VEC
+    RET --&gt; INDEX
+    RET --&gt; VEC
+    AGENT --&gt; ACL --&gt; EXEC
+    AGENT --&gt; RET
+    AGENT --&gt; AUDIT
+    AGENT --&gt; REVIEW
+    BUILD --&gt; HOST
+    EXEC -. granted network only .-&gt; MODEL
+    FS -. optional encrypted transport .-&gt; REMOTESYNC
+</pre>
+<p>The arrows above represent logical calls. <strong>All external, user-script, and agent tool paths cross policy enforcement</strong> in the trusted core. The renderer never inherits unrestricted filesystem privileges from the desktop shell.</p>
+<h3 id="53-recommended-stack-and-rationale">5.3 Recommended stack and rationale</h3>
+<table>
+<thead>
+<tr>
+  <th>Layer</th>
+  <th>Recommended baseline</th>
+  <th>Alternatives</th>
+  <th>Reason / caveat</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Desktop host</td>
+  <td><strong>Tauri 2 + Rust</strong></td>
+  <td>Electron</td>
+  <td>Smaller platform shell; Rust access control. Validate packaging and OS behavior</td>
+</tr>
+<tr>
+  <td>Client app</td>
+  <td><strong>React + TypeScript + Vite</strong></td>
+  <td>SvelteKit</td>
+  <td>Rich editor/canvas ecosystem, reusable UI</td>
+</tr>
+<tr>
+  <td>UI styling</td>
+  <td>Tailwind + shadcn/ui + design tokens</td>
+  <td>Radix primitives, custom CSS</td>
+  <td>Accessible primitives, customization</td>
+</tr>
+<tr>
+  <td>Docking</td>
+  <td>Custom pane tree or maintained layout library behind adapter</td>
+  <td>Golden Layout</td>
+  <td>Stacked panes and tabs should be portable across themes</td>
+</tr>
+<tr>
+  <td>Source editing</td>
+  <td><strong>CodeMirror 6</strong></td>
+  <td>Monaco (code-heavy), Lexical (rich editing)</td>
+  <td>Markdown-first text fidelity and plugin ecosystem</td>
+</tr>
+<tr>
+  <td>Markdown parser</td>
+  <td>unified/remark/rehype stack</td>
+  <td>markdown-it</td>
+  <td>Extensible AST transforms and sanitized output</td>
+</tr>
+<tr>
+  <td>Syntax compatibility</td>
+  <td>Dedicated Obsidian syntax adapter</td>
+  <td>Parser customizations</td>
+  <td>Avoid lossy regex-only conversions</td>
+</tr>
+<tr>
+  <td>Local core</td>
+  <td>Rust/Tauri commands + typed RPC bridge</td>
+  <td>JS service host</td>
+  <td>File transactions and permissions</td>
+</tr>
+<tr>
+  <td>Metadata/index</td>
+  <td><strong>SQLite + FTS5</strong></td>
+  <td>DuckDB for analytics later</td>
+  <td>Local transactions, mature search, graph relational tables</td>
+</tr>
+<tr>
+  <td>Vectors</td>
+  <td>Adapter: sqlite-vec pilot / embedded vector index</td>
+  <td>LanceDB local, specialized ANN</td>
+  <td>sqlite-vec is pre-v1; isolate behind interface</td>
+</tr>
+<tr>
+  <td>Graph display</td>
+  <td>Cytoscape.js or Sigma.js</td>
+  <td>D3 custom</td>
+  <td>Graph exploration/large-network layouts</td>
+</tr>
+<tr>
+  <td>Directed visual flows</td>
+  <td><strong>React Flow (<code>@xyflow/react</code>)</strong></td>
+  <td>Custom SVG</td>
+  <td>MIT license, editable nodes/edges</td>
+</tr>
+<tr>
+  <td>Whiteboard</td>
+  <td><strong>Excalidraw embedded</strong> as optional adapter</td>
+  <td>Custom open-source canvas</td>
+  <td>MIT code; check current third-party terms</td>
+</tr>
+<tr>
+  <td>MDX</td>
+  <td>MDX compiler in <strong>isolated build worker</strong></td>
+  <td>Static component AST renderer</td>
+  <td>Compiled MDX is executable JS; not safe by default</td>
+</tr>
+<tr>
+  <td>Diagrams</td>
+  <td>Mermaid with restricted/sanitized rendering</td>
+  <td>Graphviz</td>
+  <td>Native docs authoring and export</td>
+</tr>
+<tr>
+  <td>Local model</td>
+  <td>Ollama-compatible endpoint adapter</td>
+  <td>llama.cpp, other OpenAI-compatible hosts</td>
+  <td>BYO models; no AI dependency for editing</td>
+</tr>
+<tr>
+  <td>Hosted models</td>
+  <td>OpenAI-compatible endpoint + provider-specific adapter</td>
+  <td>Any supported API</td>
+  <td>Capability discovery, redaction, user consent</td>
+</tr>
+<tr>
+  <td>Agent workflows</td>
+  <td>Durable custom state machine + optional LangGraph adapter</td>
+  <td>Microsoft Agent Framework / PydanticAI adapter</td>
+  <td>Core should not depend on one fast-changing agent SDK</td>
+</tr>
+<tr>
+  <td>Tool protocol</td>
+  <td>Versioned local tool contract + MCP adapter</td>
+  <td>Direct local tools</td>
+  <td>Standardized capability access with policy guard</td>
+</tr>
+<tr>
+  <td>Static publishing</td>
+  <td><strong>Astro build worker</strong></td>
+  <td>Eleventy, custom renderer</td>
+  <td>Strong Markdown/MDX content publishing</td>
+</tr>
+<tr>
+  <td>Sync</td>
+  <td>File/object sync with journal, conflict revision policy</td>
+  <td>Git, WebDAV, S3</td>
+  <td>CRDT collaboration is separate feature</td>
+</tr>
+<tr>
+  <td>Telemetry</td>
+  <td>Optional OpenTelemetry signals; local by default</td>
+  <td>Structured JSONL</td>
+  <td>Privacy-respecting traceability</td>
+</tr>
+<tr>
+  <td>Test stack</td>
+  <td>Vitest, Playwright, Rust cargo tests, property-based tests</td>
+  <td>Others</td>
+  <td>Browser + core + compatibility coverage</td>
+</tr>
+</tbody>
+</table>
+<h3 id="54-dependency-licensing-flags">5.4 Dependency licensing flags</h3>
+<ul>
+<li>React Flow documents its <strong>MIT</strong> licensing, including commercial use. <a href="https://github.com/xyflow/xyflow">Source: React Flow</a>.</li>
+<li>Excalidraw repository documents an <strong>MIT</strong> license. <a href="https://github.com/excalidraw/excalidraw">Source: Excalidraw</a>.</li>
+<li><strong>Do not assume tldraw SDK is a drop-in unrestricted open-source choice</strong>: current official docs require a valid production license key. <a href="https://tldraw.dev/sdk-features/license-key">Source: tldraw licensing</a>.</li>
+<li>sqlite-vec documents <strong>pre-v1 / expected breaking changes</strong>. Do not make its table format a public contract. <a href="https://github.com/asg017/sqlite-vec">Source: sqlite-vec</a>.</li>
+<li>Tauri filesystem permissions are scoped and must be configured explicitly. <a href="https://v2.tauri.app/plugin/file-system/">Source: Tauri FS</a>.</li>
+<li>MDX compiles Markdown/JSX to <strong>JavaScript</strong>; evaluating unknown documents in a privileged application renderer is unsafe. <a href="https://mdxjs.com/getting-started/">Source: MDX docs</a>.</li>
+</ul>
+<h3 id="55-why-not-start-with-a-distributed-microservice-architecture">5.5 Why not start with a distributed microservice architecture?</h3>
+<p>A single-user local-first app gains little from running many microservices. Start as a <strong>modular monolith</strong> with separable workers and explicit RPC interfaces. Promote specific functions to services only if collaboration, sync or shared publishing usage justifies it. Every cloud component must have a local substitute or graceful feature degradation.</p>
+<hr />
+<h2 id="6-repository-vault-layout-portability">6. 🗂️ Repository, Vault Layout &amp; Portability</h2>
+<h3 id="61-suggested-monorepo-layout">6.1 Suggested monorepo layout</h3>
+<pre class="code-block"><span class="lang-tag">text</span><code class="language-text">chitkala/
+├── apps/
+│   ├── desktop/                 # Tauri application host
+│   ├── web/                     # Shared UI, browser-specific persistence
+│   ├── publish-worker/          # Isolated static site builder
+│   └── docs/                    # Public docs / development handbook
+├── packages/
+│   ├── ui/                      # Tokens, shadcn/Radix wrappers, panes
+│   ├── domain/                  # IDs, entities, shared schemas
+│   ├── editor/                  # CodeMirror extensions / preview
+│   ├── markdown/                # AST, wikilinks, embeds, frontmatter
+│   ├── graph/                   # Graph query model + views
+│   ├── canvas/                  # Canvas schema + adapters
+│   ├── retrieval/               # Ranking, chunking, citations
+│   ├── agents/                  # Workflow contracts and UX
+│   ├── model-sdk/               # Provider abstraction
+│   ├── plugin-sdk/              # Manifest + capability APIs
+│   ├── publish/                 # Asset pipeline, theme kit
+│   ├── sync-protocol/           # Wire types + conflict contracts
+│   └── test-fixtures/           # Golden vaults / stress fixtures
+├── crates/
+│   ├── chitkala-core/           # Commands, vault registry
+│   ├── chitkala-files/          # Atomic writes, watchers, backups
+│   ├── chitkala-index/          # SQLite FTS/metadata/edges
+│   ├── chitkala-policy/         # Capability decisions and auditing
+│   └── chitkala-sync/           # Optional sync adapter core
+├── schemas/                     # JSON Schema, OpenAPI, SQL, migrations
+├── examples/                    # Example vault, skill, renderer
+├── tests/                       # E2E, fuzz/property, benchmark suites
+├── scripts/                     # Dev/bootstrap/release automation
+├── .github/                     # CI, templates, security scanning
+├── LICENSE
+├── CONTRIBUTING.md
+├── SECURITY.md
+├── CODE_OF_CONDUCT.md
+├── GOVERNANCE.md
+└── README.md
+</code></pre>
+<h3 id="62-user-vault-format">6.2 User vault format</h3>
+<pre class="code-block"><span class="lang-tag">text</span><code class="language-text">My Knowledge Vault/
+├── Articles/
+│   ├── Agentic AI Gateways.md
+│   ├── RAG Retrieval Strategies.md
+│   └── Architecture with Interactive Visuals.mdx
+├── Projects/
+│   ├── Ananke/
+│   └── Vichara/
+├── Canvas/
+│   ├── Research Constellation.canvas.json
+│   └── Workflow Thinking.excalidraw.json
+├── Attachments/
+│   ├── retrieval-chart.svg
+│   └── architecture.png
+├── Templates/
+├── .obsidian/                    # preserved, not treated as trusted code
+└── .chitkala/
+    ├── vault.json               # portable, non-secret settings
+    ├── ids.json                 # optional stable ID sidecar
+    ├── publish.yaml             # explicit public-content policy
+    ├── skills/                  # user-reviewed skill descriptors
+    └── cache/                   # safe to delete; index may live in OS appdata
+</code></pre>
+<p><strong>Important:</strong> tokens, credentials, encryption keys, device identifiers and sensitive execution traces <strong>do not belong in portable, auto-published vault content</strong>. Store them via platform credential storage / user-controlled encrypted secret vault. Large caches should default to OS application data, excluded from sync and Git.</p>
+<h3 id="63-document-identity">6.3 Document identity</h3>
+<p>Use opaque <code>document_id</code> (UUIDv7 or ULID) independent of filename and title. Store IDs in frontmatter <strong>when the user opts in</strong>; otherwise use <code>.chitkala/ids.json</code> mapping resolved path + content fingerprints to stable IDs. An import must not rewrite documents merely to add IDs without preview/approval.</p>
+<p>On rename: update document path and incoming wikilinks transactionally where enabled. On content move: preserve ID. On duplicate import: determine whether content represents fork or same document; do not silently merge based only on matching title.</p>
+<h3 id="64-markdown-document-example">6.4 Markdown document example</h3>
+<pre class="code-block"><span class="lang-tag">yaml</span><code class="language-yaml">---
+chitkala_id: &quot;01K9EXAMPLE7B0Q3XYZ&quot;
+title: &quot;Retrieval Engineering for RAG&quot;
+aliases: [&quot;RAG Retrieval&quot;]
+tags: [rag, retrieval, architecture]
+status: draft
+visibility: private
+updated: 2026-10-20
+---
+</code></pre>
+<p>Then ordinary Markdown including <code>[[Knowledge Graph#Typed Edges]]</code>, <code>![[Attachments/retrieval-chart.svg]]</code>, fenced Mermaid, math and semantic metadata remains readable from other Markdown editors.</p>
+<h3 id="65-supported-content-formats">6.5 Supported content formats</h3>
+<table>
+<thead>
+<tr>
+  <th>Format</th>
+  <th>Editing</th>
+  <th>Preview</th>
+  <th>Search/graph extraction</th>
+  <th>Publish</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>.md</code></td>
+  <td>Native P0</td>
+  <td>Native P0</td>
+  <td>P0</td>
+  <td>P0/M4</td>
+</tr>
+<tr>
+  <td><code>.mdx</code></td>
+  <td>Source P0, safe preview M3</td>
+  <td>Trusted-components M3</td>
+  <td>Markdown text + component metadata</td>
+  <td>Trusted build M4</td>
+</tr>
+<tr>
+  <td><code>.html</code></td>
+  <td>Source P0</td>
+  <td>Sandboxed preview M3</td>
+  <td>Sanitized visible text + links</td>
+  <td>Opt-in restricted M4</td>
+</tr>
+<tr>
+  <td><code>.js</code> / <code>.ts</code></td>
+  <td>Source editor</td>
+  <td>Only in isolated preview environment</td>
+  <td>Code-symbol search optional</td>
+  <td>Explicit trusted bundle only</td>
+</tr>
+<tr>
+  <td><code>.canvas</code> / <code>.canvas.json</code></td>
+  <td>Canvas editor M3</td>
+  <td>Native M3</td>
+  <td>Semantic references</td>
+  <td>Snapshot/interactive export</td>
+</tr>
+<tr>
+  <td><code>.svg</code></td>
+  <td>Source and image</td>
+  <td>Sanitized/sandboxed</td>
+  <td>Links/alt text</td>
+  <td>Sanitized assets</td>
+</tr>
+<tr>
+  <td>Images/audio/PDF</td>
+  <td>Attachment</td>
+  <td>Native/safe viewers</td>
+  <td>Metadata; OCR/transcription opt-in</td>
+  <td>Allowlisted assets</td>
+</tr>
+<tr>
+  <td><code>.ipynb</code></td>
+  <td>Import/read adapter later</td>
+  <td>Sandboxed outputs</td>
+  <td>Markdown/code cells</td>
+  <td>Sanitized export</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Never equate “supports HTML/JavaScript” with “executes arbitrary scripts with vault privileges.”</strong> Those are separate feature tiers controlled by trust, provenance and permissions.</p>
+<hr />
+<h2 id="7-document-editing-hypermedia-rendering">7. ✍️ Document Editing, Hypermedia &amp; Rendering</h2>
+<h3 id="71-the-canonical-content-pipeline">7.1 The canonical content pipeline</h3>
+<pre class="mermaid" data-source="diagram">flowchart LR
+    SRC[Markdown / MDX / HTML file] --&gt; DETECT[Format + trust detection]
+    DETECT --&gt; AST[Parse to format-specific AST]
+    AST --&gt; META[Metadata / headings / IDs]
+    AST --&gt; LINK[Wikilinks / embeds resolver]
+    AST --&gt; SAFE[Sanitization + component allowlist]
+    SAFE --&gt; PREVIEW[Preview renderer]
+    META --&gt; INDEX[Index projection]
+    LINK --&gt; INDEX
+    AST --&gt; PATCH[Patch / source-map engine]
+</pre>
+<p>Retain original whitespace and Markdown syntax wherever possible; AST transformations should avoid gratuitous source reformatting. Keep editor state (selection, undo stack, scroll position) separate from disk documents.</p>
+<h3 id="72-editor-feature-checklist">7.2 Editor feature checklist</h3>
+<p><strong>P0:</strong> CodeMirror source mode, line numbers optional, split preview, autocomplete for wikilinks/headings/tags, autosave, transactional rename, heading outline, blockquote/callout rendering, Mermaid and math, image paste with safe filename generation, code fencing, undo/redo, tabbed and stacked pages.</p>
+<p><strong>P1:</strong> visual block mode, structured metadata forms, table editing, MDX component completion, cross-document block references, inline source citations, live data cards, AI selection actions.</p>
+<p><strong>P2:</strong> reusable knowledge components, interactive data visualizations, parameterized snippets, component registry, notebook-style cells under an explicit sandbox.</p>
+<h3 id="73-backlinks-and-references">7.3 Backlinks and references</h3>
+<p>Extract link types:</p>
+<ul>
+<li>Wikilinks: <code>[[Page]]</code>, <code>[[Page#Heading]]</code>, <code>[[Page|Label]]</code>.</li>
+<li>Markdown: <code>[label](relative-path.md)</code> including fragments.</li>
+<li>Embeds: <code>![[Page]]</code>, images and named blocks.</li>
+<li>Frontmatter: references and tags from registered schemas.</li>
+<li>Semantic edges: manually created or AI-suggested relations (<code>supports</code>, <code>contradicts</code>, <code>depends_on</code>, etc.).</li>
+</ul>
+<p>Maintain <strong>normalized target IDs</strong>, the original textual link, offsets/source map, link status (resolved/ambiguous/broken) and revision. UI should distinguish exact links from probabilistic AI-inferred links.</p>
+<h3 id="74-mdx-and-arbitrary-html-policy">7.4 MDX and arbitrary HTML policy</h3>
+<p><strong>Tier 0 — Safe Markdown (default):</strong> no arbitrary JavaScript or HTML event handlers; sanitize to approved tags/attributes; block <code>javascript:</code> URLs and unsafe resources.</p>
+<p><strong>Tier 1 — Trusted CHITKALA components:</strong> imports from a signed/versioned local registry; no network or filesystem access unless individually permitted. For example, <code>&lt;KnowledgeGraph topic=&quot;rag&quot; /&gt;</code>, <code>&lt;MindMap src=&quot;...&quot; /&gt;</code>, <code>&lt;MermaidDiagram ... /&gt;</code>, <code>&lt;MetricCard ... /&gt;</code>.</p>
+<p><strong>Tier 2 — Sandboxed interactive artifacts:</strong> user-authored JavaScript rendered inside a distinct iframe/origin or tightly isolated webview; CSP, restricted postMessage API, network deny by default. Prefer isolated subprocess + browser sandbox for builds. No Node.js APIs, no direct Tauri bridge, no privileged cookies or access tokens.</p>
+<p><strong>Tier 3 — Trusted developer extension:</strong> explicit install and signature/provenance inspection; capabilities exposed only through the policy broker. Plugin UI runs in isolated extension host; high-risk tasks execute out-of-process.</p>
+<blockquote>
+<p>[!danger] Avoid a common trap
+An MDX compiler produces executable JavaScript. AST validation alone is not a complete sandbox. Do <strong>not</strong> <code>eval</code>, dynamic-import, or run untrusted compiled MDX in the privileged CHITKALA app origin. Segregate trust domains at the execution boundary.</p>
+</blockquote>
+<h3 id="75-renderer-registry-contract-illustrative-typescript">7.5 Renderer registry contract (illustrative TypeScript)</h3>
+<pre class="code-block"><span class="lang-tag">ts</span><code class="language-ts">export interface RendererManifest {
+  id: string;              // e.g. &quot;org.chitkala.mermaid&quot;
+  version: string;         // SemVer
+  formats: string[];      // [&quot;markdown/fence:mermaid&quot;]
+  integrity?: string;      // bundle hash
+  entrypoint: string;
+  sandbox: &quot;static&quot; | &quot;isolated-frame&quot; | &quot;isolated-worker&quot;;
+  requiredCapabilities: Capability[];
+}
+
+export interface RenderRequest {
+  vaultId: string;
+  documentId: string;
+  revision: string;
+  source: string;
+  format: string;
+  options: Record&lt;string, unknown&gt;;
+}
+</code></pre>
+<h3 id="76-embedded-webjavascript-behavior">7.6 Embedded web/JavaScript behavior</h3>
+<p>For ordinary imported articles: render static HTML/MDX safely; strip executable scripts. For trusted interactive articles: compile with a controlled component registry and issue a preview token <strong>limited to named assets and API methods</strong>. Public publishing includes <em>only</em> explicitly approved interactive components, with a per-site content-security policy.</p>
+<hr />
+<h2 id="8-knowledge-graph-backlinks-semantic-modeling">8. 🕸️ Knowledge Graph, Backlinks &amp; Semantic Modeling</h2>
+<h3 id="81-three-distinct-graphs">8.1 Three distinct graphs</h3>
+<ol>
+<li><strong>Document graph:</strong> explicit Markdown links and embeds. Deterministic, rebuildable.</li>
+<li><strong>Semantic entity graph:</strong> concepts, definitions, people/projects/topics and typed relations. May require user review.</li>
+<li><strong>Agent provenance graph:</strong> which sources, tools and decisions produced an output. Append-only audit metadata.</li>
+</ol>
+<p>Do not mix these into one undifferentiated cloud of dots. Different edge trust and provenance must be visible.</p>
+<pre class="mermaid" data-source="diagram">flowchart LR
+    D1[Article A] --&gt;|wikilink| D2[Article B]
+    D1 --&gt;|discusses| E1[Concept: RAG]
+    D2 --&gt;|supports| E1
+    D3[Article C] --&gt;|contradicts: suggested| E1
+    RUN[Agent Run 421] --&gt;|read| D1
+    RUN --&gt;|proposed edit| D3
+    D3 --&gt;|revision| REV[Revision hash]
+</pre>
+<h3 id="82-data-and-queries">8.2 Data and queries</h3>
+<p>A minimal graph needs <code>nodes</code>, <code>edges</code>, <code>document_revisions</code>, <code>source_spans</code>, and <code>edge_evidence</code>. Store exact source/target IDs, types, provenance (<code>manual</code>, <code>parsed</code>, <code>agent_suggested</code>), confidence and validation status. Support 1-hop neighborhood, k-hop with limits, inbound/outbound links, connected components, orphan notes, dangling references, graph search and path explanations.</p>
+<p><strong>Do not start with Neo4j.</strong> For a personal vault, indexed relational edge tables are simpler and usually sufficient. Add a graph database adapter only if measured traversal/query requirements warrant it.</p>
+<h3 id="83-knowledge-graph-ux">8.3 Knowledge graph UX</h3>
+<ul>
+<li>Graph overview: neighborhood-first, zoom and filters, not a million-node hairball.</li>
+<li>Node styling: distinct shapes/colors for note, concept, task, agent, source, canvas.</li>
+<li>Edge styling: explicit link vs inferred relationship vs provenance.</li>
+<li>Hover: title, snippet, tags, incoming/outgoing counts, source type.</li>
+<li>Click: open in adjacent pane, keep previous panes accessible.</li>
+<li>Context menu: create relationship, pin, generate mindmap, ask about neighborhood.</li>
+<li>Provenance mode: visualize the lineage of an agent-generated article.</li>
+</ul>
+<h3 id="84-stable-positions-and-performance">8.4 Stable positions and performance</h3>
+<p>Cache graph layouts by filter + graph revision. Materialize local neighborhoods in a worker. Use level-of-detail, node budgets and progressive expansion. Index source/target columns, avoid unbounded recursive graph traversals in interactive UI.</p>
+<hr />
+<h2 id="9-search-retrieval-memory-rag">9. 🧠 Search, Retrieval, Memory &amp; RAG</h2>
+<h3 id="91-layered-search-strategy">9.1 Layered search strategy</h3>
+<p>Do not equate vector search with all retrieval. Use a staged, transparent retrieval pipeline:</p>
+<pre class="mermaid" data-source="diagram">flowchart TB
+    Q[User query + active context] --&gt; ROUTE[Intent classification / deterministic filters]
+    ROUTE --&gt; FTS[SQLite FTS5 + title / metadata]
+    ROUTE --&gt; VEC[Embedding similarity]
+    ROUTE --&gt; GRAPH[Graph neighbors and references]
+    FTS --&gt; UNION[Merge + dedupe by source span]
+    VEC --&gt; UNION
+    GRAPH --&gt; UNION
+    UNION --&gt; RANK[RRF / reranker / recency + scope]
+    RANK --&gt; GUARD[Permission, revision, context budget]
+    GUARD --&gt; CITED[Retrieved context with source IDs]
+    CITED --&gt; MODEL[Model with citation instructions]
+    MODEL --&gt; CHECK[Claim/citation verifier]
+    CHECK --&gt; ANSWER[Answer + citation navigator + caveats]
+</pre>
+<h3 id="92-retrieval-modes">9.2 Retrieval modes</h3>
+<table>
+<thead>
+<tr>
+  <th>Mode</th>
+  <th>Approach</th>
+  <th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Navigation</td>
+  <td>Title/path alias and fuzzy search</td>
+  <td>Open a known note quickly</td>
+</tr>
+<tr>
+  <td>Lexical</td>
+  <td>FTS5 BM25-style ranking</td>
+  <td>Exact terms, rare tokens, identifiers</td>
+</tr>
+<tr>
+  <td>Semantic</td>
+  <td>Local vector similarity</td>
+  <td>Paraphrase and conceptual similarity</td>
+</tr>
+<tr>
+  <td>Hybrid</td>
+  <td>Rank fusion, then optional rerank</td>
+  <td>Default natural language Q&amp;A</td>
+</tr>
+<tr>
+  <td>Graph-aware</td>
+  <td>Neighbors, edges, shared concepts</td>
+  <td>Multi-document relationships</td>
+</tr>
+<tr>
+  <td>Structural</td>
+  <td>Heading, section, property and date filters</td>
+  <td>Precise scoped extraction</td>
+</tr>
+<tr>
+  <td>Temporal</td>
+  <td>Revision history or date filters</td>
+  <td>What changed, progression of ideas</td>
+</tr>
+<tr>
+  <td>Provenance</td>
+  <td>Agent run / source lineage filters</td>
+  <td>Why this generated content exists</td>
+</tr>
+</tbody>
+</table>
+<p>SQLite FTS5 supports full-text queries and relevance ranking via <code>rank</code> / <code>bm25()</code>; see <a href="https://sqlite.org/fts5.html">SQLite FTS5 documentation</a>. Vector search should be optional and degradable, not a startup blocker.</p>
+<h3 id="93-ingestion-and-chunking">9.3 Ingestion and chunking</h3>
+<p><strong>Input event:</strong> <code>document.changed(vault_id, document_id, revision, changed_ranges)</code>.</p>
+<ol>
+<li>Read committed file content, validate size/MIME and exclude privacy-filtered paths.</li>
+<li>Parse frontmatter, title, sections, links, citations, code fences, tables, math and metadata.</li>
+<li>Split by Markdown headings first; preserve tables, code fences and block references as atomic chunks when possible.</li>
+<li>Apply bounded size overlap <strong>within the same logical section</strong>; avoid blindly merging unrelated sections.</li>
+<li>Assign stable chunk anchors: <code>document_id + section_anchor + local span + content_hash</code>.</li>
+<li>Upsert lexical fields and exact link edges transactionally.</li>
+<li>Queue embeddings asynchronously with model/version/policy metadata.</li>
+<li>Remove obsolete chunks/edges after new revision commits and refresh retrieval revision watermark.</li>
+<li>Emit <code>index.document.ready</code> only once a coherent committed search projection is visible.</li>
+</ol>
+<p><strong>Default chunking proposal:</strong> heading-aware chunks with target ~350–650 tokens, maximum ~900 tokens, overlap ~50 tokens when necessary. These are starting values for evaluation, not universal best practices. Split large code or tables according to syntax-aware rules and preserve references.</p>
+<p><strong>Embedding version policy:</strong> record model ID, dimensionality, normalization, creation time and document revision. A changed embedding model triggers a <strong>new index namespace</strong> and progressive reembedding; never compare vectors from incompatible spaces.</p>
+<h3 id="94-query-planning-and-ranking">9.4 Query planning and ranking</h3>
+<p>Retrieve using lexical and vector channels independently. Use <strong>Reciprocal Rank Fusion (RRF)</strong> for a transparent default; optionally rerank the merged top-k with a small model. Apply permission/source-type filters <strong>before</strong> retrieval and repeat them before prompt assembly. Resist leakage from excluded directories through cached embeddings or summaries.</p>
+<p>Illustrative RRF formula:</p>
+<p>[
+\operatorname{RRF}(d)=\sum_{r\in \text{retrievers}}\frac{w_r}{k+\operatorname{rank}_r(d)}
+]</p>
+<p>Tune weights, <code>k</code>, top-N limits and reranking experimentally. Include maximum token budgets and timeout/fallback behavior.</p>
+<h3 id="95-citations-and-evidence">9.5 Citations and evidence</h3>
+<p>A source citation is a <strong>machine-verifiable location</strong>, not merely an LLM-written hyperlink.</p>
+<pre class="code-block"><span class="lang-tag">ts</span><code class="language-ts">export interface SourceCitation {
+  vaultId: string;
+  documentId: string;
+  revision: string;          // content hash or revision ID
+  chunkId: string;
+  headingPath: string[];
+  startByte: number;         // UTF-8 canonical content offset
+  endByte: number;
+  quotedTextHash: string;
+  displayPath: string;
+}
+</code></pre>
+<p>On click: resolve document ID → revision → section/span → highlight matching text. If the file changed, indicate <em>“citation refers to an older revision”</em>, attempt offset relocation by text hash, and offer to view saved revision. Do not quietly point to an unrelated paragraph.</p>
+<h3 id="96-memory-taxonomy">9.6 Memory taxonomy</h3>
+<table>
+<thead>
+<tr>
+  <th>Memory</th>
+  <th>Stored where</th>
+  <th>Control / lifecycle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Source documents</td>
+  <td>Canonical Markdown files</td>
+  <td>User ownership, edit/delete</td>
+</tr>
+<tr>
+  <td>Working context</td>
+  <td>Per-conversation state, bounded</td>
+  <td>TTL and manual clear</td>
+</tr>
+<tr>
+  <td>Summaries</td>
+  <td>Sidecar Markdown or explicit generated artifact</td>
+  <td>User-reviewable, versioned</td>
+</tr>
+<tr>
+  <td>Preferences</td>
+  <td>Named settings or user-approved profile</td>
+  <td>Opt in, inspect/delete</td>
+</tr>
+<tr>
+  <td>Semantic memory</td>
+  <td>Embedding index derived from content</td>
+  <td>Rebuildable, excluded scopes honored</td>
+</tr>
+<tr>
+  <td>Agent experience</td>
+  <td>Traces + evaluation results</td>
+  <td>Policy retention, reviewable</td>
+</tr>
+<tr>
+  <td>Knowledge graph</td>
+  <td>Explicit links + derived projections</td>
+  <td>Edge provenance and user override</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Never</strong> treat an agent's unverified observation as a confirmed personal fact. Derived memory must reference sources and have deletion propagation semantics.</p>
+<h3 id="97-quality-and-evaluation">9.7 Quality and evaluation</h3>
+<p>Build a benchmark corpus from consented sample vaults and synthetic fixtures. Use hand-verified Q&amp;A pairs, ambiguous link cases, citation exactness cases, partial-data questions and adversarial instructions embedded in notes. Score recall@k, nDCG@k, MRR, groundedness, unsupported claims, exact citation resolution, permission leakage, latency and token cost. Capture results by model/provider/embedding version. Golden tests should fail if a tool can bypass document scopes or if missing evidence is fabricated.</p>
+<h3 id="98-when-ai-creates-an-article">9.8 When AI creates an article</h3>
+<p>The agent must mark each paragraph as <strong>user-supplied</strong>, <strong>source-supported synthesis</strong>, <strong>general model knowledge</strong>, or <strong>unsupported draft to verify</strong> at proposal time. Publish only after human review; avoid inventing citations. The source citations and a generated-content provenance summary should be accessible from the editor even if not all metadata is included in public Markdown.</p>
+<hr />
+<h2 id="10-agent-architecture-skills-tool-execution">10. 🤖 Agent Architecture, Skills &amp; Tool Execution</h2>
+<h3 id="101-execution-philosophy">10.1 Execution philosophy</h3>
+<p>An agent is a <strong>bounded workflow actor</strong>, not a privileged operator. Design agents around explicit inputs, capabilities, resource scopes, budgets, checkpoints and observable outputs. Natural-language instructions alone are not an authorization system.</p>
+<h3 id="102-agent-layers">10.2 Agent layers</h3>
+<pre class="mermaid" data-source="diagram">flowchart TB
+    USER[User task / command] --&gt; PLAN[Planner]
+    PLAN --&gt; POLICY[Policy + grants]
+    POLICY --&gt; CTX[Context / retrieval service]
+    CTX --&gt; RUN[Workflow state machine]
+    RUN --&gt; TOOLS[Tool registry / MCP adapters]
+    TOOLS --&gt; SANDBOX[Isolated execution]
+    SANDBOX --&gt; RESULT[Artifact + patch proposals]
+    RESULT --&gt; VERIFY[Checks: schema / tests / citations]
+    VERIFY --&gt; APPROVE{Needs approval?}
+    APPROVE --&gt;|Yes| HUMAN[Human review]
+    APPROVE --&gt;|No / readonly| COMMIT[Allowed state transition]
+    HUMAN --&gt;|Approve| COMMIT
+    HUMAN --&gt;|Reject / revise| RUN
+    COMMIT --&gt; AUDIT[Append-only run audit]
+    COMMIT --&gt; REINDEX[Reindex / dependency updates]
+</pre>
+<h3 id="103-agent-runtime-state-machine">10.3 Agent runtime state machine</h3>
+<p><code>CREATED → PLANNED → WAITING_PERMISSION → RUNNING → PROPOSAL_READY → WAITING_REVIEW → COMMITTING → COMPLETED</code></p>
+<p>Alternative terminal states: <code>CANCELLED</code>, <code>FAILED</code>, <code>EXPIRED</code>, <code>REJECTED</code>. Transitions must be validated server/core-side. Persist checkpoints at every externally visible transition. Idempotency keys prevent duplicate side effects after retries. Tool timeouts must propagate cancellation and resource teardown.</p>
+<h3 id="104-standard-agents-future-templates-not-pre-enabled-autonomy">10.4 Standard agents (future templates, not pre-enabled autonomy)</h3>
+<table>
+<thead>
+<tr>
+  <th>Agent</th>
+  <th>Inputs</th>
+  <th>Output</th>
+  <th>Default privileges</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Researcher</td>
+  <td>Question, scope</td>
+  <td>Source-grounded research memo</td>
+  <td>Read selected vault content</td>
+</tr>
+<tr>
+  <td>Writer</td>
+  <td>Brief, sources, outline</td>
+  <td>Draft <code>.md</code> / <code>.mdx</code> patch</td>
+  <td>Read + propose, no direct commit</td>
+</tr>
+<tr>
+  <td>Knowledge Curator</td>
+  <td>Vault subset</td>
+  <td>Tags, aliases, links, orphan suggestions</td>
+  <td>Read + suggest metadata</td>
+</tr>
+<tr>
+  <td>Diagram Artist</td>
+  <td>Concepts, selected notes</td>
+  <td>Mermaid / SVG / canvas proposal</td>
+  <td>Read + propose asset</td>
+</tr>
+<tr>
+  <td>Reviewer</td>
+  <td>Document + constraints</td>
+  <td>Quality checks / citation gaps</td>
+  <td>Read only</td>
+</tr>
+<tr>
+  <td>Architect</td>
+  <td>Specs and repo metadata</td>
+  <td>ADR/diagram/API sketches</td>
+  <td>Read + propose</td>
+</tr>
+<tr>
+  <td>Publisher</td>
+  <td>Approved selected documents</td>
+  <td>Publish manifest + build preview</td>
+  <td>Build locally; no push without approval</td>
+</tr>
+<tr>
+  <td>Planner</td>
+  <td>Goals/notes</td>
+  <td>Task graph / prioritized roadmap</td>
+  <td>Read + propose task mutations</td>
+</tr>
+<tr>
+  <td>Migration Assistant</td>
+  <td>Source vault</td>
+  <td>Compatibility and conversion patches</td>
+  <td>Filesystem scoped, dry-run first</td>
+</tr>
+</tbody>
+</table>
+<h3 id="105-skill-manifest">10.5 Skill manifest</h3>
+<p>Skills describe <strong>capabilities and reusable instructions</strong>. They may call registered tools, but skill prose never expands permissions. Declare dependencies and compatibility.</p>
+<pre class="code-block"><span class="lang-tag">yaml</span><code class="language-yaml">apiVersion: chitkala.dev/v1alpha1
+kind: Skill
+metadata:
+  id: org.chitkala.write-research-article
+  name: Research Article Writer
+  version: 0.1.0
+  author: CHITKALA contributors
+spec:
+  description: Draft a source-grounded Markdown article
+  entrypoint: skills/article-writer/SKILL.md
+  inputSchema: schemas/article-request.json
+  outputSchema: schemas/article-proposal.json
+  requiredCapabilities:
+    - action: vault.read
+      scope: user-selected-documents
+    - action: index.query
+      scope: user-selected-vault
+    - action: patch.propose
+      scope: drafts/**
+  approvalPolicy: always-before-write
+  budgets:
+    maxWallTimeSeconds: 180
+    maxToolCalls: 30
+    maxOutputTokens: 12000
+  compatibility:
+    chitkala: &quot;&gt;=0.3.0 &lt;1.0.0&quot;
+</code></pre>
+<h3 id="106-tool-and-mcp-contract">10.6 Tool and MCP contract</h3>
+<p>Expose a normalized tool registry for <code>vault.read</code>, <code>vault.search</code>, <code>graph.neighbors</code>, <code>note.propose_patch</code>, <code>diagram.render</code>, <code>publish.preview</code>, etc. MCP servers are adapters—not privileged exceptions. The broker validates tool metadata, schema, permissions, origin, timeout, quota and allowed destinations; it sanitizes tool outputs and records provenance. Be attentive to untrusted MCP server descriptors and tool-result injection. See <a href="https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html">OWASP MCP Security Cheat Sheet</a>.</p>
+<h3 id="107-permission-model">10.7 Permission model</h3>
+<p>Each grant is the intersection of <strong>principal + action + resource scope + conditions + expiration</strong>:</p>
+<pre class="code-block"><span class="lang-tag">json</span><code class="language-json">{
+  &quot;grant_id&quot;: &quot;grant_01KEXAMPLE&quot;,
+  &quot;principal&quot;: &quot;skill:org.chitkala.write-research-article&quot;,
+  &quot;action&quot;: &quot;vault.read&quot;,
+  &quot;resources&quot;: [&quot;vault:v1/Articles/**&quot;],
+  &quot;constraints&quot;: {&quot;exclude&quot;: [&quot;**/Private/**&quot;], &quot;network&quot;: false},
+  &quot;expires_at&quot;: &quot;2026-10-21T02:00:00Z&quot;,
+  &quot;approval_mode&quot;: &quot;per_run&quot;
+}
+</code></pre>
+<p>For sensitive actions—delete, shell execution, public publish, external upload, spending money, bulk changes—require specific visible confirmation. <strong>Do not</strong> let a model construct a privileged API call by simply writing JSON that happens to look like an authorized action; authorization occurs separately in the core.</p>
+<h3 id="108-patch-based-mutations">10.8 Patch-based mutations</h3>
+<pre class="mermaid" data-source="diagram">sequenceDiagram
+    autonumber
+    participant A as Agent
+    participant P as Patch service
+    participant UI as Review UI
+    participant F as Filesystem
+    participant I as Indexer
+    A-&gt;&gt;P: propose(diff, base_revision, evidence)
+    P-&gt;&gt;P: validate paths, format, syntax, policy
+    P--&gt;&gt;UI: Human-readable diff + confidence/evidence
+    UI-&gt;&gt;P: Approved patch ID + exact hash
+    P-&gt;&gt;F: compare-and-swap against base revision
+    alt Content unchanged
+      F-&gt;&gt;F: atomic temp write + rename + journal
+      F--&gt;&gt;P: committed revision hash
+      P-&gt;&gt;I: enqueue delta
+      I--&gt;&gt;P: index revision complete
+      P--&gt;&gt;UI: Success and provenance
+    else Concurrent change detected
+      F--&gt;&gt;P: version conflict
+      P--&gt;&gt;UI: Three-way merge / regenerate proposal
+    end
+</pre>
+<p>Patch validation includes permission check, path normalization, symlink resolution, file size quota, syntax validation, filename allowlist, frontmatter consistency, and citation locator validation. Keep before/after revisions for recovery.</p>
+<h3 id="109-agent-evaluation-harness">10.9 Agent evaluation harness</h3>
+<p>Evaluate distinct axes: task success, source fidelity, citation resolution, patch correctness, forbidden-side-effect rate, tool efficiency, cost, latency, and user acceptance. Integration points can support frameworks such as MLflow and optional external evaluator SDKs while retaining a stable internal evidence model. Store evaluations with run input snapshot, dataset version, evaluator version and model metadata.</p>
+<h3 id="1010-agent-ananke-boundary">10.10 Agent ↔ Ananke boundary</h3>
+<p>CHITKALA can integrate with <strong>Ananke</strong> as an <strong>optional code-engineering agent harness</strong>, not a hard dependency. A separate connector exchanges structured task manifests, tool requests, test artifacts, policy decisions and patch bundles. CHITKALA stays responsible for vault permissions, knowledge provenance and user-visible review.</p>
+<hr />
+<h2 id="11-canvas-mind-maps-visual-intelligence">11. 🎨 Canvas, Mind Maps &amp; Visual Intelligence</h2>
+<h3 id="111-canvas-types">11.1 Canvas types</h3>
+<ul>
+<li><strong>Knowledge canvas:</strong> notes, links, concepts and groups represented as referenced nodes.</li>
+<li><strong>Mind-map canvas:</strong> hierarchical or radial ideas; can export as nested Markdown outline.</li>
+<li><strong>Flow canvas:</strong> React Flow nodes for workflows, agent chains and system design.</li>
+<li><strong>Freeform canvas:</strong> optional Excalidraw-style pen/drawing adapter with safe static snapshots.</li>
+<li><strong>Dashboard canvas:</strong> typed visual widgets (charts, tables, metrics) consuming approved local data queries.</li>
+</ul>
+<h3 id="112-canvas-data-model-separate-from-source-documents">11.2 Canvas data model (separate from source documents)</h3>
+<pre class="code-block"><span class="lang-tag">json</span><code class="language-json">{
+  &quot;schemaVersion&quot;: 1,
+  &quot;canvasId&quot;: &quot;can_123&quot;,
+  &quot;title&quot;: &quot;RAG Research Map&quot;,
+  &quot;nodes&quot;: [
+    {
+      &quot;id&quot;: &quot;node_1&quot;,
+      &quot;type&quot;: &quot;document-ref&quot;,
+      &quot;ref&quot;: {&quot;documentId&quot;: &quot;doc_abc&quot;, &quot;heading&quot;: &quot;Hybrid Retrieval&quot;},
+      &quot;x&quot;: 120,
+      &quot;y&quot;: 180,
+      &quot;width&quot;: 320,
+      &quot;height&quot;: 210
+    }
+  ],
+  &quot;edges&quot;: [],
+  &quot;styles&quot;: {&quot;theme&quot;: &quot;aurora&quot;},
+  &quot;revision&quot;: &quot;sha256:example&quot;
+}
+</code></pre>
+<p><code>ref.documentId</code> gives stable identity across file rename. If referenced content is deleted, show a broken-reference placeholder; never silently duplicate historical content as if current.</p>
+<h3 id="113-graph-to-canvas-synchronization">11.3 Graph-to-canvas synchronization</h3>
+<p>Canvas placement is user-authored spatial state. The graph is a queryable relationship projection. Dragging a note from graph to canvas creates a reference node. Adding a drawn connector <strong>does not automatically create a factual semantic edge</strong>; the user must choose whether it is presentation-only or a persistent typed relationship.</p>
+<h3 id="114-visual-export">11.4 Visual export</h3>
+<p>Provide SVG/PNG for diagrams, PDF print via browser rendering (later), JSON scene exports, and markdown-embedded interactive references. Preserve editability where possible and include accessible textual alternatives. Exported SVG must be sanitized before publishing.</p>
+<hr />
+<h2 id="12-data-storage-schema-event-processing">12. 🧱 Data Storage, Schema &amp; Event Processing</h2>
+<h3 id="121-authoritative-vs-derived-storage">12.1 Authoritative vs derived storage</h3>
+<table>
+<thead>
+<tr>
+  <th>Store</th>
+  <th>Authoritative?</th>
+  <th>Contains</th>
+  <th>Recovery</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Vault <code>.md</code> / <code>.mdx</code> / assets</td>
+  <td><strong>Yes</strong></td>
+  <td>User content</td>
+  <td>Backup/version history</td>
+</tr>
+<tr>
+  <td>Vault explicit metadata manifests</td>
+  <td><strong>Yes</strong></td>
+  <td>IDs, user tags/settings, canvas structure, publish rules</td>
+  <td>Backed up with vault</td>
+</tr>
+<tr>
+  <td>OS keychain/secrets</td>
+  <td><strong>Yes</strong></td>
+  <td>Credentials / encryption keys</td>
+  <td>Credential recovery flow</td>
+</tr>
+<tr>
+  <td>SQLite primary cache</td>
+  <td>No for document bodies; yes for ephemeral run state unless archived</td>
+  <td>FTS, graph, jobs, UI state</td>
+  <td>Rebuild; persist run log safely</td>
+</tr>
+<tr>
+  <td>Vector index</td>
+  <td>No</td>
+  <td>Embeddings and chunk pointers</td>
+  <td>Recompute from canonical source</td>
+</tr>
+<tr>
+  <td>Agent audit archive</td>
+  <td><strong>Yes for audit</strong></td>
+  <td>Grants, proposals, outcomes and run metadata</td>
+  <td>Explicit backup/retention strategy</td>
+</tr>
+<tr>
+  <td>Remote sync blob store</td>
+  <td>Replica</td>
+  <td>Encrypted documents/objects</td>
+  <td>Reconcile version history</td>
+</tr>
+<tr>
+  <td>Public site output</td>
+  <td>No</td>
+  <td>Generated HTML/assets</td>
+  <td>Rebuild from publish manifest</td>
+</tr>
+</tbody>
+</table>
+<h3 id="122-logical-relational-model">12.2 Logical relational model</h3>
+<pre class="mermaid" data-source="diagram">classDiagram
+    class Vault {
+      id
+      root_uri
+      created_at
+      privacy_policy
+    }
+    class Document {
+      id
+      vault_id
+      path
+      title
+      format
+      revision_hash
+    }
+    class Chunk {
+      id
+      document_id
+      revision_hash
+      heading_anchor
+      content_hash
+    }
+    class Entity {
+      id
+      label
+      type
+    }
+    class Edge {
+      id
+      from_id
+      to_id
+      kind
+      provenance
+    }
+    class Embedding {
+      chunk_id
+      model_id
+      index_namespace
+    }
+    class AgentRun {
+      id
+      agent_id
+      state
+      started_at
+    }
+    class PatchProposal {
+      id
+      run_id
+      base_hash
+      approval_state
+    }
+    class AuditEvent {
+      id
+      actor
+      action
+      object_id
+      timestamp
+    }
+    class Publication {
+      id
+      manifest_hash
+      build_hash
+      target
+    }
+    Vault &quot;1&quot; --&gt; &quot;*&quot; Document
+    Document &quot;1&quot; --&gt; &quot;*&quot; Chunk
+    Document &quot;1&quot; --&gt; &quot;*&quot; Edge
+    Edge &quot;*&quot; --&gt; &quot;1&quot; Entity
+    Chunk &quot;1&quot; --&gt; &quot;*&quot; Embedding
+    AgentRun &quot;1&quot; --&gt; &quot;*&quot; PatchProposal
+    AgentRun &quot;1&quot; --&gt; &quot;*&quot; AuditEvent
+    Vault &quot;1&quot; --&gt; &quot;*&quot; Publication
+</pre>
+<p>See the companion <code>schema.sql</code> for starter DDL. It is a <strong>design seed</strong>, not a tested production migration.</p>
+<h3 id="123-change-propagation">12.3 Change propagation</h3>
+<p>Local file watcher events can arrive duplicated, coalesced or out of order. Canonicalize path, debounce short bursts, compute content hash, ignore unchanged hashes, serialize writes per-document and use transactional index mutations. For large vaults, cap worker concurrency to prevent CPU/IO overload. On startup, compare journal sequence + current filesystem manifest; scan for missed changes during downtime.</p>
+<h3 id="124-event-envelope">12.4 Event envelope</h3>
+<pre class="code-block"><span class="lang-tag">json</span><code class="language-json">{
+  &quot;eventId&quot;: &quot;evt_01KEXAMPLE&quot;,
+  &quot;eventType&quot;: &quot;document.committed&quot;,
+  &quot;schemaVersion&quot;: 1,
+  &quot;vaultId&quot;: &quot;vault_123&quot;,
+  &quot;aggregateId&quot;: &quot;doc_abc&quot;,
+  &quot;revision&quot;: &quot;sha256:content_hash&quot;,
+  &quot;causationId&quot;: &quot;patch_456&quot;,
+  &quot;correlationId&quot;: &quot;run_789&quot;,
+  &quot;occurredAt&quot;: &quot;2026-10-20T21:00:00Z&quot;,
+  &quot;payload&quot;: {&quot;path&quot;: &quot;Articles/RAG.md&quot;, &quot;format&quot;: &quot;md&quot;}
+}
+</code></pre>
+<p><strong>Events are delivery signals</strong>, not the canonical history of file contents. Consumers must be idempotent by <code>(document_id, revision, projection_name)</code> and must tolerate replay.</p>
+<h3 id="125-compaction-backups-and-retention">12.5 Compaction, backups and retention</h3>
+<ul>
+<li>Use SQLite WAL and explicit integrity checks; checkpoints tuned to workload.</li>
+<li>Periodic snapshot + journal for in-flight drafts; atomic safe-write with OS-specific durability testing.</li>
+<li>Hash-address attachments for deduplication only when it does not break user-visible paths.</li>
+<li>Backups include vault manifests and revision snapshots; indexes are optionally excluded.</li>
+<li>Support “rebuild all indexes” command and diagnostic report.</li>
+<li>Delete paths must remove vectors, chunk caches and derived summaries; honor user-requested scope exclusions.</li>
+<li>Keep audit events for a documented retention window; redact sensitive prompt data by default.</li>
+</ul>
+<hr />
+<h2 id="13-apis-ipc-extension-contracts">13. 🔌 APIs, IPC &amp; Extension Contracts</h2>
+<h3 id="131-interface-conventions">13.1 Interface conventions</h3>
+<ol>
+<li>Local desktop uses typed <strong>Tauri command IPC</strong>; shared domain types describe request and response payloads.</li>
+<li>Optional self-hosted server uses REST/JSON for standard operations, SSE for run event streams, WebSocket only for real-time collaboration/sync negotiation when required.</li>
+<li>Use <code>/v1</code> external API path, <code>schemaVersion</code> inside durable artifacts, SemVer for packages.</li>
+<li>API mutators take idempotency keys and revision preconditions; responses include stable identifiers.</li>
+<li>Error model is structured: <code>code</code>, <code>message</code>, <code>details</code>, <code>requestId</code>, <code>retryable</code>.</li>
+<li>No external API endpoint should bypass the same capability authorization checks as desktop IPC.</li>
+</ol>
+<h3 id="132-high-level-api-surface">13.2 High-level API surface</h3>
+<table>
+<thead>
+<tr>
+  <th>Operation</th>
+  <th>Desktop contract</th>
+  <th>Optional HTTP equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Scan/import vault</td>
+  <td><code>vault.scan</code>, <code>vault.import</code></td>
+  <td><code>POST /v1/vaults/imports</code></td>
+</tr>
+<tr>
+  <td>List/read documents</td>
+  <td><code>documents.list</code>, <code>documents.read</code></td>
+  <td><code>GET /v1/vaults/{id}/documents</code></td>
+</tr>
+<tr>
+  <td>Stage edit</td>
+  <td><code>patches.propose</code></td>
+  <td><code>POST /v1/patches</code></td>
+</tr>
+<tr>
+  <td>Approve/apply</td>
+  <td><code>patches.approve</code>, <code>patches.apply</code></td>
+  <td><code>POST /v1/patches/{id}/apply</code></td>
+</tr>
+<tr>
+  <td>Search</td>
+  <td><code>search.query</code></td>
+  <td><code>POST /v1/search</code></td>
+</tr>
+<tr>
+  <td>Retrieve graph</td>
+  <td><code>graph.neighbors</code></td>
+  <td><code>GET /v1/graph/neighbors</code></td>
+</tr>
+<tr>
+  <td>Start agent run</td>
+  <td><code>agents.start</code></td>
+  <td><code>POST /v1/agent-runs</code></td>
+</tr>
+<tr>
+  <td>Observe agent run</td>
+  <td>local event emitter</td>
+  <td><code>GET /v1/agent-runs/{id}/events</code> SSE</td>
+</tr>
+<tr>
+  <td>Publish preview</td>
+  <td><code>publish.preview</code></td>
+  <td><code>POST /v1/publications/previews</code></td>
+</tr>
+<tr>
+  <td>Publish deploy</td>
+  <td><code>publish.deploy</code></td>
+  <td><code>POST /v1/publications/deployments</code></td>
+</tr>
+<tr>
+  <td>Sync state</td>
+  <td><code>sync.status</code></td>
+  <td><code>GET /v1/sync/status</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="133-example-safe-patch-proposal-request">13.3 Example: safe patch proposal request</h3>
+<pre class="code-block"><span class="lang-tag">json</span><code class="language-json">{
+  &quot;vaultId&quot;: &quot;vault_123&quot;,
+  &quot;documentId&quot;: &quot;doc_abc&quot;,
+  &quot;baseRevision&quot;: &quot;sha256:original&quot;,
+  &quot;operation&quot;: &quot;replace-section&quot;,
+  &quot;target&quot;: {&quot;headingAnchor&quot;: &quot;hybrid-retrieval&quot;},
+  &quot;newMarkdown&quot;: &quot;## Hybrid Retrieval\n\nLexical and semantic retrieval...&quot;,
+  &quot;evidence&quot;: [{&quot;documentId&quot;: &quot;doc_source&quot;, &quot;revision&quot;: &quot;sha256:source&quot;}],
+  &quot;origin&quot;: {&quot;type&quot;: &quot;agent&quot;, &quot;runId&quot;: &quot;run_789&quot;}
+}
+</code></pre>
+<p>A patch preview is durable until expiration, rejection or commit. The proposal must never hold a hidden network action disguised as a content edit.</p>
+<h3 id="134-search-response-contract">13.4 Search response contract</h3>
+<pre class="code-block"><span class="lang-tag">ts</span><code class="language-ts">export interface SearchRequest {
+  vaultId: string;
+  query: string;
+  mode: &quot;lexical&quot; | &quot;semantic&quot; | &quot;hybrid&quot; | &quot;graph&quot;;
+  filters?: {tags?: string[]; paths?: string[]; modifiedAfter?: string};
+  limit: number;
+  includeCitations: boolean;
+}
+
+export interface SearchHit {
+  documentId: string;
+  chunkId?: string;
+  revision: string;
+  title: string;
+  path: string;
+  heading?: string;
+  score: number;
+  scoreComponents?: Record&lt;string, number&gt;;
+  citation?: SourceCitation;
+}
+</code></pre>
+<h3 id="135-agent-run-event-types">13.5 Agent run event types</h3>
+<p><code>agent.run.started</code>, <code>agent.plan.ready</code>, <code>agent.tool.requested</code>, <code>agent.tool.completed</code>, <code>agent.patch.proposed</code>, <code>agent.approval.required</code>, <code>agent.run.completed</code>, <code>agent.run.failed</code>, <code>agent.run.cancelled</code>. Stream events have monotonically increasing run-local sequence numbers so reconnects can request events after a cursor.</p>
+<h3 id="136-plugin-abi-and-isolation">13.6 Plugin ABI and isolation</h3>
+<p>A stable JavaScript-facing extension API must be smaller than the internal application API. Expose permissioned facades (read note, register view, register command, subscribe to scoped events, propose patch) rather than <code>window.__TAURI__</code>, raw filesystem, database handles or arbitrary Node.js builtins. Consider WebAssembly/WASI for deterministic sandboxed computation; do not infer security solely from packaging language.</p>
+<hr />
+<h2 id="14-sync-collaboration-multi-device-architecture">14. ☁️ Sync, Collaboration &amp; Multi-Device Architecture</h2>
+<h3 id="141-treat-three-products-as-three-problems">14.1 Treat three products as three problems</h3>
+<ul>
+<li><strong>Backup:</strong> durable historical copies, often one direction.</li>
+<li><strong>Sync:</strong> propagate latest file edits across personal devices with conflicts and tombstones.</li>
+<li><strong>Collaboration:</strong> multiple authors edit the <em>same document simultaneously</em>.</li>
+</ul>
+<p>Combining these too early produces data loss and a much harder architecture. Deliver separate contracts and test plans.</p>
+<h3 id="142-personal-sync-proposed-mechanism">14.2 Personal sync — proposed mechanism</h3>
+<p><strong>MVP/M5:</strong> each device maintains a local vault and per-file revision ledger. Device commits create <code>content_hash</code>, parent revision(s), device ID, logical timestamp and immutable change manifest. Sync adapter transfers encrypted manifests and content-addressed objects. A deterministic reconciliation algorithm handles renames, creations, deletions and conflicts. Conflict-free transfers fast-forward; divergent file edits trigger a three-way merge where safe or create clearly named conflict copies requiring review.</p>
+<pre class="mermaid" data-source="diagram">flowchart TD
+    A[Local committed revision] --&gt; B[Encrypt payload + manifest]
+    B --&gt; C[Remote object store]
+    C --&gt; D[Other device fetch + verify]
+    D --&gt; E{Revision ancestry}
+    E --&gt;|Fast forward| F[Apply atomic update]
+    E --&gt;|Same content| G[Deduplicate]
+    E --&gt;|Diverged| H[Three-way merge attempt]
+    H --&gt; I{Conflict free?}
+    I --&gt;|Yes| J[New merged revision + history]
+    I --&gt;|No| K[Conflict copy + user decision]
+    F --&gt; L[Incremental reindex]
+    J --&gt; L
+    K --&gt; L
+</pre>
+<h3 id="143-encryption-and-key-management">14.3 Encryption and key management</h3>
+<p>Use a vetted authenticated encryption library and device key-management library, not handwritten cryptography. Define: per-vault encryption key, key wrapping for devices, nonce strategy, secure random generation, recovery key, explicit device revocation and rotation, encrypted metadata scope, and threat model for remote storage. E2EE means the relay <strong>cannot decrypt vault bodies</strong>; it does not necessarily hide traffic metadata (object counts, sizes, activity times). Avoid marketing claims until independent tests and audits exist.</p>
+<h3 id="144-webdav-git-s3-compatible-adapters">14.4 WebDAV / Git / S3-compatible adapters</h3>
+<p>File synchronization adapters differ substantially: Git supports reviewable history but has poor concurrent rich editing UX; WebDAV offers broad hosting compatibility but often lacks strong atomic multi-file transaction semantics; S3-compatible storage supports immutable objects and conditional writes but requires a protocol above raw buckets. Provide adapters behind a common reconciliation engine rather than pretending they share identical conflict guarantees.</p>
+<h3 id="145-real-time-collaboration-separate-crdt-design">14.5 Real-time collaboration: separate CRDT design</h3>
+<p>When building synchronous multi-user editing, use <strong>Yjs</strong> or an equivalent CRDT inside active editing sessions. Yjs documents encode commutative/idempotent updates and provide offline persistence options; see <a href="https://docs.yjs.dev/api/document-updates">Yjs update docs</a> and <a href="https://docs.yjs.dev/getting-started/allowing-offline-editing">offline support</a>.</p>
+<p><strong>Bridge to Markdown canonical files:</strong> while a document is in live collaborative mode, CRDT state and update log are the source of truth for the <strong>active session</strong>. A controlled checkpoint writer periodically produces canonical Markdown snapshots and corresponding revision records, with one serialization policy. External filesystem edits during an active CRDT session must be imported as a distinct operation/revision or lead to a visible merge prompt—never silently race a separate file watcher write. Shared cursors/presence are ephemeral.</p>
+<p>The protocol must protect against replay, malicious client payloads, permission changes mid-session and device clock skew. Test offline concurrent rename/delete/edit cases explicitly.</p>
+<h3 id="146-multi-tenant-saas-later">14.6 Multi-tenant SaaS later</h3>
+<p>If an optional hosted service becomes necessary: separate organization/workspace/vault identities, tenant-scoped encryption keys, row-level access checks and rate limits. No single service account should authorize arbitrary vault operations. Design the <strong>local edition to remain complete without the managed service</strong>.</p>
+<hr />
+<h2 id="15-publishing-astro-shareable-knowledge-sites">15. 🌐 Publishing, Astro &amp; Shareable Knowledge Sites</h2>
+<h3 id="151-publishing-goals">15.1 Publishing goals</h3>
+<p>Support Obsidian Publish-like outcomes with significantly more control: selected documents, backlinks, navigation, search, themes, internal/external links, diagrams and approved interactive components. Generating a website is a build step, not a live exposure of the local vault.</p>
+<h3 id="152-proposed-publishing-pipeline">15.2 Proposed publishing pipeline</h3>
+<pre class="mermaid" data-source="diagram">flowchart TB
+    RULES[Explicit publish.yaml] --&gt; SELECT[Select public docs and assets]
+    SELECT --&gt; VALIDATE[Privacy / references / compatibility checks]
+    VALIDATE --&gt; CONVERT[Portable Markdown/MDX adapter]
+    CONVERT --&gt; BUILD[Isolated Astro static build]
+    BUILD --&gt; SCAN[Asset manifest / CSP / link checks]
+    SCAN --&gt; PREVIEW[Local preview + visual diff]
+    PREVIEW --&gt; REVIEW{Human approve deploy?}
+    REVIEW --&gt;|Yes| DEPLOY[GitHub Pages / S3 / static host]
+    REVIEW --&gt;|No| ABORT[Keep private]
+    DEPLOY --&gt; RELEASE[Versioned build receipt + rollback]
+</pre>
+<h3 id="153-astro-design">15.3 Astro design</h3>
+<p>Generate or mount a sanitized content export into an Astro site project with typed content collections. Astro supports Markdown/MDX content collections and build-time loaders; see <a href="https://docs.astro.build/en/guides/content-collections/">Astro content collections</a> and <a href="https://docs.astro.build/en/guides/integrations-guide/mdx/">Astro MDX integration</a>. Validate the Astro version and adapter API at implementation time; avoid pinning an unverified package version in the design.</p>
+<p><strong>Modes:</strong> static export is the default and should run without a CHITKALA account. Optional advanced deployments may add server-side dynamic features behind a separate consented server application, not by shipping personal vault credentials to the client.</p>
+<h3 id="154-publish-manifest-example">15.4 Publish manifest example</h3>
+<pre class="code-block"><span class="lang-tag">yaml</span><code class="language-yaml">schemaVersion: 1
+site:
+  title: &quot;CHITKALA Research Notes&quot;
+  baseUrl: &quot;https://example.org/notes&quot;
+  theme: aurora
+content:
+  include:
+    - &quot;Articles/Published/**&quot;
+  exclude:
+    - &quot;**/Private/**&quot;
+    - &quot;**/*.secret.*&quot;
+  defaultVisibility: private
+rendering:
+  mdxTrustedComponentRegistry: &quot;registry/public-components.lock.json&quot;
+  allowInlineScripts: false
+  allowUnknownHTML: false
+assets:
+  stripEXIF: true
+  rejectRemoteEmbedsByDefault: true
+deploy:
+  provider: github-pages
+  approval: always
+</code></pre>
+<p><strong>Private-by-default:</strong> frontmatter <code>visibility: public</code> alone does not override the explicit publish allowlist. Validate attachments, hidden frontmatter, local absolute paths, draft cross-links, comments, transclusions, code sample credentials and metadata before release.</p>
+<h3 id="155-public-search-graphs-and-backlinks">15.5 Public search, graphs and backlinks</h3>
+<p>Generate a public-only index and public-only graph—<strong>never reuse an unfiltered private vector or lexical index</strong>. For static websites, ship a bounded lexical search index or partitioned client-side index; hosted semantic queries are an optional service with independent cost/privacy policies. Ensure every public graph edge points to public content or is removed/marked as unavailable without revealing secret titles.</p>
+<h3 id="156-hosting-adapters">15.6 Hosting adapters</h3>
+<ul>
+<li><strong>GitHub Pages:</strong> zero/low infrastructure entry for static content; build artifacts pushed via GitHub Actions/repository, respecting hosting limits.</li>
+<li><strong>Cloudflare Pages / Netlify / Vercel:</strong> optional hosted static/CDN providers; examine plan terms and CI minutes.</li>
+<li><strong>S3-compatible object store + CDN:</strong> scalable self-host/admin route with infrastructure setup.</li>
+<li><strong>Local HTML export:</strong> works offline; portable folder you can host anywhere.</li>
+</ul>
+<p>Do not require users to purchase CHITKALA publishing services to export a website.</p>
+<hr />
+<h2 id="16-ux-architecture-design-system">16. 🎛️ UX Architecture &amp; Design System</h2>
+<h3 id="161-workspace-composition">16.1 Workspace composition</h3>
+<pre class="mermaid" data-source="diagram">flowchart LR
+    RAIL[Global navigation rail] --&gt; SHELL[Dockable workspace]
+    TREE[Vault / tags / collections] --&gt; SHELL
+    SHELL --&gt; D[Document tabs / stacked reading]
+    SHELL --&gt; C[Canvas]
+    SHELL --&gt; G[Graph explorer]
+    SHELL --&gt; A[Agent trace]
+    SHELL --&gt; P[Publish preview]
+    INS[Inspector: backlinks / metadata / AI] --&gt; SHELL
+</pre>
+<p>Support Obsidian-inspired <strong>stacked page reading</strong> as a first-class dock layout: a series of narrow document columns/tabs that can open adjacent pages, switch focus, keep context, and close without losing the browsing trail.</p>
+<h3 id="162-named-app-sections">16.2 Named app sections</h3>
+<table>
+<thead>
+<tr>
+  <th>Space</th>
+  <th>Why it exists</th>
+  <th>Signature interactions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Home Universe</td>
+  <td>Launchpad</td>
+  <td>Recent knowledge, pinned goals, active tasks, agent activity</td>
+</tr>
+<tr>
+  <td>Library</td>
+  <td>Manage content</td>
+  <td>Files, folders, tags, metadata, import</td>
+</tr>
+<tr>
+  <td>Document Studio</td>
+  <td>Think and write</td>
+  <td>Source/preview, diffs, citations, stacked pages</td>
+</tr>
+<tr>
+  <td>Graph Explorer</td>
+  <td>See relationships</td>
+  <td>Neighborhood, paths, semantic edges, filters</td>
+</tr>
+<tr>
+  <td>Canvas Studio</td>
+  <td>Spatial thinking</td>
+  <td>Cards, whiteboards, mindmaps, diagrams</td>
+</tr>
+<tr>
+  <td>Intelligence</td>
+  <td>Ask and synthesize</td>
+  <td>Scope picker, source citations, traces</td>
+</tr>
+<tr>
+  <td>Agent Studio</td>
+  <td>Orchestrate</td>
+  <td>Skills, runs, approvals, budgets, event logs</td>
+</tr>
+<tr>
+  <td>Planner</td>
+  <td>Turn knowledge into action</td>
+  <td>Projects, goals, tasks, timelines</td>
+</tr>
+<tr>
+  <td>Publishing</td>
+  <td>Share consciously</td>
+  <td>Site preview, allowlist, deployment records</td>
+</tr>
+<tr>
+  <td>Settings</td>
+  <td>Keep control</td>
+  <td>Models, sync, capabilities, export, telemetry</td>
+</tr>
+</tbody>
+</table>
+<h3 id="163-design-tokens">16.3 Design tokens</h3>
+<p><strong>Aurora (recommended default):</strong> deep navy background <code>#0B0E18</code>, surface <code>#121828</code>, raised surface <code>#1A2133</code>, lavender <code>#B9A0FF</code>, teal <code>#7AD7CA</code>, apricot <code>#FFC79A</code>, text <code>#EDF0FA</code>.</p>
+<p><strong>Parchment (reading):</strong> background <code>#F4F0E9</code>, paper <code>#FFFDF9</code>, ink <code>#322F30</code>, plum <code>#9966A6</code>, sage <code>#3E8B7C</code>.</p>
+<p><strong>Atlas (engineering/graph):</strong> background <code>#07171A</code>, panel <code>#0B2225</code>, aqua <code>#67E3D3</code>, amber <code>#FFC37D</code>, rose <code>#EE95A2</code>.</p>
+<p>Expose tokens for contrast, density, typography and reduced motion; avoid baking semantic categories into a single unchangeable color.</p>
+<h3 id="164-ux-behaviors">16.4 UX behaviors</h3>
+<ul>
+<li>Keyboard-first command palette (<code>Cmd/Ctrl+K</code>), search (<code>Cmd/Ctrl+P</code>), quick note, and agent action invocation.</li>
+<li>Pane drag/drop with keyboard equivalent; layout persistence and reset.</li>
+<li>Focus/zen writing mode, contextual breadcrumbs, backlinks and hover previews.</li>
+<li>Agent proposals show source evidence, file paths, byte/line diff and write scope.</li>
+<li>Explicit “offline,” “index stale,” “provider unavailable” and “awaiting approval” states.</li>
+<li>A source citation should open the correct note revision in a side pane.</li>
+<li>Semantic graph edges show whether they were parsed, manually asserted or AI-suggested.</li>
+<li>Publishing preview highlights potentially sensitive files and metadata.</li>
+</ul>
+<h3 id="165-accessibility-requirements">16.5 Accessibility requirements</h3>
+<p>Semantic navigation landmarks, visible focus rings, tree keyboard navigation, aria labels for graph/canvas accessible list view, text alternatives for diagrams, reduced-motion preference, high contrast themes, responsive font scaling and accessible color palettes. Automated a11y scanners supplement, not replace, manual screen-reader tests.</p>
+<hr />
+<h2 id="17-security-privacy-abuse-resistance">17. 🔐 Security, Privacy &amp; Abuse Resistance</h2>
+<h3 id="171-threat-inventory">17.1 Threat inventory</h3>
+<table>
+<thead>
+<tr>
+  <th>Threat</th>
+  <th>Attack vector</th>
+  <th>Controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Prompt injection</td>
+  <td>Imported notes / web pages instruct agent to act</td>
+  <td>Treat source text as data, least-privilege tools, human approvals</td>
+</tr>
+<tr>
+  <td>Plugin supply-chain</td>
+  <td>Malicious package or update</td>
+  <td>Review manifests, integrity/signature checks, pinning, revocation</td>
+</tr>
+<tr>
+  <td>Privileged renderer escape</td>
+  <td>MDX/HTML scripts access desktop bridge</td>
+  <td>Isolated origin/worker, no Tauri bridge, strict CSP</td>
+</tr>
+<tr>
+  <td>Tool escalation</td>
+  <td>MCP tool description or args demand broad rights</td>
+  <td>Core policy broker, server-side scope validation</td>
+</tr>
+<tr>
+  <td>Local path traversal</td>
+  <td><code>../</code>, symlink, Unicode aliases, drive paths</td>
+  <td>Canonical path resolution, in-root check, symlink policy</td>
+</tr>
+<tr>
+  <td>Exfiltration</td>
+  <td>Agent uploads private vault data</td>
+  <td>Deny network by default, destination allowlist, user consent</td>
+</tr>
+<tr>
+  <td>Publication leak</td>
+  <td>Private transclusion or backlink included in site</td>
+  <td>Public-only dependency graph and explicit build manifest</td>
+</tr>
+<tr>
+  <td>Sync compromise</td>
+  <td>Relay storage breached</td>
+  <td>Authenticated encryption, key lifecycle and recovery</td>
+</tr>
+<tr>
+  <td>Index leakage</td>
+  <td>Search reveals excluded documents</td>
+  <td>Pre-filtering and projection segregation</td>
+</tr>
+<tr>
+  <td>Destructive automation</td>
+  <td>Agent overwrites/removes many files</td>
+  <td>Dry-run, rate limits, patch approval, snapshots, rollback</td>
+</tr>
+<tr>
+  <td>Resource abuse</td>
+  <td>Recursive tasks, infinite retry, big vector jobs</td>
+  <td>Per-run budgets, quotas, cancellation, watchdogs</td>
+</tr>
+<tr>
+  <td>Supply-chain vulnerability</td>
+  <td>npm/crate transitive dependencies</td>
+  <td>SCA, SBOM, lockfiles, signed releases, reproducible CI</td>
+</tr>
+</tbody>
+</table>
+<p>OWASP's <a href="https://owasp.org/projects/top-10-for-large-language-model-applications">GenAI security project</a> and <a href="https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html">MCP guidance</a> are appropriate inputs to security acceptance tests, especially prompt injection and excessive agent authority.</p>
+<h3 id="172-trust-zones">17.2 Trust zones</h3>
+<ol>
+<li><strong>Trusted core:</strong> filesystem, keychain, policy broker, local index transaction APIs.</li>
+<li><strong>Trusted UI:</strong> application shell and maintained first-party components, still least privilege.</li>
+<li><strong>Untrusted content:</strong> imported Markdown/HTML/MDX/images, web captures, external repository content.</li>
+<li><strong>Untrusted executable extensions:</strong> installed skills, plugins, MCP servers and script workers.</li>
+<li><strong>Remote:</strong> model providers, sync relays, public sites and third-party deployment systems.</li>
+</ol>
+<p>There are no direct privileged shortcuts between zones 3/4 and zone 1.</p>
+<h3 id="173-privacy-and-model-provider-consent">17.3 Privacy and model-provider consent</h3>
+<p>Per-vault provider policy: <code>local-only</code>, <code>external-models-with-consent</code>, or <code>selected-folders-only</code>. Before a provider request, show the selected model, data categories and approximate context scope; provide preview/redaction for sensitive content. Keys stay in OS credential store. Disable outbound prompt telemetry by default. Avoid storing full prompts in application logs unless user explicitly enables debug capture.</p>
+<h3 id="174-code-execution-sandbox">17.4 Code-execution sandbox</h3>
+<p>Separate read-only render of static code samples from <strong>Run</strong> action. Execution requires explicit target runtime selection and a capable sandbox. Use process/container isolation, filesystem allowlists, network namespace/restrictions where available, CPU/memory/time quotas, no user home mount by default, temp workspace cleanup and signed output artifacts. Desktop security controls differ by OS; don't promise identical sandboxing absent per-platform testing.</p>
+<h3 id="175-security-release-gates">17.5 Security release gates</h3>
+<p>Every release must pass path traversal/symlink tests, unauthorized tool actions, CSP/render injection tests, malicious MDX compilation fixtures, model prompt-injection fixtures, publish-manifest privacy tests, stale-revision patch tests, dependency audit and an incident-response process. Add independent review before claiming end-to-end encryption and plugin sandbox reliability.</p>
+<hr />
+<h2 id="18-testing-qa-evaluation-observability">18. 🧪 Testing, QA, Evaluation &amp; Observability</h2>
+<h3 id="181-test-pyramid">18.1 Test pyramid</h3>
+<table>
+<thead>
+<tr>
+  <th>Layer</th>
+  <th>Tooling</th>
+  <th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Unit</td>
+  <td>Vitest / Rust tests</td>
+  <td>Parsers, link resolution, scopes, conflict algorithms</td>
+</tr>
+<tr>
+  <td>Property-based</td>
+  <td>fast-check / proptest</td>
+  <td>Arbitrary paths, bytes, links, race/replay invariants</td>
+</tr>
+<tr>
+  <td>Component</td>
+  <td>React Testing Library</td>
+  <td>Editor chrome, tabs, state transitions</td>
+</tr>
+<tr>
+  <td>Integration</td>
+  <td>Local Tauri/core harness</td>
+  <td>File writes, FTS, graph, indexing, secret store adapter</td>
+</tr>
+<tr>
+  <td>Browser E2E</td>
+  <td>Playwright</td>
+  <td>Import, writing, search, approval, publish preview</td>
+</tr>
+<tr>
+  <td>Golden vaults</td>
+  <td>Fixture harness</td>
+  <td>Obsidian syntax, embeds, callouts, unicode, broken links</td>
+</tr>
+<tr>
+  <td>Retrieval evaluation</td>
+  <td>Versioned QA/evidence corpus</td>
+  <td>Retrieval, hallucination, citation locators, permissions</td>
+</tr>
+<tr>
+  <td>Agent eval</td>
+  <td>Tool simulator / deterministic traces</td>
+  <td>Authority, resilience, patch correctness, budgets</td>
+</tr>
+<tr>
+  <td>Security</td>
+  <td>Fuzzing, SAST, SCA, targeted penetration test</td>
+  <td>Plugins, MDX, IPC, agent tools, publishing</td>
+</tr>
+<tr>
+  <td>Performance</td>
+  <td>Benchmark fixtures</td>
+  <td>Launch, FTS, graph, index throughput, memory</td>
+</tr>
+<tr>
+  <td>Disaster recovery</td>
+  <td>Chaos / power-loss tests</td>
+  <td>Crash before rename, interrupted sync, corrupted cache</td>
+</tr>
+</tbody>
+</table>
+<h3 id="182-critical-invariants">18.2 Critical invariants</h3>
+<ol>
+<li><em>A document edit never destroys last committed bytes if the process crashes mid-save.</em></li>
+<li><em>No unapproved agent patch modifies canonical vault content.</em></li>
+<li><em>No document outside selected scopes appears in retrieved context, prompts, logs or public exports.</em></li>
+<li><em>Reindexing identical content is idempotent and does not change references.</em></li>
+<li><em>A renamed document keeps its stable ID and links resolve according to configured strategy.</em></li>
+<li><em>Index deletion propagates to lexical, vector and graph projections.</em></li>
+<li><em>Every emitted citation resolves to the same document revision and source text.</em></li>
+<li><em>Simultaneous external file edits and pending patches do not silently overwrite each other.</em></li>
+<li><em>A missing model API key does not block offline editing.</em></li>
+<li><em>Decommissioned plugin grants cannot be used by cached runs.</em></li>
+</ol>
+<h3 id="183-observability-signal-taxonomy">18.3 Observability signal taxonomy</h3>
+<p><strong>Metrics:</strong> document-open latency, save latency, index lag, missing-link rate, hybrid retrieval p95, citation verification success, agent tool-call count, patch approval/rejection, sync conflict rate, publish validation failures.</p>
+<p><strong>Tracing:</strong> each <code>agent_run</code> has <code>trace_id</code>; spans for retrieval, prompt assembly (redacted), model invocation, tool request, sandbox execution, patch validation, commit, reindex. User can inspect a locally stored trace and export a redacted diagnostic bundle.</p>
+<p><strong>Logs:</strong> structured JSON, appropriate severity, correlation IDs; no default capture of private document body content. Analytics is opt-in and must be documented separately from crash reporting.</p>
+<h3 id="184-quality-gates-initial-proposed-thresholds">18.4 Quality gates (initial proposed thresholds)</h3>
+<table>
+<thead>
+<tr>
+  <th>Gate</th>
+  <th>Required for</th>
+  <th>Example pass condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Migration fidelity</td>
+  <td>M1</td>
+  <td>100% unchanged source checksums for copy-mode import; all unsupported constructs listed</td>
+</tr>
+<tr>
+  <td>Index correctness</td>
+  <td>M1</td>
+  <td>No stale backlinks or phantom documents after replay/rename/delete fixtures</td>
+</tr>
+<tr>
+  <td>RAG citation integrity</td>
+  <td>M2</td>
+  <td>≥ 95% citation resolution in curated test set; zero fabricated file IDs</td>
+</tr>
+<tr>
+  <td>Agent safety</td>
+  <td>M2</td>
+  <td>Zero unauthorized writes across explicit permission adversarial suite</td>
+</tr>
+<tr>
+  <td>MDX isolation</td>
+  <td>M3</td>
+  <td>Cannot read vault or credentials through untrusted iframe/worker tests</td>
+</tr>
+<tr>
+  <td>Publish privacy</td>
+  <td>M4</td>
+  <td>Zero private file leaks across exhaustive manifest+transclusion fixture set</td>
+</tr>
+<tr>
+  <td>Sync safety</td>
+  <td>M5</td>
+  <td>No silent data loss across offline/edit/rename/delete/conflict matrix</td>
+</tr>
+</tbody>
+</table>
+<h3 id="185-dogfooding-plan">18.5 Dogfooding plan</h3>
+<p>Use real mixed-format vault copies containing research articles, code fences, large Mermaid diagrams, nested folders, diagrams and historical attachments. Measure migration friction and reader quality on these before building complex agent orchestration. Keep backups and protect personal content from cloud test runs.</p>
+<hr />
+<h2 id="19-cicd-development-environment-release-engineering">19. ⚙️ CI/CD, Development Environment &amp; Release Engineering</h2>
+<h3 id="191-local-developer-onboarding">19.1 Local developer onboarding</h3>
+<ul>
+<li>Required: supported Node LTS + pnpm, Rust toolchain, platform dependencies for Tauri.</li>
+<li><code>pnpm install</code>, <code>pnpm dev</code>, <code>cargo test</code>, <code>pnpm test</code>, <code>pnpm lint</code>, <code>pnpm typecheck</code>.</li>
+<li><code>pnpm test:fixtures</code> loads synthetic vaults; <code>pnpm test:e2e</code> boots a temporary, isolated workspace.</li>
+<li>Optional local model via configured endpoint; tests have deterministic mock model.</li>
+<li>Optional packaging: signed/notarized macOS; signed Windows; Linux AppImage/deb/rpm as applicable.</li>
+</ul>
+<p>Avoid hard-coded version guesses: maintain an <code>engines</code> policy and lockfiles selected in the first ADR, then update through Renovate/Dependabot and CI compatibility matrices.</p>
+<h3 id="192-ci-pipeline">19.2 CI pipeline</h3>
+<pre class="mermaid" data-source="diagram">flowchart LR
+    PR[Pull request] --&gt; LINT[Lint + typecheck]
+    PR --&gt; UNIT[Unit + property tests]
+    PR --&gt; SCA[Licenses + vulnerability scan]
+    LINT --&gt; BUILD[Desktop / web builds]
+    UNIT --&gt; BUILD
+    SCA --&gt; BUILD
+    BUILD --&gt; E2E[Golden vault / E2E]
+    E2E --&gt; SEC[Security gates]
+    SEC --&gt; ART[Versioned artifacts + SBOM]
+    ART --&gt; RELEASE[Signed release / changelog]
+</pre>
+<p><strong>Required guardrails:</strong> pinned actions, minimum token permissions, CODEOWNERS, branch protection, secret scanning, provenance and reproducible build documentation. Do not run untrusted PR scripts with production publishing credentials.</p>
+<h3 id="193-versioning-and-upgrade-strategy">19.3 Versioning and upgrade strategy</h3>
+<ul>
+<li>Desktop app SemVer, schema <code>schemaVersion</code>, explicit migration runners.</li>
+<li>Metadata schema migrations are transactional and backed up.</li>
+<li>Stable <code>plugin-sdk</code> version and compatibility range in manifests.</li>
+<li>Preserve canonical file formats even if internal database migrations fail.</li>
+<li>Test opening old vault metadata with new versions and recovery after interrupted upgrades.</li>
+</ul>
+<h3 id="194-open-source-governance">19.4 Open-source governance</h3>
+<p><strong>Apache-2.0</strong> recommendation: permissive ecosystem contribution, redistribution and an explicit patent license; verify name/trademark and contributor policy separately. Include <code>CONTRIBUTING.md</code>, <code>CODE_OF_CONDUCT.md</code>, <code>SECURITY.md</code>, <code>GOVERNANCE.md</code>, <code>ROADMAP.md</code>, license headers and a public RFC/ADR mechanism. Decide branding/trademark permissions independently from code licensing.</p>
+<hr />
+<h2 id="20-cost-hosting-and-sustainability">20. 💸 Cost, Hosting and Sustainability</h2>
+<h3 id="201-separate-cost-centers">20.1 Separate cost centers</h3>
+<table>
+<thead>
+<tr>
+  <th>Feature</th>
+  <th>Offline/self-host baseline</th>
+  <th>Potential variable cloud cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Local notes and graph</td>
+  <td>User's disk and CPU</td>
+  <td>None to project</td>
+</tr>
+<tr>
+  <td>Semantic embeddings</td>
+  <td>Local model or BYO key</td>
+  <td>External embedding tokens if selected</td>
+</tr>
+<tr>
+  <td>Hosted chat/agents</td>
+  <td>Not required</td>
+  <td>Model input/output tokens, tool calls</td>
+</tr>
+<tr>
+  <td>Sync</td>
+  <td>DIY Git/WebDAV/S3 adapter</td>
+  <td>Object storage, bandwidth, API calls, support</td>
+</tr>
+<tr>
+  <td>Publishing</td>
+  <td>Static export / GitHub Pages</td>
+  <td>Build minutes, CDN, hosting, domains</td>
+</tr>
+<tr>
+  <td>Collaboration</td>
+  <td>Disabled initially</td>
+  <td>WebSocket/concurrency, persistence, egress</td>
+</tr>
+<tr>
+  <td>OCR/transcription</td>
+  <td>Local optional tools</td>
+  <td>Cloud inference if selected</td>
+</tr>
+<tr>
+  <td>Telemetry</td>
+  <td>Local traces</td>
+  <td>Optional collector/storage</td>
+</tr>
+</tbody>
+</table>
+<h3 id="202-pricing-philosophy">20.2 Pricing philosophy</h3>
+<p>A product inspired by Obsidian's ~$4 sync and ~$8 publish <strong>does not need to clone those prices</strong>, which can change and may not cover AI costs. Recommended value proposition: <strong>free and complete local core</strong>, free self-host tools, BYO model keys, optional managed services priced on real usage. Managed AI usage should be separately metered or capped, because unbounded model requests can overwhelm a low flat subscription price.</p>
+<h3 id="203-suggested-future-service-tiers-hypotheses-only">20.3 Suggested future service tiers (hypotheses only)</h3>
+<ul>
+<li><strong>Community:</strong> local core, self-host, vault import, static export, BYO AI models; free.</li>
+<li><strong>Personal convenience:</strong> managed encrypted sync, simple publish automation, device management; price validated after operations tests.</li>
+<li><strong>Creator/Team:</strong> collaboration, custom domains, team controls, hosted semantic search; usage-aware pricing.</li>
+</ul>
+<h3 id="204-unit-economics-workbook-fields">20.4 Unit economics workbook fields</h3>
+<p><code>monthly_active_users × average_vault_size × storage_replication_factor</code>, <code>monthly_sync_GB</code>, <code>builds/user</code>, <code>build_minutes</code>, <code>read/write requests</code>, <code>AI input/output tokens</code>, <code>embedding refresh rate</code>, <code>support tickets</code>, <code>fraud/abuse budget</code>, <code>payment fees</code>, <code>gross margin</code>. Do not quote per-user cloud costs until real workloads and cloud region/pricing are chosen.</p>
+<hr />
+<h2 id="21-roadmap-sequencing-delivery-dependencies">21. 🗓️ Roadmap, Sequencing &amp; Delivery Dependencies</h2>
+<h3 id="211-why-this-order">21.1 Why this order</h3>
+<p>Start with <strong>file integrity</strong> because every other feature depends on trustworthy canonical content. Build graph and FTS before RAG so AI can leverage deterministic retrieval. Add agent write proposals only after reliable revision/diff transactions. Add MDX and plugins only after sandbox capability isolation. Add sync only after revision and merge invariants are proven.</p>
+<pre class="mermaid" data-source="diagram">flowchart LR
+    M0[M0: Foundations] --&gt; M1[M1: Vault + Editor + Graph]
+    M1 --&gt; M2[M2: RAG + Safe AI Writing]
+    M2 --&gt; M3[M3: Hypermedia + Canvas]
+    M3 --&gt; M4[M4: Skills + Publishing]
+    M4 --&gt; M5[M5: Sync + Ecosystem]
+    M1 -. optional parallel spike .-&gt; MDX[Sandbox proof-of-concept]
+    M1 -. optional parallel spike .-&gt; SYNC[Conflict simulation]
+    MDX --&gt; M3
+    SYNC --&gt; M5
+</pre>
+<h3 id="212-milestone-definitions">21.2 Milestone definitions</h3>
+<table>
+<thead>
+<tr>
+  <th>Milestone</th>
+  <th>Deliverable</th>
+  <th>Exit gate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>M0 · Architecture spike</strong></td>
+  <td>Tauri shell, themes, basic file IO, threat model, dependency/license review</td>
+  <td>Cross-OS smoke; no privileged renderer shortcuts</td>
+</tr>
+<tr>
+  <td><strong>M1 · Knowledge Alpha</strong></td>
+  <td>Copy import, editor, autosave, backlinks, graph, FTS, rename, backups</td>
+  <td>Golden vault suite; recoverability tests</td>
+</tr>
+<tr>
+  <td><strong>M2 · Intelligence Alpha</strong></td>
+  <td>Retrieval, citations, local/hosted model adapters, patch proposals</td>
+  <td>Citation verifier and zero unauthorized writes</td>
+</tr>
+<tr>
+  <td><strong>M3 · Creative Beta</strong></td>
+  <td>Trust-tiered MDX/HTML, Mermaid, canvas, interactive safe components</td>
+  <td>Renderer isolation and graph/canvas consistency</td>
+</tr>
+<tr>
+  <td><strong>M4 · Agent &amp; Publish Beta</strong></td>
+  <td>Skill registry, scoped tools/MCP, run log, Astro export, deployment preview</td>
+  <td>Publish privacy suite and capability review</td>
+</tr>
+<tr>
+  <td><strong>M5 · Portable Ecosystem</strong></td>
+  <td>Personal encrypted sync, extension SDK, stable installer/release</td>
+  <td>Conflict matrix, key recovery and migration tests</td>
+</tr>
+<tr>
+  <td><strong>Later</strong></td>
+  <td>Collaboration, web editor, mobile, shared workspaces, marketplace</td>
+  <td>Separate security/operations RFC</td>
+</tr>
+</tbody>
+</table>
+<h3 id="213-example-implementation-order-for-code-assist">21.3 Example implementation order for Code Assist</h3>
+<p><strong>Work package 0 — Foundations</strong></p>
+<ol>
+<li>Define schemas for <code>Vault</code>, <code>Document</code>, <code>Revision</code>, <code>CapabilityGrant</code>, <code>PatchProposal</code>, <code>SourceCitation</code>.</li>
+<li>Scaffold monorepo and UI shell; implement design tokens and dockable-pane state.</li>
+<li>Create Rust vault read/write abstraction and typed frontend IPC; enforce path scopes.</li>
+<li>Add transactional file writer, watcher, content hashes and SQLite migrations.</li>
+<li>Build golden vault fixtures and CI for macOS/Windows/Linux.</li>
+</ol>
+<p><strong>Work package 1 — Obsidian compatibility</strong></p>
+<ol>
+<li>Write parser adapters for YAML frontmatter, wiki links, headings, block refs, embeds and callouts.</li>
+<li>Implement vault scan/compatibility report, import copy mode and rollback.</li>
+<li>Implement stable document IDs, link resolver and rename transaction.</li>
+<li>Add CodeMirror editing, preview, file explorer and stacked tabs.</li>
+<li>Build FTS index, links/backlinks graph, tags and source highlighting.</li>
+</ol>
+<p><strong>Work package 2 — Intelligence</strong></p>
+<ol>
+<li>Implement chunk source maps and embedding adapters.</li>
+<li>Build retrieval and citation resolution APIs; hybrid query and filtering.</li>
+<li>Add provider adapters with explicit prompt/consent boundaries.</li>
+<li>Build read-only question-answer flow with citation test suite.</li>
+<li>Add patch proposal DTO, diff viewer, CAS commit, event journal and reindexing.</li>
+</ol>
+<p><strong>Work package 3 — Creation</strong></p>
+<ol>
+<li>Add MDX trust tiers and isolated preview proof-of-concept.</li>
+<li>Add Mermaid and approved widget registry.</li>
+<li>Build React Flow semantic canvas and import/export scene files.</li>
+<li>Add graph-to-canvas reference operations and editable node linking.</li>
+<li>Add HTML/JS sandbox UX and permission review.</li>
+</ol>
+<p><strong>Work package 4 — Agents and publish</strong></p>
+<ol>
+<li>Build durable agent state machine, cancellation and budget enforcement.</li>
+<li>Build skill manifest registry, MCP gateway and capability broker.</li>
+<li>Add code/article generation with evidence-aware proposals.</li>
+<li>Build static export pipeline to Astro and staging checks.</li>
+<li>Add GitHub Pages or local-static export adapter and deployment receipts.</li>
+</ol>
+<p><strong>Work package 5 — Sync, SDK and hardening</strong></p>
+<ol>
+<li>Prototype sync manifest protocol, encrypted object transport and conflict resolution.</li>
+<li>Run concurrent offline conflict matrix and key recovery tests.</li>
+<li>Stabilize extension SDK and capability scopes.</li>
+<li>Create contributor examples, docs, signatures and release pipeline.</li>
+<li>Beta audit, accessibility pass, packaging and migration support.</li>
+</ol>
+<h3 id="214-prioritization-rule">21.4 Prioritization rule</h3>
+<p>Do not begin the next milestone before its data-loss and security exit gates pass. Opportunistic visual polish is fine in parallel; architectural shortcuts that invalidate user trust are not.</p>
+<hr />
+<h2 id="22-architecture-decision-records-adrs">22. 📋 Architecture Decision Records (ADRs)</h2>
+<table>
+<thead>
+<tr>
+  <th>ADR</th>
+  <th>Decision</th>
+  <th>Why</th>
+  <th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>ADR-001</td>
+  <td>Desktop-first, Tauri 2</td>
+  <td>Local file access with controlled IPC</td>
+  <td>Proposed</td>
+</tr>
+<tr>
+  <td>ADR-002</td>
+  <td>Markdown files as canonical knowledge</td>
+  <td>Portability and user ownership</td>
+  <td><strong>Recommended invariant</strong></td>
+</tr>
+<tr>
+  <td>ADR-003</td>
+  <td>SQLite + FTS5 + relational graph projection</td>
+  <td>Low cost, offline, queryable, reconstructable</td>
+  <td>Proposed</td>
+</tr>
+<tr>
+  <td>ADR-004</td>
+  <td>Hybrid retrieval; vectors optional</td>
+  <td>Exact and semantic searches both matter</td>
+  <td>Proposed</td>
+</tr>
+<tr>
+  <td>ADR-005</td>
+  <td>Patch-first agent writes</td>
+  <td>Auditability and conflict prevention</td>
+  <td><strong>Recommended invariant</strong></td>
+</tr>
+<tr>
+  <td>ADR-006</td>
+  <td>Renderer trust tiers + isolated execution</td>
+  <td>Arbitrary MDX/JS cannot share privileged UI origin</td>
+  <td><strong>Recommended invariant</strong></td>
+</tr>
+<tr>
+  <td>ADR-007</td>
+  <td>Astro static export</td>
+  <td>Portable and efficient publishing</td>
+  <td>Proposed</td>
+</tr>
+<tr>
+  <td>ADR-008</td>
+  <td>Per-file sync initially, CRDT collaboration later</td>
+  <td>Preserve plain files and avoid conflicting writers</td>
+  <td>Proposed</td>
+</tr>
+<tr>
+  <td>ADR-009</td>
+  <td>Apache-2.0 licensing</td>
+  <td>Permissive ecosystem</td>
+  <td>Pending review</td>
+</tr>
+<tr>
+  <td>ADR-010</td>
+  <td>Modular monolith with isolated workers</td>
+  <td>Minimize operational footprint</td>
+  <td>Proposed</td>
+</tr>
+<tr>
+  <td>ADR-011</td>
+  <td>Explicit public-content manifest</td>
+  <td>Privacy and safe transclusion</td>
+  <td><strong>Recommended invariant</strong></td>
+</tr>
+<tr>
+  <td>ADR-012</td>
+  <td>Provider-neutral AI model adapter</td>
+  <td>Optional, replaceable intelligence</td>
+  <td><strong>Recommended invariant</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="221-major-open-technical-decisions-requiring-spikes">22.1 Major open technical decisions requiring spikes</h3>
+<ol>
+<li><strong>Vault indexing location:</strong> inside vault versus OS appdata, with portable multi-machine restore behavior.</li>
+<li><strong>Document stable IDs:</strong> opt-in frontmatter modification versus resilient sidecar mapping.</li>
+<li><strong>Rich editing:</strong> source-first indefinitely, or bidirectional visual editor with lossless round trip.</li>
+<li><strong>Browser edition:</strong> File System Access API support versus remote-first workspace storage.</li>
+<li><strong>Renderer sandbox:</strong> iframe isolation with dedicated origin versus separately packaged preview process.</li>
+<li><strong>Embedding storage:</strong> sqlite-vec experimental adapter versus stable standalone local vector index.</li>
+<li><strong>Sync protocol:</strong> selected transport and encryption/key recovery UX.</li>
+<li><strong>Licensing/brand:</strong> code license, trademark, plugin marketplace policy, dependency notices.</li>
+<li><strong>Model routing:</strong> what data may be sent to each provider and what is cached.</li>
+<li><strong>Managed hosting:</strong> optional service boundaries, multi-tenant risk, support model.</li>
+</ol>
+<hr />
+<h2 id="23-future-extensions-ecosystem-connections">23. 🧠 Future Extensions &amp; Ecosystem Connections</h2>
+<h3 id="231-vichara-integration">23.1 Vichara integration</h3>
+<p>Vichara could remain an independently published ideation/research repository while CHITKALA indexes it as a vault, opens project documentation, renders Mermaid, resolves references and proposes updates through scoped repository tools. It should remain possible to use Vichara without CHITKALA.</p>
+<h3 id="232-ananke-integration">23.2 Ananke integration</h3>
+<p>Ananke may provide deeper spec-driven, architecture-aware agent development. Define interoperability via a <code>TaskManifest</code>, <code>ArtifactManifest</code>, <code>EvidenceBundle</code>, <code>PolicyDecision</code> and <code>PatchBundle</code>. CHITKALA does not need to absorb Ananke's internal implementation to benefit from its outputs.</p>
+<h3 id="233-future-optional-module-families">23.3 Future optional module families</h3>
+<table>
+<thead>
+<tr>
+  <th>Working module name</th>
+  <th>Role</th>
+  <th>Core or plugin?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Chitkala Library</td>
+  <td>Durable documents and metadata</td>
+  <td>Core</td>
+</tr>
+<tr>
+  <td>Chitkala Anvaya</td>
+  <td>Knowledge graph and relationships</td>
+  <td>Core UI / extended semantics plugin</td>
+</tr>
+<tr>
+  <td>Chitkala Smriti</td>
+  <td>Retrieval and versioned memory</td>
+  <td>Core interface / vector plugin</td>
+</tr>
+<tr>
+  <td>Chitkala Kalpana</td>
+  <td>Visual creative workspace</td>
+  <td>Core canvas / extra renderers</td>
+</tr>
+<tr>
+  <td>Chitkala Kriya</td>
+  <td>Agent workflows and skills</td>
+  <td>Core broker / plugin runtime</td>
+</tr>
+<tr>
+  <td>Chitkala Prakasha</td>
+  <td>Publishing</td>
+  <td>First-party optional package</td>
+</tr>
+<tr>
+  <td>Chitkala Sankalpa</td>
+  <td>Planning and goals</td>
+  <td>Optional domain package</td>
+</tr>
+<tr>
+  <td>Chitkala Vimarsha</td>
+  <td>Research, review and synthesis</td>
+  <td>Agent template library</td>
+</tr>
+</tbody>
+</table>
+<p>These are internal naming proposals, <strong>not</strong> verified unique trademarks or package names.</p>
+<hr />
+<h2 id="24-acceptance-scenarios-for-the-initial-public-alpha">24. ✅ Acceptance Scenarios for the Initial Public Alpha</h2>
+<h3 id="scenario-a-safe-import">Scenario A — Safe import</h3>
+<p><strong>Given</strong> an existing Obsidian vault with 10,000 Markdown files, linked attachments, frontmatter and plugin-dependent snippets, <strong>when</strong> a user scans and imports to a new CHITKALA workspace, <strong>then</strong> the source directory remains unmodified, each imported file has matching byte checksum (except explicitly selected conversions), every unresolved link is reported, and documents can be opened offline.</p>
+<h3 id="scenario-b-linked-research">Scenario B — Linked research</h3>
+<p><strong>Given</strong> a document with <code>[[RAG Retrieval Strategies#Hybrid Search]]</code>, <strong>when</strong> it is indexed, <strong>then</strong> target resolution is stable after a filename rename and the backlink appears on the referenced section or document.</p>
+<h3 id="scenario-c-grounded-answer">Scenario C — Grounded answer</h3>
+<p><strong>Given</strong> several documents about RAG, <strong>when</strong> a user asks for a comparison of embedding strategies, <strong>then</strong> retrieval combines exact and semantic signals and the answer includes clickable citations to existing passages; unsupported claims are identified as uncertain rather than assigned fake references.</p>
+<h3 id="scenario-d-agent-authored-article">Scenario D — Agent-authored article</h3>
+<p><strong>Given</strong> a user selects a research question and source folders, <strong>when</strong> a writer agent completes its task, <strong>then</strong> it produces an article and evidence-backed patch preview; before approval, no canonical file changes. After approval, a committed revision appears in the vault, graph, and search index with provenance.</p>
+<h3 id="scenario-e-malicious-imported-script">Scenario E — Malicious imported script</h3>
+<p><strong>Given</strong> an <code>.mdx</code> note containing executable JavaScript that attempts to read private vault files, <strong>when</strong> it is previewed without elevated trust, <strong>then</strong> no privileged API is exposed and the user sees a safe preview or a clear blocked-content notice.</p>
+<h3 id="scenario-f-safe-public-publishing">Scenario F — Safe public publishing</h3>
+<p><strong>Given</strong> a public article transcludes a private note, <strong>when</strong> a publish preview is built, <strong>then</strong> the private dependency is excluded or the build fails with a visible diagnostic. No private title/content enters generated HTML, search index, graph or static assets.</p>
+<h3 id="scenario-g-offline-conflicting-writes">Scenario G — Offline conflicting writes</h3>
+<p><strong>Given</strong> the same Markdown document is edited independently on two offline devices, <strong>when</strong> sync resumes, <strong>then</strong> the system detects divergence, preserves both changes, and either performs a conflict-free proven merge or presents a conflict document and resolution interface. There is no silent last-writer-wins data loss.</p>
+<hr />
+<h2 id="25-immediate-action-plan-first-engineering-iteration">25. 🗺️ Immediate Action Plan (First Engineering Iteration)</h2>
+<p><strong>Deliver a thin vertical slice, not just UI screenshots.</strong></p>
+<ol>
+<li>Create the monorepo and Tauri/React app shell with Aurora, Parchment and Atlas tokens.</li>
+<li>Implement <code>VaultService.open</code>, <code>DocumentService.read</code>, <code>DocumentService.writeAtomic</code> and <code>DocumentService.list</code>.</li>
+<li>Build CodeMirror source editor, safe Markdown preview, persisted tabs and left-hand file explorer.</li>
+<li>Implement SQLite migrations, document hash ledger, FTS5 search and deterministic backlinks.</li>
+<li>Use a 500-note fixture plus a real-vault copy to validate editor correctness, indexing and path handling.</li>
+<li>Wire source-grounded read-only search Q&amp;A through a mock model, then an optional local provider.</li>
+<li>Add patch proposal, review and compare-and-swap commit before any autonomous writing behavior.</li>
+<li>Write ADR outcomes and benchmark reports as Markdown within the project itself.</li>
+</ol>
+<p><strong>First demo acceptance:</strong> open an imported note → follow two links → ask a question → receive an answer with citations → request a draft section → approve a diff → see updated backlinks and search results. This demonstrates the distinctive value of CHITKALA without the complexity of collaboration, billing or cloud infrastructure.</p>
+<hr />
+<h2 id="26-research-references-validation-notes">26. 📚 Research References &amp; Validation Notes</h2>
+<p>These are primary/reference sources used to validate important technology and policy decisions <strong>as of the document date</strong>. They do not imply all components are currently integrated or that pricing/version details are frozen.</p>
+<ol>
+<li><a href="https://v2.tauri.app/plugin/file-system/">Tauri 2 filesystem and permission scopes</a> — scope-based access and safe API usage.</li>
+<li><a href="https://v2.tauri.app/learn/security/using-plugin-permissions/">Tauri plugin permission model</a> — least-privilege desktop application design.</li>
+<li><a href="https://docs.yjs.dev/api/document-updates">Yjs document updates</a> — CRDT update properties.</li>
+<li><a href="https://docs.yjs.dev/getting-started/allowing-offline-editing">Yjs offline support</a> — IndexedDB and provider persistence patterns.</li>
+<li><a href="https://sqlite.org/fts5.html">SQLite FTS5</a> — lexical indexing, ranking and snippet APIs.</li>
+<li><a href="https://github.com/asg017/sqlite-vec">sqlite-vec README</a> — embedded vector approach with explicit pre-v1 warning.</li>
+<li><a href="https://mdxjs.com/getting-started/">MDX getting started</a> — MDX compilation to JavaScript.</li>
+<li><a href="https://docs.astro.build/en/guides/content-collections/">Astro content collections</a> — content pipeline.</li>
+<li><a href="https://docs.astro.build/en/guides/integrations-guide/mdx/">Astro MDX</a> — MDX in publication.</li>
+<li><a href="https://github.com/xyflow/xyflow">React Flow repository</a> — maintained MIT-licensed flow editor.</li>
+<li><a href="https://github.com/excalidraw/excalidraw">Excalidraw repository</a> — MIT-licensed whiteboard.</li>
+<li><a href="https://tldraw.dev/sdk-features/license-key">tldraw licensing</a> — production SDK license constraints.</li>
+<li><a href="https://owasp.org/projects/top-10-for-large-language-model-applications">OWASP LLM security</a> — prompt injection, data exfiltration and excessive agency risks.</li>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html">OWASP MCP security cheat sheet</a> — secure agent tool integrations.</li>
+</ol>
+<hr />
+<h2 id="appendix-a-glossary">Appendix A — Glossary</h2>
+<table>
+<thead>
+<tr>
+  <th>Term</th>
+  <th>Meaning in CHITKALA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Vault</td>
+  <td>User-owned local directory of source documents and attachments</td>
+</tr>
+<tr>
+  <td>Document</td>
+  <td>Identified, versioned note or structured content file</td>
+</tr>
+<tr>
+  <td>Revision</td>
+  <td>Committed content state with hash and change provenance</td>
+</tr>
+<tr>
+  <td>Chunk</td>
+  <td>Addressable source passage for search/retrieval</td>
+</tr>
+<tr>
+  <td>Explicit link</td>
+  <td>User-authored wikilink or Markdown link</td>
+</tr>
+<tr>
+  <td>Semantic edge</td>
+  <td>Typed concept relationship, with provenance and trust level</td>
+</tr>
+<tr>
+  <td>Agent run</td>
+  <td>A constrained, auditable invocation of an autonomous or assisted workflow</td>
+</tr>
+<tr>
+  <td>Skill</td>
+  <td>Versioned reusable instruction/workflow descriptor with declared capabilities</td>
+</tr>
+<tr>
+  <td>Tool</td>
+  <td>Callable action implemented by a trusted/brokered interface</td>
+</tr>
+<tr>
+  <td>Patch</td>
+  <td>Proposed source modification with revision precondition</td>
+</tr>
+<tr>
+  <td>Capability grant</td>
+  <td>Principal/action/resource/time-bound authorization</td>
+</tr>
+<tr>
+  <td>Publish manifest</td>
+  <td>Explicit allowlist and build options for public content</td>
+</tr>
+<tr>
+  <td>Local-first</td>
+  <td>Local content and core capabilities remain usable without internet</td>
+</tr>
+<tr>
+  <td>E2EE</td>
+  <td>End-to-end encryption of content under the intended threat model</td>
+</tr>
+<tr>
+  <td>CRDT</td>
+  <td>Convergent data structure for concurrent collaborative changes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="appendix-b-final-architectural-north-star">Appendix B — Final architectural north star</h2>
+<blockquote>
+<p><strong>CHITKALA</strong> is a portable, permissioned environment where <strong>knowledge remains human-owned, intelligence remains explainable, and automation remains reversible</strong>.</p>
+<p>It must always be possible to turn off the AI, unplug the network, uninstall the application, and still possess useful, readable knowledge files.</p>
+</blockquote>
+<p><strong>End of technical design — version 1.0 draft.</strong></p>
+</article><p class="muted-note">CHITKALA · Detailed architecture is proposed and awaits engineering spikes and validation.</p>
+</main></div>
+<script>
+const root=document.documentElement;
+document.getElementById('theme').addEventListener('change',e=>{root.dataset.theme=e.target.value;try{localStorage.setItem('chitkala-doc-theme',e.target.value)}catch{};});
+try{let t=localStorage.getItem('chitkala-doc-theme');if(t){root.dataset.theme=t;document.getElementById('theme').value=t}}catch{}
+document.getElementById('mobileNavBtn').addEventListener('click',()=>document.body.classList.toggle('open-nav'));
+document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('open-nav')));
+const navlinks=[...document.querySelectorAll('#nav a')];const headings=[...document.querySelectorAll('article h2[id]')];
+const observer=new IntersectionObserver(entries=>{let visible=entries.filter(e=>e.isIntersecting);if(!visible.length)return;let id=visible[0].target.id;navlinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+id));},{rootMargin:'-90px 0px -72% 0px'});headings.forEach(h=>observer.observe(h));
+function progress(){let d=document.documentElement;document.getElementById('progress').style.width=(100*d.scrollTop/Math.max(1,d.scrollHeight-d.clientHeight))+'%'};window.addEventListener('scroll',progress,{passive:true});progress();
+const search=document.getElementById('search');search.addEventListener('input',()=>{let q=search.value.toLowerCase().trim();navlinks.forEach(a=>a.style.display=(!q||a.textContent.toLowerCase().includes(q))?'':'none');});
+search.addEventListener('keydown',e=>{if(e.key==='Enter'){let q=search.value.toLowerCase().trim();let t=[...document.querySelectorAll('article h2,article h3,article p,article td')].find(x=>x.textContent.toLowerCase().includes(q));if(t){t.scrollIntoView({behavior:'smooth',block:'center'});t.animate([{backgroundColor:'var(--raised)'},{backgroundColor:'transparent'}],{duration:1600});}}});
+</script>
+<script type="module">
+// Progressive enhancement only. The document stays readable without network access.
+try {
+  const {default:mermaid}=await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+  mermaid.initialize({startOnLoad:false,securityLevel:'strict',theme:document.documentElement.dataset.theme==='parchment'?'default':'dark'});
+  await mermaid.run({querySelector:'.mermaid'});
+} catch(e) {console.info('Offline diagram source is available in Mermaid fences.');}
+</script>
+</body></html>

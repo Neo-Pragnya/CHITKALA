@@ -1,0 +1,11 @@
+flowchart TB
+    RULES[Explicit publish.yaml] --> SELECT[Select public docs and assets]
+    SELECT --> VALIDATE[Privacy / references / compatibility checks]
+    VALIDATE --> CONVERT[Portable Markdown/MDX adapter]
+    CONVERT --> BUILD[Isolated Astro static build]
+    BUILD --> SCAN[Asset manifest / CSP / link checks]
+    SCAN --> PREVIEW[Local preview + visual diff]
+    PREVIEW --> REVIEW{Human approve deploy?}
+    REVIEW -->|Yes| DEPLOY[GitHub Pages / S3 / static host]
+    REVIEW -->|No| ABORT[Keep private]
+    DEPLOY --> RELEASE[Versioned build receipt + rollback]

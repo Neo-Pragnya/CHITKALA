@@ -1,0 +1,10 @@
+flowchart LR
+    SRC[Markdown / MDX / HTML file] --> DETECT[Format + trust detection]
+    DETECT --> AST[Parse to format-specific AST]
+    AST --> META[Metadata / headings / IDs]
+    AST --> LINK[Wikilinks / embeds resolver]
+    AST --> SAFE[Sanitization + component allowlist]
+    SAFE --> PREVIEW[Preview renderer]
+    META --> INDEX[Index projection]
+    LINK --> INDEX
+    AST --> PATCH[Patch / source-map engine]

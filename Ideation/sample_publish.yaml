@@ -1,0 +1,22 @@
+schemaVersion: 1
+site:
+  title: CHITKALA Research Notes
+  baseUrl: https://example.org/notes
+  theme: aurora
+content:
+  include:
+    - Articles/Published/**
+  exclude:
+    - "**/Private/**"
+    - "**/*.secret.*"
+  defaultVisibility: private
+rendering:
+  mdxTrustedComponentRegistry: registry/public-components.lock.json
+  allowInlineScripts: false
+  allowUnknownHTML: false
+assets:
+  stripEXIF: true
+  rejectRemoteEmbedsByDefault: true
+deploy:
+  provider: github-pages
+  approval: always

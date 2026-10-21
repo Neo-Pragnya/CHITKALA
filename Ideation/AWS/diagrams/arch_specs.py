@@ -1,0 +1,362 @@
+"""CHITKALA on AWS: architecture specs (data, not drawings). Rendered by tools/build_arch.py (archlib).
+
+Grid: x = column, y = row (one cell = 168 x 128 px). Fractions are fine. Flows are numbered in the order things
+happen; `stage` = the milestone (M0..M5, Later) that introduces a node or flow.
+
+Rebuild:  ./build.sh        (or: python tools/build_arch.py arch_specs.py --out ../architecture)
+"""
+from archlib import Flow, Group, Node, Spec, Stage
+
+# Card colours (concept diagrams)
+CORE, UNTRUSTED, REMOTE, SAFE, AWS, INK = "#3B48CC", "#B4322A", "#6D28D9", "#0B8A6F", "#C7520E", "#334155"
+
+
+def card(id, title, body, x, y, color, w=1.7, icon=None, sub="", **kw):
+    return Node(id, icon, title, sub=sub, x=x, y=y, body=body, color=color, w=w, **kw)
+
+
+STAGES = [
+    Stage(0, "Local-first core", "M0–M1", "Desktop app, Markdown vault, SQLite/FTS5, graph — no AWS at all"),
+    Stage(1, "Account & API", "M2 prereq", "Cognito, API Gateway, API Lambdas, DynamoDB, KMS, CloudWatch"),
+    Stage(2, "Model relay", "M2", "Consent-gated Bedrock relay for grounded answers"),
+    Stage(3, "Hosted index", "M3", "Opt-in cloud index for the web companion: SQS → indexer → Aurora pgvector"),
+    Stage(4, "Agent runs", "M4", "Step Functions agent runs, isolated tool sandbox, patch review on the desktop"),
+    Stage(5, "Publishing", "M4", "Allowlisted bundle → isolated Astro build → CloudFront site"),
+    Stage(6, "Encrypted sync", "M5", "Client-encrypted objects in S3, revision ledger, push to other devices"),
+]
+
+# ===================================================================================================== overview
+OVERVIEW = Spec(
+    id="chitkala-aws-overview",
+    title="CHITKALA on AWS — optional cloud services around a local-first core",
+    subtitle="The vault on the user's device stays canonical. Every AWS service is opt-in, has a local substitute, and never writes to the vault.",
+    cols=10.4, rows=6.9, stages=STAGES,
+    groups=[
+        Group("dev", "Your devices", 1.2, 1.3, 1.2, 3.9, "logic", 0, "client"),
+        Group("cloud", "AWS Cloud · CHITKALA services account · one Region", 2.45, -0.55, 8.65, 6.45, "cloud", 1),
+        Group("plat", "Shared platform", 4.1, 0, 6.9, 0, "logic", 1),
+        Group("ai", "Intelligence · consent-gated", 6.9, 1.3, 8.3, 2.6, "logic", 2, "bedrock"),
+        Group("agents", "Agent runs (M4)", 3.6, 2.6, 5.5, 2.6, "logic", 4, "step-functions"),
+        Group("sync", "Sync (M5)", 2.7, 3.9, 2.7, 3.9, "logic", 6),
+        Group("pub", "Publishing (M4)", 2.7, 5.2, 4.1, 6.4, "logic", 5),
+    ],
+    nodes=[
+        Node("author", "user", "Author", "writer · researcher", 0, 1.3, 0),
+        Node("desk", "client", "CHITKALA desktop", "Tauri · vault · SQLite/FTS5", 1.2, 1.3, 0),
+        Node("dev2", "client", "Other device", "E2EE replica", 1.2, 3.9, 6),
+        Node("readers", "users", "Public readers", "static site", 9.75, 5.2, 5),
+        Node("cognito", "cognito", "Amazon Cognito", "users · devices · JWT", 2.7, 0, 1),
+        Node("apigw", "api-gateway", "API Gateway", "HTTP /v1 + WebSocket", 2.7, 1.3, 1),
+        Node("api", "lambda", "API handlers", "capability checks", 4.1, 1.3, 1),
+        Node("ddb", "dynamodb", "DynamoDB", "grants · runs · ledger", 4.1, 0, 1),
+        Node("kms", "kms", "AWS KMS", "per-tenant keys", 5.5, 0, 1),
+        Node("cw", "cloudwatch", "CloudWatch · X-Ray", "no document bodies", 6.9, 0, 1),
+        Node("relay", "lambda-fn", "Model relay", "consent · budget", 5.5, 1.3, 2),
+        Node("bedrock", "bedrock", "Amazon Bedrock", "chat · embed · guardrails", 6.9, 1.3, 2),
+        Node("aurora", "aurora", "Aurora PostgreSQL", "pgvector · FTS · edges", 8.3, 1.3, 3),
+        Node("indexer", "lambda-fn", "Indexer", "SQS-driven chunker", 8.3, 2.6, 3),
+        Node("sfn", "step-functions", "Step Functions", "agent run state machine", 4.1, 2.6, 4),
+        Node("sandbox", "fargate", "Tool sandbox", "Fargate · no egress", 5.5, 2.6, 4),
+        Node("s3sync", "s3", "Sync objects", "ciphertext only", 2.7, 3.9, 6),
+        Node("s3pub", "s3", "Publish bucket", "bundles · site builds", 2.7, 5.2, 5),
+        Node("cb", "codebuild", "Astro build", "isolated · no vault access", 2.7, 6.4, 5),
+        Node("cf", "cloudfront", "Amazon CloudFront", "per-site CSP · WAF", 4.1, 5.2, 5),
+    ],
+    flows=[
+        Flow(1, "author", "desk", "The author works fully offline: the Markdown vault on disk is canonical; editing, links, graph and FTS5 search never need AWS.", "", 0),
+        Flow(2, "desk", "cognito", "If the author opts in, they sign in and the device is registered; Cognito issues short-lived JWTs.", "sign in", 1, "r", "l", via=1.95, so=-14, badge_at=.85),
+        Flow(3, "desk", "apigw", "The desktop calls the /v1 API with its JWT; AWS WAF filters abuse at the edge.", "JWT · /v1", 1, bidir=True, do=-10, badge_at=.75),
+        Flow(4, "apigw", "api", "API Lambdas re-check every capability grant: the same rules as the desktop's policy broker.", "", 1),
+        Flow(5, "api", "ddb", "Tenant-scoped records (devices, grants, runs, audit index) are keyed by tenant in DynamoDB.", "", 1),
+        Flow(6, "ddb", "kms", "Each tenant's data is encrypted with its own KMS key.", "", 1, dashed=True),
+        Flow(7, "kms", "cw", "Key use is logged in CloudTrail; metrics and traces carry correlation ids, never document bodies or prompts.", "", 1, dashed=True),
+        Flow(8, "api", "relay", "For a grounded question, the desktop retrieves locally and sends only the scope-filtered context; the relay checks consent and budget.", "context", 2),
+        Flow(9, "relay", "bedrock", "Bedrock answers through Guardrails; the answer may cite only the chunk ids it was given.", "Converse", 2, bidir=True),
+        Flow(10, "api", "indexer", "For the web companion, consented folders (and only those) are queued for hosted indexing.", "SQS", 3, "b", "t", via=1.97, badge_at=.62),
+        Flow(11, "indexer", "bedrock", "The indexer chunks by heading and asks Bedrock for embeddings, recording the model and version.", "embed", 3, "l", "b", do=14),
+        Flow(12, "indexer", "aurora", "Chunks, vectors, FTS fields and link edges are written to Aurora with row-level tenant security.", "", 3),
+        Flow(13, "relay", "aurora", "Hosted questions use hybrid retrieval (vector + full text + graph) from Aurora before the model call.", "hybrid", 3, "t", "t", via=0.68, badge_at=.85),
+        Flow(14, "api", "sfn", "A long-running or scheduled skill starts a Step Functions agent run with its grants and budgets.", "start run", 4),
+        Flow(15, "sfn", "bedrock", "Planner and writer steps call Bedrock within the run's token and time budget.", "", 4, "b", "b", via=3.3, do=-14, badge_at=.8),
+        Flow(16, "sfn", "sandbox", "Tools run in an isolated Fargate task: no internet, VPC endpoints only, hard timeouts.", "tool", 4),
+        Flow(17, "sfn", "apigw", "The run ends as a patch proposal pushed to the desktop over WebSocket; the run waits for review.", "proposal", 4, "l", "b"),
+        Flow(18, "desk", "apigw", "The author reviews the diff; the desktop commits it locally (compare-and-swap) and the run resumes. The cloud never writes the vault.", "approve", 4, so=12, do=12, badge_at=.8),
+        Flow(19, "desk", "s3pub", "To publish, only allowlisted, sanitized files are uploaded as a bundle (presigned URL).", "bundle", 5, "r", "l", via=1.82, so=8, badge_at=.72),
+        Flow(20, "s3pub", "cb", "An isolated CodeBuild project builds the Astro site and runs the privacy, link and CSP checks.", "", 5, bidir=True),
+        Flow(21, "s3pub", "cf", "After the author approves the preview, CloudFront switches to that build (rollback = previous build).", "promote", 5),
+        Flow(22, "cf", "readers", "Readers get the public-only site, search index and graph.", "", 5),
+        Flow(23, "desk", "s3sync", "Sync: the desktop encrypts committed revisions locally and uploads content-addressed ciphertext.", "ciphertext", 6, "r", "l", via=1.95, so=22, do=-12, badge_at=.45),
+        Flow(24, "s3sync", "dev2", "The other device is notified, fetches, verifies and decrypts, then reconciles locally (fast-forward, merge or conflict copy).", "", 6, so=12, do=12),
+    ],
+)
+
+
+# ===================================================================================================== sync (M5)
+SYNC = Spec(
+    id="chitkala-sync",
+    title="Encrypted personal sync — the relay stores ciphertext it cannot read",
+    subtitle="Devices encrypt with a vault key held in their OS keychain. S3 holds immutable content-addressed objects; DynamoDB holds the revision head as a compare-and-swap.",
+    cols=7.4, rows=5.6,
+    groups=[
+        Group("devs", "Your devices", 0, 1.0, 0, 5.0, "logic", 0, "client"),
+        Group("cloud", "AWS Cloud · sync service", 1.5, -0.05, 6.1, 3.6, "cloud", 0),
+    ],
+    nodes=[
+        Node("devA", "client", "Device A", "commit → encrypt locally", 0, 1.0),
+        Node("devB", "client", "Device B", "verify → decrypt", 0, 3.6),
+        Node("rec", None, "Reconcile + reindex", "fast-forward · merge · conflict copy", 0, 5.0, w=1.75),
+        Node("apigw", "api-gateway", "HTTP API", "/v1/sync · JWT", 1.8, 1.0),
+        Node("ws", "api-gateway", "WebSocket API", "per-device connection", 1.8, 3.6),
+        Node("s3", "s3", "Sync bucket", "objects/<sha256> · ciphertext", 1.8, 2.3),
+        Node("fn", "lambda", "Sync API", "presign · CAS commit", 3.3, 1.0),
+        Node("ddb", "dynamodb", "Revision ledger", "head seq · manifest refs", 4.8, 1.0),
+        Node("kms", "kms", "AWS KMS", "SSE-KMS outer layer", 3.3, 2.3),
+        Node("bak", "backup", "AWS Backup", "PITR · S3 versioning", 6.1, 1.0),
+        Node("notif", "lambda-fn", "Notifier", "DynamoDB Streams", 4.8, 3.6),
+    ],
+    flows=[
+        Flow(1, "devA", "apigw", "Device A commits locally, then asks to push: parent sequence number plus the hashes of its encrypted objects.", "push", 0, bidir=True),
+        Flow(2, "apigw", "fn", "The Sync API checks the device's JWT and its grant on this vault.", "", 0),
+        Flow(3, "fn", "ddb", "It reads the vault head and returns presigned PUT URLs only for objects the bucket does not have yet.", "", 0, so=-12, do=-12, bidir=True),
+        Flow(4, "devA", "s3", "Device A uploads ciphertext objects and the encrypted manifest with If-None-Match: immutable and deduplicated.", "PUT", 0, "r", "l", via=0.9, packet="cipher"),
+        Flow(5, "fn", "ddb", "Commit is a conditional update: head = parent + 1 only if head is still the parent. Nobody silently wins.", "CAS", 0, so=12, do=12, badge_at=.3),
+        Flow(6, "fn", "apigw", "If another device moved the head first, the push gets 409: Device A fetches, merges locally and retries.", "409", 0, "t", "t", via=0.45, dashed=True, color="#B4322A"),
+        Flow(7, "ddb", "notif", "The head change flows through DynamoDB Streams to the notifier.", "", 0),
+        Flow(8, "notif", "ws", "The notifier posts 'head advanced' (ids only, no content) to the vault's other device connections.", "head N", 0),
+        Flow(9, "ws", "devB", "Device B is woken up over its WebSocket.", "", 0, do=10, badge_at=.3),
+        Flow(10, "devB", "s3", "Device B fetches the manifest and objects by presigned GET, checks every hash and decrypts with the vault key.", "GET", 0, "r", "l", via=1.0, so=-14, do=12, packet="cipher", badge_at=.55),
+        Flow(11, "devB", "rec", "It reconciles locally: fast-forward, three-way merge, or a named conflict copy; then reindexes. No silent data loss.", "", 0),
+        Flow(12, "s3", "kms", "At rest, S3 and DynamoDB add SSE-KMS with the tenant key: a second layer, not the confidentiality guarantee.", "", 0, dashed=True),
+        Flow(13, "ddb", "bak", "Point-in-time recovery, AWS Backup plans and S3 versioning make the replica restorable.", "", 0, dashed=True),
+    ],
+)
+
+# ===================================================================================================== intelligence (M2/M3)
+INTEL = Spec(
+    id="chitkala-intelligence",
+    title="Grounded intelligence on AWS — relay mode and hosted-index mode",
+    subtitle="Relay (default cloud mode): the desktop retrieves locally and sends only consented context. Hosted index: opt-in folders indexed in Aurora (private subnets, no NAT, VPC endpoints).",
+    cols=8.0, rows=5.2,
+    groups=[
+        Group("cloud", "AWS Cloud · intelligence services", 1.25, -0.6, 6.4, 4.3, "cloud", 0),
+        Group("vpc", "VPC", 3.0, 2.6, 6.0, 2.6, "vpc", 0, "vpc"),
+    ],
+    nodes=[
+        Node("desk", "client", "CHITKALA desktop", "local hybrid retrieval", 0, 1.2),
+        Node("web", "react", "Web companion", "browser · no vault access", 0, 2.6),
+        Node("apigw", "api-gateway", "API Gateway", "/v1 · JWT", 1.5, 1.2),
+        Node("relay", "lambda-fn", "Model relay", "consent · budget · verify", 3.0, 1.2),
+        Node("ddb", "dynamodb", "Consent & budgets", "per vault · per user", 3.0, -0.05),
+        Node("guard", "bedrock", "Bedrock Guardrails", "prompt attack · PII", 4.5, 1.2),
+        Node("llm", "bedrock", "Bedrock models", "chat · embed · rerank", 6.0, 1.2),
+        Node("retr", "lambda-fn", "Retriever", "FTS + vector + graph · RRF", 3.0, 2.6),
+        Node("aurora", "aurora", "Aurora PostgreSQL", "pgvector · tsvector · RLS", 4.5, 2.6),
+        Node("idx", "lambda-fn", "Indexer", "heading-aware chunks", 6.0, 2.6),
+        Node("corpus", "s3", "Consented corpus", "tenant KMS key", 1.5, 3.9),
+        Node("sqs", "sqs", "Index queue", "retries · DLQ", 4.5, 3.9),
+    ],
+    flows=[
+        Flow(1, "desk", "apigw", "Relay mode: the desktop retrieves locally (FTS5 + vectors + graph), filters by scope, redacts, and sends question + context.", "context", 0, bidir=True, do=-10, badge_at=.25),
+        Flow(2, "apigw", "relay", "The relay receives the request with the user's JWT.", "", 0),
+        Flow(3, "relay", "ddb", "It checks the vault's consent mode, the model allowlist and the remaining token budget (atomic counter).", "", 0, bidir=True),
+        Flow(4, "relay", "guard", "Guardrails screen the assembled context for prompt attacks and sensitive data before any model call.", "", 0),
+        Flow(5, "guard", "llm", "The model (chosen by family, with a fallback order) answers, citing only the chunk ids it was given.", "Converse", 0),
+        Flow(6, "apigw", "desk", "The answer streams back; the desktop's verifier resolves each citation to revision + span and flags unsupported claims.", "answer", 0, so=12, do=12, badge_at=.3),
+        Flow(7, "desk", "corpus", "Hosted index (opt-in): only consented folders are uploaded, encrypted with the tenant's KMS key. Excluded paths never leave.", "upload", 0, "r", "l", via=0.75, badge_at=.75),
+        Flow(8, "corpus", "sqs", "Each object event is queued, with retries and a dead-letter queue.", "S3 event", 0),
+        Flow(9, "sqs", "idx", "The indexer chunks by heading (about 350–650 tokens) with stable anchors: document + section + span + hash.", "", 0, "r", "b"),
+        Flow(10, "idx", "llm", "Embeddings come from Bedrock over a VPC endpoint; model id and version are recorded (a new model = a new namespace).", "embed", 0),
+        Flow(11, "idx", "aurora", "Chunks, tsvector, vectors and link edges are upserted in one transaction; obsolete chunks are removed.", "", 0),
+        Flow(12, "web", "apigw", "Web companion: the user asks a question through the same API and JWT.", "", 0, "r", "b"),
+        Flow(13, "relay", "retr", "In hosted mode the relay asks the retriever instead of receiving context from a device.", "", 0),
+        Flow(14, "retr", "aurora", "Lexical, vector and graph channels run separately under row-level security, then fuse with RRF and an optional rerank; then steps 4–5 run.", "hybrid", 0, bidir=True),
+        Flow(15, "desk", "corpus", "Revoking consent deletes the objects and propagates to chunks, vectors and summaries.", "revoke", 0, "r", "l", via=0.6, dashed=True, color="#B4322A", so=22, do=12, badge_at=.8),
+    ],
+)
+
+# ===================================================================================================== agent run (M4)
+AGENT = Spec(
+    id="chitkala-agent-run",
+    title="A cloud agent run — bounded, brokered, and finished by a human",
+    subtitle="Step Functions is the run state machine (CREATED → … → COMPLETED). Tools go through a policy broker; the result is a patch proposal the desktop commits.",
+    cols=8.9, rows=4.6,
+    groups=[
+        Group("cloud", "AWS Cloud · agent services", 1.25, -0.6, 7.0, 3.3, "cloud", 0),
+        Group("vpc", "VPC · isolated subnet · no NAT", 3.0, 2.75, 3.0, 2.75, "vpc", 0, "vpc"),
+    ],
+    nodes=[
+        Node("desk", "client", "CHITKALA desktop", "review · CAS commit", 0, 1.2),
+        Node("apigw", "api-gateway", "API Gateway", "HTTP + WebSocket", 1.5, 1.2),
+        Node("start", "lambda", "Run starter", "manifest · grants", 3.0, 1.2),
+        Node("ddb", "dynamodb", "Grants · runs · events", "idempotency keys", 3.0, -0.05),
+        Node("ctx", "s3", "Run context pack", "in-scope docs · TTL", 4.5, -0.05),
+        Node("sfn", "step-functions", "Step Functions", "run state machine", 4.5, 1.2),
+        Node("llm", "bedrock", "Amazon Bedrock", "planner · writer", 6.0, -0.05),
+        Node("prop", "s3", "Proposals · audit", "Object Lock", 6.0, 1.2),
+        Node("broker", "lambda-fn", "Policy broker", "every tool call", 4.5, 2.75),
+        Node("sbx", "fargate", "Tool sandbox", "read-only FS · caps", 3.0, 2.75),
+        Node("mcp", "lambda-fn", "MCP adapter", "destination allowlist", 6.0, 2.75),
+        Node("remote", "internet", "Remote MCP servers", "untrusted", 8.15, 2.75),
+    ],
+    flows=[
+        Flow(1, "desk", "apigw", "The author starts a skill: POST /v1/agent-runs with skill id, scopes, budgets and an idempotency key.", "start", 0, bidir=True, do=-10),
+        Flow(2, "apigw", "start", "The starter validates the skill manifest; skill prose can never widen permissions.", "", 0),
+        Flow(3, "start", "ddb", "It loads grants (principal + action + scope + expiry). Anything not granted is denied.", "", 0),
+        Flow(4, "desk", "ctx", "Without a hosted index, the desktop uploads a context pack: only in-scope documents, deleted when the run ends.", "pack", 0, "t", "t", via=-0.72, badge_at=.3),
+        Flow(5, "start", "sfn", "StartExecution is named by the idempotency key, so a retry never starts a second run.", "", 0),
+        Flow(6, "sfn", "llm", "Planner and writer steps call Bedrock; the budget is checked before each call.", "", 0, "r", "l", via=5.25, so=-14, badge_at=.7),
+        Flow(7, "sfn", "ctx", "The run reads only its context pack (or the consented hosted index).", "", 0),
+        Flow(8, "sfn", "broker", "Every tool call goes through the broker: schema, grant, quota and timeout.", "tool", 0),
+        Flow(9, "broker", "sbx", "Code tools run as a Fargate task: isolated subnet, no internet, CPU/memory/time caps.", "", 0),
+        Flow(10, "broker", "mcp", "MCP tools go through an adapter that enforces a destination allowlist.", "", 0),
+        Flow(11, "mcp", "remote", "Tool results come back tagged untrusted and are sanitized before the model sees them.", "", 0, bidir=True),
+        Flow(12, "sfn", "prop", "The draft becomes a patch proposal: diff, base revision, evidence and a provenance label per paragraph.", "patch", 0),
+        Flow(13, "sfn", "apigw", "The run waits on a task token; 'approval required' is pushed to the desktop over WebSocket.", "review", 0, "b", "b", via=2.0),
+        Flow(14, "desk", "apigw", "The author approves the exact patch hash; the desktop commits it with compare-and-swap and reindexes.", "approve", 0, so=12, do=12, badge_at=.6),
+        Flow(15, "apigw", "sfn", "The committed revision resumes the run (SendTaskSuccess). Reject or timeout ends it as REJECTED or EXPIRED.", "resume", 0, "t", "t", via=0.62, badge_at=.15),
+        Flow(16, "sfn", "prop", "The outcome, grants used, tools called and sources read are appended to the audit log.", "audit", 0, so=14, do=14, dashed=True, badge_at=.7),
+    ],
+)
+
+# ===================================================================================================== publishing (M4)
+PUBLISH = Spec(
+    id="chitkala-publish",
+    title="Managed publishing — only allowlisted files leave the device",
+    subtitle="Static export to GitHub Pages or a folder stays free and local. The managed path builds in a VPC with no NAT and no vault access, scans again, and promotes by pointer.",
+    cols=8.6, rows=4.9,
+    groups=[
+        Group("cloud", "AWS Cloud · publishing", 1.25, -0.6, 7.6, 4.3, "cloud", 0),
+        Group("vpc", "VPC", 3.0, 2.6, 3.0, 2.6, "vpc", 0, "vpc"),
+    ],
+    nodes=[
+        Node("desk", "client", "CHITKALA desktop", "publish.yaml allowlist", 0, 1.2),
+        Node("apigw", "api-gateway", "API Gateway", "/v1/publications", 1.5, 1.2),
+        Node("api", "lambda", "Publish API", "builds · receipts", 3.0, 1.2),
+        Node("ddb", "dynamodb", "Sites · builds", "deployment receipts", 3.0, -0.05),
+        Node("inbox", "s3", "Bundle inbox", "presigned upload", 1.5, 2.6),
+        Node("cb", "codebuild", "CodeBuild", "Astro static build", 3.0, 2.6),
+        Node("ecr", "ecr", "Builder image", "pinned by digest", 3.0, 3.9),
+        Node("site", "s3", "Site builds", "sites/<id>/<build>", 4.5, 2.6),
+        Node("macie", "macie", "Amazon Macie", "sensitive-data scan", 4.5, 3.9),
+        Node("cf", "cloudfront", "CloudFront", "KVS → active build", 6.0, 2.6),
+        Node("r53", "route53", "Route 53 + ACM", "custom domains", 7.4, 3.9),
+        Node("readers", "users", "Readers", "public site", 7.4, 2.6),
+    ],
+    flows=[
+        Flow(1, "desk", "apigw", "The desktop resolves publish.yaml, drops private transclusions and EXIF, and asks for a preview build.", "preview", 0, bidir=True, do=-10),
+        Flow(2, "apigw", "api", "The Publish API checks the user's publish grant for this site.", "", 0),
+        Flow(3, "api", "ddb", "It records the build and returns a presigned URL for the bundle.", "", 0),
+        Flow(4, "desk", "inbox", "Only the allowlisted, sanitized files are uploaded: the private vault never leaves.", "bundle", 0, "b", "l"),
+        Flow(5, "api", "cb", "A CodeBuild project starts, with no internet and no access to the vault, sync or models.", "", 0),
+        Flow(6, "ecr", "cb", "It runs a builder image pinned by digest (Astro + the approved component registry).", "", 0),
+        Flow(7, "inbox", "cb", "The build reads the bundle.", "", 0),
+        Flow(8, "cb", "site", "It re-checks links, the public-only graph and search index, CSP and secrets, then writes a new build prefix.", "build", 0),
+        Flow(9, "site", "macie", "Macie scans new builds for sensitive data; a finding blocks promotion.", "", 0, dashed=True),
+        Flow(10, "desk", "apigw", "The author views the preview through a signed URL, then approves it.", "approve", 0, so=12, do=12, badge_at=.6),
+        Flow(11, "api", "cf", "Promotion is one pointer write in CloudFront KeyValueStore (rollback = the previous build); a receipt is stored.", "promote", 0, "r", "t", badge_at=.4),
+        Flow(12, "readers", "cf", "Readers' requests are mapped by a CloudFront Function to the active build path.", "", 0),
+        Flow(13, "cf", "site", "CloudFront reads the bucket through origin access control; the bucket is not public.", "OAC", 0),
+        Flow(14, "r53", "cf", "Custom domains use a Route 53 alias and an ACM certificate.", "", 0, "l", "b", dashed=True),
+    ],
+)
+
+# ===================================================================================================== collaboration (Later)
+COLLAB = Spec(
+    id="chitkala-collab",
+    title="Real-time collaboration (Later) — a relay that forwards encrypted CRDT updates",
+    subtitle="Collaboration is a separate product from sync. The relay orders and stores Yjs updates it cannot read; a client writes the canonical Markdown checkpoint.",
+    cols=7.0, rows=3.9,
+    groups=[
+        Group("cloud", "AWS Cloud · collaboration service (separate RFC)", 1.25, -0.6, 5.0, 2.95, "cloud", 0),
+        Group("ecs", "ECS cluster · Fargate tasks across AZs", 3.1, 1.25, 3.1, 1.25, "cluster", 0, "ecs"),
+    ],
+    nodes=[
+        Node("a", "client", "Author A", "session leader", 0, 0.45),
+        Node("b", "client", "Author B", "peer", 0, 2.05),
+        Node("alb", "alb", "Application LB", "WebSocket · TLS", 1.6, 1.25),
+        Node("relay", "fargate", "Yjs relay", "room per document", 3.1, 1.25),
+        Node("redis", "elasticache", "ElastiCache", "pub/sub · presence", 4.6, 0.0),
+        Node("ddb", "dynamodb", "Update log", "doc · seq · ciphertext", 4.6, 1.25),
+        Node("s3", "s3", "State snapshots", "compacted · encrypted", 4.6, 2.5),
+        Node("sync", "s3", "Sync bucket", "see sync diagram", 1.6, -0.1),
+    ],
+    flows=[
+        Flow(1, "a", "alb", "Author A joins the session; the relay verifies the JWT and the per-document grant on connect.", "join", 0),
+        Flow(2, "b", "alb", "Author B joins the same document room.", "", 0),
+        Flow(3, "alb", "relay", "The connection is pinned to one relay task.", "", 0),
+        Flow(4, "relay", "redis", "Updates and presence fan out across tasks through ElastiCache pub/sub.", "", 0, "t", "l"),
+        Flow(5, "relay", "ddb", "Encrypted Yjs updates are appended in order (document, sequence); the relay cannot read them.", "update", 0),
+        Flow(6, "relay", "s3", "The log is compacted into encrypted state snapshots for fast joins.", "", 0, "b", "l"),
+        Flow(7, "alb", "b", "Peers receive each other's updates; cursors and presence are ephemeral.", "", 0, so=14, do=14),
+        Flow(8, "a", "sync", "The session leader periodically writes the canonical Markdown snapshot and commits it through normal encrypted sync.", "checkpoint", 0, "t", "l"),
+    ],
+)
+
+# ===================================================================================================== trust zones (concept)
+TRUST = Spec(
+    id="chitkala-trust-zones",
+    title="Trust zones, local and cloud — authority lives in grants, not in text",
+    subtitle="The desktop core is the only writer of the vault. AWS services receive consented data, are confined per tenant, and send back only proposals.",
+    cols=8.6, rows=4.4,
+    nodes=[
+        card("z3", "Zone 3 · Untrusted content", ["imported Markdown / HTML / MDX", "web captures, repository files", "treated as data, never instructions"], 1.0, 0.25, UNTRUSTED, w=2.0),
+        card("z4", "Zone 4 · Untrusted extensions", ["skills, plugins, MCP servers", "signed manifests, scoped grants"], 1.0, 1.95, UNTRUSTED, w=2.0),
+        card("z1", "Zones 1–2 · Trusted core + UI", ["Rust core: files, keychain, policy broker", "atomic writes with revision CAS", "the only writer of the vault"], 4.1, 1.1, CORE, w=2.2, icon="client"),
+        card("never", "Never", ["zone 3/4 → core shortcuts", "a cloud service writing the vault", "a server reading sync bodies"], 4.1, 3.3, INK, w=2.2),
+        card("edge", "Zone 5 · AWS edge", ["Cognito device JWT, WAF", "same capability check as the core"], 7.3, 0.25, REMOTE, w=2.1, icon="api-gateway"),
+        card("ten", "Tenant isolation", ["IAM session tags → ABAC", "per-tenant KMS key", "Aurora row-level security"], 7.3, 1.75, AWS, w=2.1, icon="iam"),
+        card("exe", "Execution isolation", ["Fargate sandbox, no egress", "CodeBuild, no vault access", "Guardrails on model context"], 7.3, 3.3, AWS, w=2.1, icon="fargate"),
+    ],
+    flows=[
+        Flow(1, "z3", "z1", "Content enters the core as data: parsed, sanitized and rendered in an isolated origin.", "", 0, "r", "l", do=-20, packet="data", color=SAFE),
+        Flow(2, "z4", "z1", "Extensions ask the policy broker; a grant (principal + action + scope + expiry) decides.", "", 0, "r", "l", do=20, packet="grant"),
+        Flow(3, "z1", "edge", "Only consented, scope-filtered data leaves the device, with a short-lived device JWT.", "", 0, "r", "l", so=-22, packet="JWT"),
+        Flow(4, "edge", "ten", "API handlers assume a tenant-tagged session; IAM, KMS and row-level security confine each tenant.", "", 0, packet="tags"),
+        Flow(5, "ten", "exe", "Agent tools and site builds run isolated, with no route back to devices.", "", 0),
+        Flow(6, "exe", "z1", "Results come back only as patch proposals the author reviews and the core commits.", "", 0, "l", "r", do=22, dashed=True, packet="patch", color=SAFE),
+        Flow(7, "z3", "never", "Injected text asking for tools or uploads gets nothing: it holds no grant.", "", 0, "r", "l", via=2.3, so=24, dashed=True, packet="blocked", color=UNTRUSTED),
+    ],
+)
+
+# ===================================================================================================== delivery
+DELIVERY = Spec(
+    id="chitkala-delivery",
+    title="Delivery — open-source CI, multi-account AWS, signed desktop releases",
+    subtitle="No long-lived AWS keys in CI. Infrastructure is CDK; the same artifacts move staging → production; desktop updates are signature-checked.",
+    cols=9.6, rows=4.9,
+    groups=[
+        Group("gh", "GitHub (public repository)", 1.5, 0.8, 3.0, 2.4, "logic", 0, "github"),
+        Group("org", "AWS Organizations", 4.15, -0.6, 7.9, 4.3, "cloud", 0, "organizations"),
+        Group("tool", "Tooling account", 4.5, 0.8, 6.0, 2.4, "logic", 0),
+        Group("sec", "Security + log archive accounts", 6.0, 3.75, 7.5, 3.75, "logic", 0),
+    ],
+    nodes=[
+        Node("dev", "users", "Contributors", "pull requests", 0, 0.8),
+        Node("repo", "github", "GitHub repo", "CODEOWNERS · branch rules", 1.5, 0.8),
+        Node("gha", "github-actions", "GitHub Actions", "tests · SCA · SBOM", 3.0, 0.8),
+        Node("sign", None, "Code signing", "notarize · sign · provenance", 3.0, 2.4, w=1.3),
+        Node("role", "iam-role", "Deploy role", "OIDC · short-lived", 4.5, 0.8),
+        Node("rel", "s3", "Release bucket", "installers · update feed", 4.5, 2.4),
+        Node("cfr", "cloudfront", "CloudFront", "downloads · updates", 6.0, 2.4),
+        Node("stg", "cloudformation", "CDK stacks", "staging account", 7.5, 0.15),
+        Node("prd", "cloudformation", "CDK stacks", "production account", 7.5, 1.45),
+        Node("trail", "cloudtrail", "Org CloudTrail", "log archive", 7.5, 3.75),
+        Node("hub", "security-hub", "Security Hub", "GuardDuty · Config", 6.0, 3.75),
+        Node("users", "client", "Desktop installs", "Tauri updater", 9.1, 2.4),
+    ],
+    flows=[
+        Flow(1, "dev", "repo", "Contributors open pull requests; CODEOWNERS and branch protection apply.", "PR", 0),
+        Flow(2, "repo", "gha", "CI runs lint, types, unit/property tests, golden vaults, security gates, license scan and SBOM, with pinned actions.", "", 0),
+        Flow(3, "gha", "role", "On main, Actions federates by OIDC into a short-lived deploy role: no stored AWS keys.", "OIDC", 0),
+        Flow(4, "role", "stg", "cdk deploy updates the staging account; acceptance and security tests run against it.", "cdk deploy", 0, "r", "l", via=6.4),
+        Flow(5, "stg", "prd", "After a manual approval the same assets deploy to production.", "approve", 0, badge_at=.5),
+        Flow(6, "gha", "sign", "Release tags build the desktop installers, which are signed and notarized with provenance.", "tag", 0),
+        Flow(7, "sign", "rel", "Installers and the signed update manifest go to the release bucket.", "", 0),
+        Flow(8, "rel", "cfr", "CloudFront serves downloads and the update feed.", "", 0),
+        Flow(9, "cfr", "users", "The Tauri updater verifies the signature before installing anything.", "update", 0),
+        Flow(10, "prd", "trail", "Every account logs to an organization CloudTrail in the log-archive account.", "", 0, "b", "t", dashed=True, via=3.0),
+        Flow(11, "trail", "hub", "GuardDuty, Config and Security Hub findings are aggregated in the security account.", "", 0, dashed=True),
+    ],
+)
+
+SPECS = [OVERVIEW, SYNC, INTEL, AGENT, PUBLISH, COLLAB, TRUST, DELIVERY]

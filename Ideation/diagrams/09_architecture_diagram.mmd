@@ -1,0 +1,72 @@
+classDiagram
+    class Vault {
+      id
+      root_uri
+      created_at
+      privacy_policy
+    }
+    class Document {
+      id
+      vault_id
+      path
+      title
+      format
+      revision_hash
+    }
+    class Chunk {
+      id
+      document_id
+      revision_hash
+      heading_anchor
+      content_hash
+    }
+    class Entity {
+      id
+      label
+      type
+    }
+    class Edge {
+      id
+      from_id
+      to_id
+      kind
+      provenance
+    }
+    class Embedding {
+      chunk_id
+      model_id
+      index_namespace
+    }
+    class AgentRun {
+      id
+      agent_id
+      state
+      started_at
+    }
+    class PatchProposal {
+      id
+      run_id
+      base_hash
+      approval_state
+    }
+    class AuditEvent {
+      id
+      actor
+      action
+      object_id
+      timestamp
+    }
+    class Publication {
+      id
+      manifest_hash
+      build_hash
+      target
+    }
+    Vault "1" --> "*" Document
+    Document "1" --> "*" Chunk
+    Document "1" --> "*" Edge
+    Edge "*" --> "1" Entity
+    Chunk "1" --> "*" Embedding
+    AgentRun "1" --> "*" PatchProposal
+    AgentRun "1" --> "*" AuditEvent
+    Vault "1" --> "*" Publication

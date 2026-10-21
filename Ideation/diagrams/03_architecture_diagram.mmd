@@ -1,0 +1,45 @@
+flowchart TB
+    subgraph UI[Desktop Frontend - React / TypeScript]
+        SHELL[Workspace shell]
+        EDITOR[Editor + preview]
+        GRAPHUI[Graph / canvas / visualization]
+        CHAT[Chat / agent studio]
+        REVIEW[Diff review + approvals]
+    end
+    subgraph CORE[Local Trusted Core - Tauri / Rust]
+        ACL[Permission broker]
+        FS[Vault + file transactions]
+        PARSE[Parser + document resolver]
+        EVENT[Event journal + invalidation]
+        INDEX[SQLite metadata + FTS5 + edge graph]
+        VEC[Embeddings store adapter]
+        AUDIT[Run / audit store]
+    end
+    subgraph WORK[Isolated worker / process boundary]
+        RET[Retriever + citation resolver]
+        AGENT[Agent orchestrator]
+        EXEC[Sandboxed tool executor]
+        BUILD[MDX / publishing build]
+    end
+    subgraph OPT[Optional external systems]
+        MODEL[Hosted model endpoint]
+        REMOTESYNC[Sync transport]
+        HOST[Static hosting]
+    end
+    SHELL --> FS
+    EDITOR --> FS
+    GRAPHUI --> INDEX
+    CHAT --> RET
+    CHAT --> AGENT
+    REVIEW --> ACL
+    FS --> PARSE --> EVENT --> INDEX
+    EVENT --> VEC
+    RET --> INDEX
+    RET --> VEC
+    AGENT --> ACL --> EXEC
+    AGENT --> RET
+    AGENT --> AUDIT
+    AGENT --> REVIEW
+    BUILD --> HOST
+    EXEC -. granted network only .-> MODEL
+    FS -. optional encrypted transport .-> REMOTESYNC

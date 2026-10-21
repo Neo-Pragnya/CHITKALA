@@ -1,0 +1,16 @@
+flowchart TB
+    USER[User task / command] --> PLAN[Planner]
+    PLAN --> POLICY[Policy + grants]
+    POLICY --> CTX[Context / retrieval service]
+    CTX --> RUN[Workflow state machine]
+    RUN --> TOOLS[Tool registry / MCP adapters]
+    TOOLS --> SANDBOX[Isolated execution]
+    SANDBOX --> RESULT[Artifact + patch proposals]
+    RESULT --> VERIFY[Checks: schema / tests / citations]
+    VERIFY --> APPROVE{Needs approval?}
+    APPROVE -->|Yes| HUMAN[Human review]
+    APPROVE -->|No / readonly| COMMIT[Allowed state transition]
+    HUMAN -->|Approve| COMMIT
+    HUMAN -->|Reject / revise| RUN
+    COMMIT --> AUDIT[Append-only run audit]
+    COMMIT --> REINDEX[Reindex / dependency updates]

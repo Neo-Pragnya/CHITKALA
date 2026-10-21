@@ -23,6 +23,7 @@ STAGES = [
     Stage(4, "Agent runs", "M4", "Step Functions agent runs, isolated tool sandbox, patch review on the desktop"),
     Stage(5, "Publishing", "M4", "Allowlisted bundle → isolated Astro build → CloudFront site"),
     Stage(6, "Encrypted sync", "M5", "Client-encrypted objects in S3, revision ledger, push to other devices"),
+    Stage(7, "Knowledge library", "K3–K6", "Textbooks become signed Knowledge Packs; readers install them into the app"),
 ]
 
 # ===================================================================================================== overview
@@ -30,7 +31,7 @@ OVERVIEW = Spec(
     id="chitkala-aws-overview",
     title="CHITKALA on AWS — optional cloud services around a local-first core",
     subtitle="The vault on the user's device stays canonical. Every AWS service is opt-in, has a local substitute, and never writes to the vault.",
-    cols=10.4, rows=6.9, stages=STAGES,
+    cols=10.4, rows=7.5, stages=STAGES,
     groups=[
         Group("dev", "Your devices", 1.2, 1.3, 1.2, 3.9, "logic", 0, "client"),
         Group("cloud", "AWS Cloud · CHITKALA services account · one Region", 2.45, -0.55, 8.65, 6.45, "cloud", 1),
@@ -39,6 +40,7 @@ OVERVIEW = Spec(
         Group("agents", "Agent runs (M4)", 3.6, 2.6, 5.5, 2.6, "logic", 4, "step-functions"),
         Group("sync", "Sync (M5)", 2.7, 3.9, 2.7, 3.9, "logic", 6),
         Group("pub", "Publishing (M4)", 2.7, 5.2, 4.1, 6.4, "logic", 5),
+        Group("lib", "Knowledge library (K3–K6)", 5.5, 6.4, 6.9, 6.4, "logic", 7),
     ],
     nodes=[
         Node("author", "user", "Author", "writer · researcher", 0, 1.3, 0),
@@ -61,6 +63,9 @@ OVERVIEW = Spec(
         Node("s3pub", "s3", "Publish bucket", "bundles · site builds", 2.7, 5.2, 5),
         Node("cb", "codebuild", "Astro build", "isolated · no vault access", 2.7, 6.4, 5),
         Node("cf", "cloudfront", "Amazon CloudFront", "per-site CSP · WAF", 4.1, 5.2, 5),
+        Node("packs", "s3", "Pack store", "signed · content-addressed", 5.5, 6.4, 7),
+        Node("registry", "lambda", "Library registry", "catalog · entitlements", 6.9, 6.4, 7),
+        Node("learners", "client", "Learners' apps", "installed packs, offline", 9.75, 6.4, 7),
     ],
     flows=[
         Flow(1, "author", "desk", "The author works fully offline: the Markdown vault on disk is canonical; editing, links, graph and FTS5 search never need AWS.", "", 0),
@@ -87,6 +92,10 @@ OVERVIEW = Spec(
         Flow(22, "cf", "readers", "Readers get the public-only site, search index and graph.", "", 5),
         Flow(23, "desk", "s3sync", "Sync: the desktop encrypts committed revisions locally and uploads content-addressed ciphertext.", "ciphertext", 6, "r", "l", via=1.95, so=22, do=-12, badge_at=.45),
         Flow(24, "s3sync", "dev2", "The other device is notified, fetches, verifies and decrypts, then reconciles locally (fast-forward, merge or conflict copy).", "", 6, so=12, do=12),
+        Flow(25, "cb", "packs", "Textbook builds also produce a signed Knowledge Pack (Markdown + prebuilt indexes), PDF and EPUB.", "pack", 7),
+        Flow(26, "packs", "registry", "The registry lists the edition after signature, licence and profile checks (medical: PHI scan, reviews).", "", 7),
+        Flow(27, "learners", "registry", "A learner browses the Library in the app and asks to install; the entitlement is checked.", "install", 7),
+        Flow(28, "packs", "learners", "Pack files arrive through CloudFront; the app verifies them, mounts the book read-only and works offline. Errata arrive as deltas.", "files", 7, "b", "b", via=7.15, badge_at=.6),
     ],
 )
 
@@ -359,4 +368,134 @@ DELIVERY = Spec(
     ],
 )
 
-SPECS = [OVERVIEW, SYNC, INTEL, AGENT, PUBLISH, COLLAB, TRUST, DELIVERY]
+# ===================================================================================================== textbook pipeline (K)
+TEXTBOOK = Spec(
+    id="chitkala-textbook-pipeline",
+    title="From book project to edition — a managed textbook build",
+    subtitle="Reviews are patch proposals with sign-offs. One pipeline validates, scans, renders site/PDF/EPUB, builds the pack and signs it with a key that never leaves KMS.",
+    cols=11.2, rows=5.0,
+    groups=[
+        Group("cloud", "AWS Cloud · book services", 1.25, -0.6, 10.5, 3.9, "cloud", 0),
+        Group("pipe", "Pipeline", 4.0, 2.6, 9.0, 2.6, "logic", 0),
+    ],
+    nodes=[
+        Node("rev", "users", "Editors & reviewers", "roles from book.yaml", 0, -0.1),
+        Node("author", "client", "Author's desktop", "book.yaml · local preview", 0, 1.2),
+        Node("apigw", "api-gateway", "API Gateway", "/v1/books", 1.5, 1.2),
+        Node("inbox", "s3", "Book bundle", "allowlisted files", 1.5, 2.6),
+        Node("api", "lambda", "Books API", "editions · rules", 3.0, 1.2),
+        Node("ddb", "dynamodb", "Editions · sign-offs", "bound to proposal hash", 3.0, -0.1),
+        Node("sfn", "step-functions", "Step Functions", "book pipeline", 4.5, 1.2),
+        Node("kms", "kms", "AWS KMS", "publisher signing key", 6.0, 1.2),
+        Node("val", "lambda-fn", "Validate", "refs · alt text · privacy", 4.5, 2.6),
+        Node("phi", "comprehend", "Comprehend Medical", "PHI detection", 6.0, 2.6),
+        Node("render", "codebuild", "Render", "site · PDF · EPUB", 7.5, 2.6),
+        Node("packer", "fargate", "Pack builder", "chunks · FTS · graph", 9.0, 2.6),
+        Node("bedrock", "bedrock", "Amazon Bedrock", "batch embeddings", 9.0, 1.2),
+        Node("macie", "macie", "Amazon Macie", "output scan", 6.0, 3.9),
+        Node("site", "s3", "Edition outputs", "site · PDF · EPUB", 7.5, 3.9),
+        Node("store", "s3", "Pack store", "content-addressed", 9.0, 3.9),
+        Node("cat", "dynamodb", "Catalog", "packs · editions · errata", 10.5, 3.9),
+    ],
+    flows=[
+        Flow(1, "rev", "apigw", "Editors and reviewers approve changes as patch proposals; each sign-off is bound to the exact proposal hash.", "sign-off", 0, "r", "t"),
+        Flow(2, "author", "apigw", "The author freezes the edition locally and asks for a managed build of site, PDF, EPUB and pack.", "build", 0, bidir=True),
+        Flow(3, "author", "inbox", "Only the book's allowlisted files are uploaded: private notes never leave the vault.", "bundle", 0, "b", "l"),
+        Flow(4, "apigw", "api", "The Books API handles the request.", "", 0),
+        Flow(5, "api", "ddb", "It checks the review rules: no self-approval; dosing and monograph changes need two clinical reviewers.", "rules", 0),
+        Flow(6, "api", "sfn", "The book pipeline starts for this edition and revision.", "", 0),
+        Flow(7, "sfn", "val", "Validate: every cross-reference, citation and figure resolves, alt text exists, no private document is referenced.", "", 0),
+        Flow(8, "val", "phi", "Medical profile: text and image metadata are scanned for patient data; findings block the build.", "", 0),
+        Flow(9, "phi", "render", "Render the hosted site, PDF and EPUB from the same AST (parallel builds).", "", 0),
+        Flow(10, "render", "packer", "Build the Knowledge Pack: content, files.json, partitions, FTS and graph indexes.", "", 0),
+        Flow(11, "packer", "bedrock", "Embeddings for large books use Bedrock batch inference; namespace = model + version.", "embed", 0),
+        Flow(12, "render", "site", "Site, PDF and EPUB are written to a new edition prefix.", "", 0),
+        Flow(13, "site", "macie", "Macie scans the outputs; a high-severity finding blocks release.", "", 0, dashed=True),
+        Flow(14, "packer", "store", "Pack files are stored by content hash, so errata and new editions upload only what changed.", "", 0),
+        Flow(15, "sfn", "kms", "The pack manifest is signed with the publisher's KMS key (ECDSA P-256); the private key never leaves KMS.", "sign", 0),
+        Flow(16, "store", "cat", "After the publisher approves the release, the edition or erratum revision is listed in the catalog.", "release", 0),
+    ],
+)
+
+# ===================================================================================================== library & install (K)
+LIBRARY = Spec(
+    id="chitkala-library-install",
+    title="Installing a book into the app — like opening an Obsidian vault, but signed",
+    subtitle="Entitlement gates the download, not the reading. Files are verified on the device and mounted read-only; the same signed files also work from a USB stick or intranet.",
+    cols=8.6, rows=5.6,
+    groups=[
+        Group("cloud", "AWS Cloud · managed Library registry", 1.25, -0.1, 6.4, 2.6, "cloud", 0),
+    ],
+    nodes=[
+        Node("web", "internet", "Book website", "Open in CHITKALA", 0, -1.35),
+        Node("idp", "office", "University / hospital IdP", "SAML · OIDC", 4.0, -1.35),
+        Node("app", "client", "Reader's CHITKALA", "Library space", 0, 1.2),
+        Node("verify", None, "Verify → mount → index", "signature · hashes · read-only", 0, 2.6, w=1.55),
+        Node("usb", None, "USB / intranet registry", "same signed files", 0, 4.1, w=1.45),
+        Node("cognito", "cognito", "Amazon Cognito", "users · institution SSO", 1.5, -0.1),
+        Node("apigw", "api-gateway", "API Gateway", "HTTP + WebSocket", 1.5, 1.2),
+        Node("cf", "cloudfront", "CloudFront", "catalog · pack files", 1.5, 2.6),
+        Node("api", "lambda", "Library API", "catalog · grants · updates", 3.0, 1.2),
+        Node("store", "s3", "Pack store", "immutable files", 3.0, 2.6),
+        Node("ddb", "dynamodb", "Catalog & entitlements", "leases · installs (opt-in)", 4.5, 1.2),
+        Node("eb", "eventbridge", "EventBridge", "pack.revision.published", 4.5, 2.6),
+        Node("notif", "lambda-fn", "Update notifier", "errata · severity", 6.0, 2.6),
+        Node("mirror", "s3", "Institution mirror", "S3 replication", 3.0, 4.1),
+    ],
+    flows=[
+        Flow(1, "web", "app", "'Open in CHITKALA' on a book's website opens the app's install sheet (registry, pack, edition).", "deep link", 0, do=-14),
+        Flow(2, "app", "cognito", "For licensed books the reader signs in; institution members use their university or hospital login.", "sign in", 0, "t", "l", so=14),
+        Flow(3, "idp", "cognito", "Cognito federates with the institution's IdP; membership becomes an entitlement.", "SAML", 0, "b", "r"),
+        Flow(4, "app", "apigw", "The app fetches the signed catalog and requests an install grant for chosen partitions.", "grant", 0, bidir=True, do=-10),
+        Flow(5, "apigw", "api", "The Library API handles catalog, grant and update calls.", "", 0),
+        Flow(6, "api", "ddb", "It checks the entitlement (open, registered, paid, institutional) and records an offline lease.", "", 0),
+        Flow(7, "store", "cf", "CloudFront serves immutable pack files from S3; a signed cookie limits access to the granted edition.", "OAC", 0),
+        Flow(8, "cf", "verify", "Only missing content-addressed files are downloaded (a delta on updates).", "files", 0),
+        Flow(9, "usb", "verify", "Offline clinics and classrooms install the same signed files from a USB stick or intranet registry.", "", 0, dashed=True),
+        Flow(10, "verify", "app", "Signature, files digest and every hash are checked; the book is mounted read-only and indexes attach. Offline from here.", "", 0),
+        Flow(11, "ddb", "eb", "A new revision in the catalog emits pack.revision.published.", "", 0),
+        Flow(12, "eb", "notif", "The notifier prepares the update notice, with erratum severity.", "", 0),
+        Flow(13, "notif", "apigw", "Devices that opted in get a WebSocket notice; others see it at their next update check.", "erratum", 0, "t", "t", via=0.5, badge_at=.2),
+        Flow(14, "apigw", "app", "A safety-critical erratum shows a banner on affected pages until the update is installed.", "", 0, so=12, do=12, badge_at=.6),
+        Flow(15, "store", "mirror", "Institutions can mirror the pack store into their own account; signatures keep mirrors safe.", "replicate", 0, dashed=True),
+    ],
+)
+
+# ===================================================================================================== hosted repository (K)
+REPO = Spec(
+    id="chitkala-hosted-repository",
+    title="Hosting a large knowledge repository — static reading, cited answers",
+    subtitle="Each edition is pre-rendered with a sharded search index. 'Ask this book' retrieves only from that edition and abstains when the evidence is missing.",
+    cols=8.4, rows=4.4,
+    groups=[
+        Group("cloud", "AWS Cloud · repository hosting", 1.25, -0.6, 7.6, 3.9, "cloud", 0),
+    ],
+    nodes=[
+        Node("readers", "users", "Readers", "web · no account needed", 0, 1.2),
+        Node("cf", "cloudfront", "CloudFront + WAF", "per-edition sites", 1.5, 1.2),
+        Node("site", "s3", "Edition sites", "pages · search shards", 1.5, -0.1),
+        Node("apigw", "api-gateway", "API Gateway", "/ask · quotas", 3.0, 1.2),
+        Node("ask", "lambda", "Ask this book", "cite · abstain", 4.5, 1.2),
+        Node("cache", "dynamodb", "Answer cache", "edition + question hash", 4.5, -0.1),
+        Node("os", "opensearch", "OpenSearch Serverless", "index per edition", 4.5, 2.6),
+        Node("guard", "bedrock", "Bedrock Guardrails", "grounding check", 6.0, 1.2),
+        Node("llm", "bedrock", "Bedrock models", "answer · embed", 7.5, 1.2),
+        Node("idx", "lambda-fn", "Repository indexer", "per edition", 6.0, 2.6),
+        Node("store", "s3", "Pack store", "published editions", 6.0, 3.9),
+    ],
+    flows=[
+        Flow(1, "readers", "cf", "Readers open the edition site; reading and keyword search are static.", "", 0),
+        Flow(2, "cf", "site", "Pre-rendered pages and search shards come from S3 through origin access control.", "", 0),
+        Flow(3, "cf", "apigw", "'Ask this book' goes to the API with WAF rate limits and anonymous quotas.", "ask", 0),
+        Flow(4, "apigw", "ask", "The ask function takes the question and the edition.", "", 0),
+        Flow(5, "ask", "cache", "A recent answer for the same edition and normalised question is reused.", "", 0, bidir=True),
+        Flow(6, "ask", "os", "Otherwise it retrieves from this edition only: lexical + vector, fused, with partition filters.", "hybrid", 0, bidir=True),
+        Flow(7, "ask", "guard", "Guardrails check the context for prompt attacks and the answer for grounding in the passages.", "", 0),
+        Flow(8, "guard", "llm", "The model answers only from the passages, citing edition + section; the medical profile adds abstention rules and a disclaimer.", "", 0),
+        Flow(9, "store", "idx", "Publishing an edition triggers indexing.", "edition", 0),
+        Flow(10, "idx", "llm", "Vectors shipped in the pack are reused when the namespace matches; otherwise Bedrock embeds in batch.", "embed", 0, "r", "b"),
+        Flow(11, "idx", "os", "One index per edition; older editions stay searchable until the publisher retires them.", "", 0),
+    ],
+)
+
+SPECS = [OVERVIEW, SYNC, INTEL, AGENT, PUBLISH, COLLAB, TRUST, DELIVERY, TEXTBOOK, LIBRARY, REPO]

@@ -1,0 +1,92 @@
+apiVersion: chitkala.dev/v1alpha1
+kind: Book
+metadata:
+  id: org.example.clinical-cardiology
+  title: Clinical Cardiology
+  subtitle: From Physiology to Bedside
+  language: en
+  edition: 3e
+contributors:
+  - name: A. Author
+    roles: [author, editor]
+    orcid: 0000-0000-0000-0000
+  - name: B. Reviewer
+    roles: [clinical-reviewer]
+  - name: C. Reviewer
+    roles: [clinical-reviewer, peer-reviewer]
+spec:
+  profile: medical
+  visibility: private
+  license:
+    spdx: LicenseRef-Example-Publisher
+    url: https://books.example.org/licence
+  aiPolicy: external-with-consent
+  structure:
+    front:
+      - front/preface.md
+      - front/contributors.md
+      - front/how-to-use.md
+    parts:
+      - title: Foundations
+        chapters:
+          - part-1-foundations/01-cardiac-anatomy.md
+          - part-1-foundations/02-physiology.md
+      - title: Disease
+        chapters:
+          - part-2-disease/07-heart-failure.md
+    back:
+      - back/glossary.md
+      - back/appendix-drug-tables.md
+  numbering:
+    chapters: decimal
+    sections: chapter.section
+    figures: chapter.figure
+    tables: chapter.table
+    equations: chapter.equation
+  references:
+    source: references.bib
+    style: vancouver
+  glossary: back/glossary.md
+  index:
+    collectMarkers: true
+  outputs:
+    site:
+      theme: parchment
+      baseUrl: https://books.example.org/clinical-cardiology/
+      search: sharded
+      installButton: true
+    pdf:
+      engine: typst
+      pageSize: A4
+      accessibility: pdf-ua
+    epub:
+      version: "3.3"
+      accessibility: epub-a11y-1.1
+    pack:
+      indexes: [fts5, graph, embeddings]
+      embeddingNamespaces: [open-embed-small-v1]
+      partitions:
+        - id: foundations
+          include: ["part-1-foundations/**"]
+        - id: disease
+          include: ["part-2-disease/**"]
+  review:
+    defaultApprovals: 1
+    selfApproval: false
+    rules:
+      - match: {block: dose-table}
+        approvals: 2
+        roles: [clinical-reviewer]
+      - match: {block: drug-monograph}
+        approvals: 2
+        roles: [clinical-reviewer]
+      - match: {numericChange: true}
+        highlight: true
+        bulkApprove: false
+  medical:
+    units: ucum
+    phiScan: block
+    reviewByMonths: 24
+    vocabularies: [mesh, icd-10]
+    disclaimer: >-
+      For education of healthcare professionals. Not a substitute for clinical judgement or local guidance.

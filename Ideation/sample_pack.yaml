@@ -1,0 +1,65 @@
+apiVersion: chitkala.dev/v1alpha1
+kind: KnowledgePack
+metadata:
+  id: org.example.clinical-cardiology
+  title: Clinical Cardiology
+  edition: 3e
+  revision: r2
+  version: 3.2.0
+  publishedAt: 2027-03-01T00:00:00Z
+  publisher:
+    name: Example Medical Press
+    url: https://books.example.org
+    publisherKeyId: ed25519:4f1c…example
+spec:
+  profile: medical
+  language: en
+  license:
+    spdx: LicenseRef-Example-Publisher
+    url: https://books.example.org/licence
+  entitlement: institutional
+  aiPolicy: external-with-consent
+  effectiveDate: 2027-03-01
+  reviewBy: 2029-03-01
+  supersedes: org.example.clinical-cardiology@3e-r1
+  content:
+    root: content/
+    documents: 412
+    bytes: 186523941
+    filesDigest: sha256:9b1e…example
+  indexes:
+    - type: fts5
+      engine: sqlite-3.4x
+      path: indexes/fts.sqlite
+      digest: sha256:11aa…example
+    - type: graph
+      path: indexes/graph.sqlite
+      digest: sha256:22bb…example
+    - type: embeddings
+      namespace: open-embed-small-v1
+      model: example/open-embed-small
+      modelVersion: "1.0"
+      dimensions: 384
+      path: indexes/embeddings/open-embed-small-v1.parquet
+      digest: sha256:33cc…example
+  partitions:
+    - id: foundations
+      title: Part 1 · Foundations
+      documents: 96
+    - id: disease
+      title: Part 2 · Disease
+      documents: 316
+  dependencies:
+    - id: org.example.pharmacology
+      edition: ">=5e"
+      optional: true
+  components:
+    registryLock: sha256:44dd…example
+    allowed: [org.chitkala.mermaid, org.chitkala.quiz, org.chitkala.dose-table]
+  compatibility:
+    chitkala: ">=0.6.0 <1.0.0"
+  errata:
+    - revision: r2
+      severity: safety-critical
+      summary: Corrected a dose in Table 7.4
+      affects: ["content/part-2-disease/07-heart-failure.md#tbl:hf-drugs"]

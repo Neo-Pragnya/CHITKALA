@@ -255,6 +255,14 @@ Legend: **M0** = foundations, **M1** = useful alpha, **M2** = intelligent alpha,
 | Collaboration | Yjs-backed live sessions and server persistence | Later | Sync + CRDT strategy |
 | Mobile | Reading / light editing | Later | Mobile filesystem abstraction |
 | Marketplace | Discovery, package signatures, moderation and compatibility | Later | Stable SDK, governance |
+| Books | Book projects (`book.yaml`), numbering, cross-refs, citations, glossary; site/PDF/EPUB builds | K1–K2 (after M4) | Renderer + local publish |
+| Knowledge Packs | Signed, versioned `.ckpack` editions; install into a read-only Library; overlays; errata | K3–K4 | Retrieval, publishing |
+| Knowledge repositories | Static registries, managed registry, hosted large repositories, "ask this book", medical profile | K5–K7 | Packs, optional AWS services |
+
+> [!note] Textbooks and installable knowledge
+> Books, Knowledge Packs, the Library and the medical profile are specified in
+> [`CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md`](CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md); the optional AWS
+> implementation is in [`AWS/CHITKALA_AWS_ARCHITECTURE.md`](AWS/CHITKALA_AWS_ARCHITECTURE.md) §22.
 
 ---
 
@@ -1261,7 +1269,7 @@ Support Obsidian-inspired **stacked page reading** as a first-class dock layout:
 | Space | Why it exists | Signature interactions |
 |---|---|---|
 | Home Universe | Launchpad | Recent knowledge, pinned goals, active tasks, agent activity |
-| Library | Manage content | Files, folders, tags, metadata, import |
+| Library | Manage content and installed books | Files, folders, tags, metadata, import; browse registries, install/update/remove Knowledge Packs |
 | Document Studio | Think and write | Source/preview, diffs, citations, stacked pages |
 | Graph Explorer | See relationships | Neighborhood, paths, semantic edges, filters |
 | Canvas Studio | Spatial thinking | Cards, whiteboards, mindmaps, diagrams |
@@ -1578,6 +1586,9 @@ Do not begin the next milestone before its data-loss and security exit gates pas
 | ADR-010 | Modular monolith with isolated workers | Minimize operational footprint | Proposed |
 | ADR-011 | Explicit public-content manifest | Privacy and safe transclusion | **Recommended invariant** |
 | ADR-012 | Provider-neutral AI model adapter | Optional, replaceable intelligence | **Recommended invariant** |
+| ADR-013 | Knowledge Packs are signed Markdown, installed read-only; reader overlays live in the reader's vault | Portability, safe updates, no lock-in | Proposed |
+| ADR-014 | Static, signed registry protocol; managed registry optional | Institutions and offline use without accounts | **Recommended invariant** |
+| ADR-015 | Pack `aiPolicy` enforced before model context | Publisher rights and reader trust | **Recommended invariant** |
 
 ### 22.1 Major open technical decisions requiring spikes
 
@@ -1650,6 +1661,12 @@ These are internal naming proposals, **not** verified unique trademarks or packa
 ### Scenario G — Offline conflicting writes
 
 **Given** the same Markdown document is edited independently on two offline devices, **when** sync resumes, **then** the system detects divergence, preserves both changes, and either performs a conflict-free proven merge or presents a conflict document and resolution interface. There is no silent last-writer-wins data loss.
+
+### Scenarios H–N — Textbooks and Knowledge Packs
+
+See [`CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md` §16](CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md#16-acceptance-scenarios):
+build a textbook, install and read offline, keep notes across an edition update, honour a publisher's AI policy,
+deliver a safety-critical erratum, partially install a huge repository, reject a tampered pack.
 
 ---
 

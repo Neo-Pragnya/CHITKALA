@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS vaults (
     vault_id TEXT PRIMARY KEY,
     root_uri TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
+    kind TEXT NOT NULL DEFAULT 'user' CHECK(kind IN ('user','pack')),  -- 'pack' = read-only Library mount
     privacy_policy TEXT NOT NULL DEFAULT 'local-only'
         CHECK(privacy_policy IN ('local-only','external-with-consent','selected-folders-only')),
     created_at TEXT NOT NULL,
@@ -215,3 +216,120 @@ CREATE TABLE IF NOT EXISTS projection_watermarks (
 -- Example FTS query (never string-interpolate untrusted query directly):
 -- SELECT chunk_id, title, snippet(chunks_fts, 3, '<mark>', '</mark>', '…', 20)
 -- FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY rank LIMIT ?;
+
+-- ---------------------------------------------------------------------------------------------------------
+-- Knowledge Packs & books (see CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md). Design seed, NOT a migration.
+-- An installed pack is mounted as a vault with kind='pack'; its documents/chunks/edges use the tables above.
+-- ---------------------------------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS registries (
+    registry_id TEXT PRIMARY KEY,
+    url TEXT NOT NULL UNIQUE,                 -- https://…, file://…, or a USB/intranet path
+    title TEXT NOT NULL,
+    pinned_key_id TEXT NOT NULL,              -- trust-on-first-use, shown as a fingerprint
+    last_synced_at TEXT,
+    enabled INTEGER NOT NULL DEFAULT 1 CHECK(enabled IN (0,1))
+);
+
+CREATE TABLE IF NOT EXISTS publisher_keys (
+    key_id TEXT PRIMARY KEY,                  -- e.g. ed25519:<fingerprint>
+    publisher_name TEXT NOT NULL,
+    public_key TEXT NOT NULL,
+    registry_id TEXT REFERENCES registries(registry_id) ON DELETE SET NULL,
+    trust TEXT NOT NULL DEFAULT 'registry' CHECK(trust IN ('registry','user-pinned','institution-pinned')),
+    revoked_at TEXT,
+    revocation_reason TEXT
+);
+
+CREATE TABLE IF NOT EXISTS library_packs (
+    pack_id TEXT NOT NULL,                    -- reverse-DNS id
+    edition TEXT NOT NULL,
+    revision TEXT NOT NULL,
+    title TEXT NOT NULL,
+    profile TEXT NOT NULL CHECK(profile IN ('textbook','reference','course','repository','medical')),
+    publisher_key_id TEXT NOT NULL REFERENCES publisher_keys(key_id),
+    manifest_hash TEXT NOT NULL,
+    files_digest TEXT NOT NULL,
+    license_spdx TEXT NOT NULL,
+    entitlement TEXT NOT NULL CHECK(entitlement IN ('open','registered','paid','institutional')),
+    ai_policy TEXT NOT NULL CHECK(ai_policy IN ('local-only','external-with-consent','publisher-hosted-only')),
+    effective_date TEXT,
+    review_by TEXT,
+    registry_id TEXT REFERENCES registries(registry_id) ON DELETE SET NULL,
+    PRIMARY KEY(pack_id, edition, revision)
+);
+
+CREATE TABLE IF NOT EXISTS library_installs (
+    install_id TEXT PRIMARY KEY,
+    pack_id TEXT NOT NULL,
+    edition TEXT NOT NULL,
+    revision TEXT NOT NULL,
+    vault_id TEXT NOT NULL UNIQUE REFERENCES vaults(vault_id) ON DELETE CASCADE,  -- the read-only mount
+    install_path TEXT NOT NULL,
+    state TEXT NOT NULL CHECK(state IN ('downloading','verifying','indexing','ready','superseded','failed','removed')),
+    verified_at TEXT,
+    index_source TEXT NOT NULL DEFAULT 'prebuilt' CHECK(index_source IN ('prebuilt','rebuilt','lexical-only')),
+    lease_expires_at TEXT,                    -- paid/institutional offline lease (usability contract, not DRM)
+    installed_at TEXT NOT NULL,
+    FOREIGN KEY(pack_id, edition, revision) REFERENCES library_packs(pack_id, edition, revision)
+);
+CREATE INDEX IF NOT EXISTS ix_installs_pack ON library_installs(pack_id, state);
+
+CREATE TABLE IF NOT EXISTS pack_partitions (
+    install_id TEXT NOT NULL REFERENCES library_installs(install_id) ON DELETE CASCADE,
+    partition_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    document_count INTEGER NOT NULL CHECK(document_count >= 0),
+    installed INTEGER NOT NULL DEFAULT 0 CHECK(installed IN (0,1)),
+    PRIMARY KEY(install_id, partition_id)
+);
+
+CREATE TABLE IF NOT EXISTS overlays (
+    overlay_id TEXT PRIMARY KEY,
+    user_vault_id TEXT NOT NULL REFERENCES vaults(vault_id) ON DELETE CASCADE,
+    overlay_document_id TEXT REFERENCES documents(document_id) ON DELETE CASCADE,  -- the Markdown note holding it
+    pack_id TEXT NOT NULL,
+    edition TEXT NOT NULL,
+    revision TEXT NOT NULL,
+    target_document_id TEXT NOT NULL,
+    anchor_json TEXT NOT NULL,                -- W3C-style selectors: textQuote, position, textHash, heading path
+    anchor_status TEXT NOT NULL DEFAULT 'exact'
+      CHECK(anchor_status IN ('exact','relocated','needs-review','orphaned')),
+    kind TEXT NOT NULL CHECK(kind IN ('highlight','note','link')),
+    updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_overlays_target ON overlays(pack_id, target_document_id);
+
+CREATE TABLE IF NOT EXISTS book_projects (
+    book_id TEXT PRIMARY KEY,
+    vault_id TEXT NOT NULL REFERENCES vaults(vault_id) ON DELETE CASCADE,
+    root_path TEXT NOT NULL,                  -- folder containing book.yaml
+    profile TEXT NOT NULL CHECK(profile IN ('textbook','reference','course','repository','medical')),
+    title TEXT NOT NULL,
+    UNIQUE(vault_id, root_path)
+);
+
+CREATE TABLE IF NOT EXISTS book_editions (
+    book_id TEXT NOT NULL REFERENCES book_projects(book_id) ON DELETE CASCADE,
+    edition TEXT NOT NULL,
+    revision TEXT NOT NULL DEFAULT 'r0',
+    state TEXT NOT NULL CHECK(state IN ('draft','in-review','frozen','published','superseded','retired')),
+    manifest_hash TEXT,                       -- set at freeze
+    erratum_severity TEXT CHECK(erratum_severity IN ('editorial','content','safety-critical')),
+    frozen_at TEXT,
+    published_at TEXT,
+    PRIMARY KEY(book_id, edition, revision)
+);
+
+CREATE TABLE IF NOT EXISTS review_signoffs (
+    signoff_id TEXT PRIMARY KEY,
+    proposal_id TEXT NOT NULL REFERENCES patch_proposals(proposal_id) ON DELETE CASCADE,
+    book_id TEXT NOT NULL REFERENCES book_projects(book_id) ON DELETE CASCADE,
+    reviewer_id TEXT NOT NULL,
+    reviewer_role TEXT NOT NULL CHECK(reviewer_role IN ('editor','peer-reviewer','clinical-reviewer','publisher')),
+    proposal_hash TEXT NOT NULL,              -- approval binds to the exact proposal content
+    decision TEXT NOT NULL CHECK(decision IN ('approve','request-changes','reject')),
+    rule_ids_json TEXT NOT NULL DEFAULT '[]', -- which review rules this sign-off satisfies
+    signed_at TEXT NOT NULL,
+    UNIQUE(proposal_id, reviewer_id)
+);

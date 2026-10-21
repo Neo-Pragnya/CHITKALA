@@ -30,6 +30,13 @@ flowchart LR
     M5a[M5 sync protocol proven locally] --> C6[C6 encrypted sync]
     C1 --> C6
     C6 --> C7[C7 collaboration - Later]
+    K1[K1-K2 book projects, PDF, EPUB - desktop] --> C8[C8 managed book builds]
+    C5 --> C8
+    K3[K3-K4 packs, Library, static registries - desktop] --> C9[C9 managed Library registry]
+    C8 --> C9
+    C9 --> C10[C10 hosted large repositories]
+    C3 --> C10
+    C10 --> C11[C11 medical profile hardening]
 ```
 
 | Phase | Stage on the overview map | Depends on | Delivers |
@@ -42,6 +49,10 @@ flowchart LR
 | **C5** Managed publishing | Stage 5 | C1, M4 local publish | Isolated build, scan, preview, promote/rollback |
 | **C6** Encrypted sync | Stage 6 | C1, M5 conflict matrix passing locally | E2EE sync service, device keys, notifications |
 | **C7** Collaboration | (separate diagram) | C6, RFC | Yjs relay — Later |
+| **C8** Managed book builds | Stage 7 | C5, Packs K1–K2 | Book pipeline: reviews, validation, render site/PDF/EPUB, pack build, KMS signing |
+| **C9** Managed Library registry | Stage 7 | C8, Packs K3–K4 | Catalog, entitlements, institution SSO, CloudFront delivery, update notices, mirrors |
+| **C10** Hosted large repositories | (zoom-in) | C9, C3 | Static edition sites at scale, OpenSearch hybrid search, "ask this book" |
+| **C11** Medical profile hardening | (zoom-in) | C10, Packs K5–K7 | PHI scanning, clinical review gates, safety errata, clinical AI rules, external review |
 
 Durations below are rough estimates for **two engineers working part-time on the cloud track** alongside the desktop
 team. They are planning placeholders, not commitments; re-estimate after C0.
@@ -214,6 +225,91 @@ encrypted update log in DynamoDB, encrypted snapshots in S3, client-written Mark
 
 ---
 
+## C8 — Managed book builds (≈ 5 weeks)
+
+**Prerequisite:** C5; the Packs spec's K1 (book projects) and K2 (PDF/EPUB) working locally on the golden book fixture.
+
+| ID | Work item | Output |
+|---|---|---|
+| C8.1 | `BooksStack`: Books API, editions and sign-off records in DynamoDB, book bundle bucket | Stack |
+| C8.2 | Review rules engine shared with the desktop (`book.yaml` `review.rules`), sign-offs bound to proposal hashes; web review view for editors | Rules library + review UI |
+| C8.3 | Book pipeline state machine: CheckReviews → Validate → (ScanPHI) → Render (parallel) → BuildPack → Sign → ScanOutputs → AwaitRelease → Release | ASL in repo |
+| C8.4 | Render projects in CodeBuild: Astro book theme, PDF engine (spike S10), EPUB builder; pinned builder images | Images in ECR |
+| C8.5 | Pack builder on Fargate: chunks, FTS5/graph SQLite, partitions, `files.json`, Bedrock batch embeddings | Pack builder image |
+| C8.6 | Publisher KMS keys (ECC_NIST_P256), key policies per publisher, signature format matching local signing | Signing ADR |
+| C8.7 | Macie and accessibility gates; audited waivers | Gate reports |
+
+**Tests:** golden book fixture produces byte-identical `content/` and identical numbering locally and in the cloud;
+self-approval and missing-reviewer fixtures block; a planted private-note reference fails `Validate`; a tampered
+output fails signature verification in the desktop verifier.
+
+**Exit gate:** Packs scenario H passes in the managed pipeline; every release has a complete audit trail.
+
+---
+
+## C9 — Managed Library registry (≈ 5 weeks)
+
+**Prerequisite:** C8; Packs K3 (install from file, read-only mounts, overlays) and K4 (static registries) passing
+locally.
+
+| ID | Work item | Output |
+|---|---|---|
+| C9.1 | `LibraryStack`: pack store (versioned S3), catalog table, signed `catalog.json` generator | Static protocol served from CloudFront |
+| C9.2 | Library API: catalog search, edition details, install grants (signed cookies, spike S11), update checks | Routes in OpenAPI |
+| C9.3 | Entitlements: open / registered / paid (records only) / institutional; offline leases | Entitlement tests |
+| C9.4 | Cognito federation for institutions (SAML/OIDC), group → licence mapping, seat counts | Institution onboarding runbook |
+| C9.5 | Update notices: EventBridge → notifier → WebSocket (opt-in installs); severity handling | Notifier |
+| C9.6 | Publisher onboarding: key registration, verification badge process, revocation list publishing | Publisher console (minimal) |
+| C9.7 | Mirrors: S3 replication template and a "static export" of the registry for intranet/USB | Mirror guide |
+| C9.8 | Desktop: Library space wired to managed and static registries, "Open in CHITKALA" deep links | Desktop PR |
+
+**Tests:** Packs scenarios I, J, M, N against the managed registry; entitlement fuzzing (expired lease, revoked
+institution membership, cookie reuse across editions); revoked publisher key blocks new installs; a mirror copied to a
+local folder installs offline.
+
+**Exit gate:** no install succeeds without a valid signature chain; registry works with the managed service switched
+off (static protocol only).
+
+---
+
+## C10 — Hosted large repositories (≈ 5 weeks)
+
+**Prerequisite:** C9; C3 retrieval code shared.
+
+| ID | Work item | Output |
+|---|---|---|
+| C10.1 | Spike S12: OpenSearch Serverless vs Aurora pgvector vs S3 Vectors at 1M documents | Decision record |
+| C10.2 | `RepositoryStack`: edition-site hosting, sharded static search, OpenSearch collection, indexer | Stack |
+| C10.3 | "Ask this book": edition-scoped hybrid retrieval, Guardrails grounding check, abstention, citations, answer cache, quotas | `POST …/ask` |
+| C10.4 | Partial installs from the hosted site ("install this section") | Deep link with partitions |
+| C10.5 | Load tests: 1M documents, 10 queries/s sustained, CloudFront cache-hit targets | Load-test report |
+
+**Tests:** retrieval benchmark on a public-domain large corpus fixture; abstention fixtures (questions with no support
+must abstain); cross-edition leakage tests; quota and WAF behaviour under abuse.
+
+**Exit gate:** scale targets in the Packs spec §10.1 met or re-baselined with evidence; zero uncited answers in the
+evaluation set.
+
+---
+
+## C11 — Medical profile hardening (≈ 4 weeks + external review)
+
+**Prerequisite:** C10; Packs K5 (editorial workflow) and K7 (medical profile) implemented locally.
+
+| ID | Work item | Output |
+|---|---|---|
+| C11.1 | Comprehend Medical PHI scanning in the pipeline; spike S13 on false negatives; waiver workflow | PHI gate |
+| C11.2 | Structured clinical block schemas (dose tables, monographs) validated in `Validate`; UCUM checks | Schemas |
+| C11.3 | Two-clinical-reviewer gates and numeric-diff highlighting in web review | Review UI |
+| C11.4 | Safety-critical errata: push + banners + hosted-site notices; drill | Errata runbook |
+| C11.5 | Clinical AI rules for "ask this book": abstention policy, disclaimer, no patient-specific dosing | Guardrail config + tests |
+| C11.6 | External clinical-editor review and legal review of claims and regulatory position per launch country | Review reports |
+
+**Exit gate:** Packs scenario L drill passes; medical fixture suite green; external reviews complete before any
+medical publisher goes live.
+
+---
+
 ## Cross-cutting definition of done (every phase)
 
 - [ ] CDK stack reviewed, `cdk-nag` clean or suppressions justified in code.
@@ -238,6 +334,10 @@ encrypted update log in DynamoDB, encrypted snapshots in S3, client-written Mark
 | Agent sandbox escape / exfiltration | Low | High | No-egress subnets, task isolation, adversarial suite, bug bounty later |
 | Scope creep into cloud-first features | Medium | High | Sequencing rule; every phase has a local substitute check |
 | Maintainer AWS bill from abuse | Medium | Medium | WAF, per-tenant budgets, throttling, Budgets alerts, invite-only beta |
+| OpenSearch Serverless minimum cost for small repositories | High | Medium | Shared collections, static search for small books, spike S12 |
+| Publisher key compromise | Low | High | KMS keys, per-publisher policies, revocation lists, transparency log (Packs K5) |
+| Medical content error reaches readers | Medium | High | Review gates, safety-critical errata push, currency dates, AI abstention, external review |
+| Licensing misunderstanding ("DRM") | Medium | Medium | Clear entitlement copy; no protection claims; publisher agreement |
 
 ## First sprint for the cloud track (after M1 passes)
 

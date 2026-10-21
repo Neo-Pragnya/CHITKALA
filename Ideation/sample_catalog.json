@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "registry": {
+    "id": "org.example.books",
+    "title": "Example Medical Press — Library",
+    "url": "https://books.example.org/registry/",
+    "keyId": "ed25519:9a7d…example",
+    "updatedAt": "2027-03-01T00:00:00Z"
+  },
+  "packs": [
+    {
+      "id": "org.example.clinical-cardiology",
+      "title": "Clinical Cardiology",
+      "profile": "medical",
+      "publisherKeyId": "ed25519:4f1c…example",
+      "entitlement": "institutional",
+      "aiPolicy": "external-with-consent",
+      "editions": [
+        {
+          "edition": "3e",
+          "latestRevision": "r2",
+          "status": "current",
+          "manifest": "packs/org.example.clinical-cardiology/3e-r2/pack.yaml",
+          "signature": "packs/org.example.clinical-cardiology/3e-r2/pack.yaml.sig",
+          "bytes": 186523941,
+          "partitions": ["foundations", "disease"],
+          "errata": [{"revision": "r2", "severity": "safety-critical"}]
+        },
+        {
+          "edition": "2e",
+          "latestRevision": "r5",
+          "status": "superseded",
+          "manifest": "packs/org.example.clinical-cardiology/2e-r5/pack.yaml",
+          "signature": "packs/org.example.clinical-cardiology/2e-r5/pack.yaml.sig",
+          "bytes": 151002311
+        }
+      ]
+    },
+    {
+      "id": "org.example.open-anatomy",
+      "title": "Open Anatomy",
+      "profile": "textbook",
+      "publisherKeyId": "ed25519:4f1c…example",
+      "entitlement": "open",
+      "aiPolicy": "external-with-consent",
+      "license": "CC-BY-4.0",
+      "editions": [
+        {
+          "edition": "1e",
+          "latestRevision": "r0",
+          "status": "current",
+          "manifest": "packs/org.example.open-anatomy/1e-r0/pack.yaml",
+          "signature": "packs/org.example.open-anatomy/1e-r0/pack.yaml.sig",
+          "bytes": 48211002
+        }
+      ]
+    }
+  ]
+}

@@ -14,6 +14,10 @@ tags:
   - name: Search
   - name: Agents
   - name: Publishing
+  - name: Library
+    description: Knowledge Pack catalog, install grants and updates (see CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md)
+  - name: Publishers
+  - name: Books
 paths:
   /vaults/{vaultId}/documents/{documentId}:
     get:
@@ -79,6 +83,9 @@ paths:
       tags: [Documents]
       operationId: applyApprovedPatch
       summary: Apply a human-approved patch using revision compare-and-swap
+      description: >-
+        Local/self-hosted transport only, where the server process owns the vault. A cloud deployment never
+        applies patches; the desktop commits locally and posts an apply-receipt instead.
       parameters:
         - name: proposalId
           in: path
@@ -190,6 +197,255 @@ paths:
                   status: {type: string}
                 required: [previewId, status]
         '403': {$ref: '#/components/responses/Forbidden'}
+  /patches/{proposalId}/apply-receipt:
+    post:
+      tags: [Documents]
+      operationId: recordPatchApplied
+      summary: Cloud deployments - the desktop reports a patch it committed locally; resumes the waiting agent run
+      parameters:
+        - name: proposalId
+          in: path
+          required: true
+          schema: {type: string}
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                approvedProposalHash: {type: string}
+                committedRevision: {type: string}
+                documentId: {type: string}
+              required: [approvedProposalHash, committedRevision, documentId]
+      responses:
+        '200': {description: Receipt recorded}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /library/catalog:
+    get:
+      tags: [Library]
+      operationId: listCatalog
+      summary: Browse or search packs visible to the caller (static registries serve catalog.json instead)
+      parameters:
+        - {name: q, in: query, schema: {type: string}}
+        - {name: profile, in: query, schema: {$ref: '#/components/schemas/PackProfile'}}
+        - {name: cursor, in: query, schema: {type: string}}
+      responses:
+        '200':
+          description: Catalog page
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  packs:
+                    type: array
+                    items: {$ref: '#/components/schemas/PackSummary'}
+                  nextCursor: {type: string}
+                required: [packs]
+  /library/packs/{packId}/editions/{edition}:
+    get:
+      tags: [Library]
+      operationId: getPackEdition
+      summary: Manifest, signature, partitions, errata and entitlement status of one edition
+      parameters:
+        - $ref: '#/components/parameters/PackId'
+        - $ref: '#/components/parameters/Edition'
+      responses:
+        '200':
+          description: Edition details
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/PackEdition'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /library/packs/{packId}/editions/{edition}/install-grants:
+    post:
+      tags: [Library]
+      operationId: createInstallGrant
+      summary: Check entitlement and return a short-lived download grant for the chosen partitions
+      parameters:
+        - $ref: '#/components/parameters/PackId'
+        - $ref: '#/components/parameters/Edition'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceId: {type: string}
+                partitions:
+                  type: array
+                  items: {type: string}
+                fromRevision: {type: string, description: Installed revision, to receive a delta}
+              required: [deviceId]
+      responses:
+        '201':
+          description: Download grant (signed URLs/cookies scoped to this edition's files)
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/InstallGrant'}
+        '402': {description: Entitlement required}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /library/updates:
+    post:
+      tags: [Library]
+      operationId: checkLibraryUpdates
+      summary: Report installed pack revisions; returns available revisions and errata (with severity)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                installed:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      packId: {type: string}
+                      edition: {type: string}
+                      revision: {type: string}
+                    required: [packId, edition, revision]
+              required: [installed]
+      responses:
+        '200':
+          description: Available updates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updates:
+                    type: array
+                    items: {$ref: '#/components/schemas/PackUpdate'}
+                required: [updates]
+  /library/packs/{packId}/editions/{edition}/ask:
+    post:
+      tags: [Library]
+      operationId: askPack
+      summary: Hosted "ask this book" - answers only from this edition, with pinned citations or an abstention
+      parameters:
+        - $ref: '#/components/parameters/PackId'
+        - $ref: '#/components/parameters/Edition'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question: {type: string, minLength: 1, maxLength: 4000}
+                partitions:
+                  type: array
+                  items: {type: string}
+              required: [question]
+      responses:
+        '200':
+          description: Cited answer or abstention
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer: {type: string}
+                  abstained: {type: boolean}
+                  disclaimer: {type: string}
+                  citations:
+                    type: array
+                    items: {$ref: '#/components/schemas/PackCitation'}
+                required: [abstained, citations]
+        '429': {description: Rate limit or budget exhausted}
+  /publishers/packs/{packId}/editions/{edition}/uploads:
+    post:
+      tags: [Publishers]
+      operationId: createPackUpload
+      summary: Start uploading a signed pack edition (returns presigned URLs for missing content-addressed files)
+      parameters:
+        - $ref: '#/components/parameters/PackId'
+        - $ref: '#/components/parameters/Edition'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revision: {type: string}
+                manifestHash: {type: string}
+                filesDigest: {type: string}
+                fileHashes:
+                  type: array
+                  items: {type: string}
+              required: [revision, manifestHash, filesDigest, fileHashes]
+      responses:
+        '201': {description: Upload session with presigned URLs}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /publishers/packs/{packId}/editions/{edition}/submissions:
+    post:
+      tags: [Publishers]
+      operationId: submitPackEdition
+      summary: Validate (signature, schema, profile rules, PHI and privacy scans) and list in the catalog when it passes
+      parameters:
+        - $ref: '#/components/parameters/PackId'
+        - $ref: '#/components/parameters/Edition'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revision: {type: string}
+                erratumSeverity: {type: string, enum: [none, editorial, content, safety-critical]}
+                notes: {type: string}
+              required: [revision]
+      responses:
+        '202': {description: Validation started; findings are reported as events}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /books/{bookId}/builds:
+    post:
+      tags: [Books]
+      operationId: createBookBuild
+      summary: Managed build of site, PDF, EPUB and pack from an uploaded, allowlisted book bundle
+      parameters:
+        - name: bookId
+          in: path
+          required: true
+          schema: {type: string}
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                edition: {type: string}
+                revision: {type: string}
+                bundleManifestHash: {type: string}
+                outputs:
+                  type: array
+                  items: {type: string, enum: [site, pdf, epub, pack]}
+              required: [edition, bundleManifestHash, outputs]
+      responses:
+        '202':
+          description: Build accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  buildId: {type: string}
+                  status: {type: string}
+                required: [buildId, status]
+        '403': {$ref: '#/components/responses/Forbidden'}
 components:
   parameters:
     VaultId:
@@ -199,6 +455,16 @@ components:
       schema: {type: string}
     DocumentId:
       name: documentId
+      in: path
+      required: true
+      schema: {type: string}
+    PackId:
+      name: packId
+      in: path
+      required: true
+      schema: {type: string, pattern: '^[a-z0-9]+([.][a-z0-9-]+)+$'}
+    Edition:
+      name: edition
       in: path
       required: true
       schema: {type: string}
@@ -271,6 +537,77 @@ components:
         proposalHash: {type: string}
         status: {type: string, enum: [pending, approved, rejected, expired, committed, conflict]}
       required: [proposalId, proposalHash, status]
+    PackProfile:
+      type: string
+      enum: [textbook, reference, course, repository, medical]
+    PackSummary:
+      type: object
+      properties:
+        packId: {type: string}
+        title: {type: string}
+        profile: {$ref: '#/components/schemas/PackProfile'}
+        publisherKeyId: {type: string}
+        entitlement: {type: string, enum: [open, registered, paid, institutional]}
+        aiPolicy: {type: string, enum: [local-only, external-with-consent, publisher-hosted-only]}
+        currentEdition: {type: string}
+      required: [packId, title, profile, publisherKeyId, entitlement, aiPolicy]
+    PackEdition:
+      type: object
+      properties:
+        packId: {type: string}
+        edition: {type: string}
+        latestRevision: {type: string}
+        status: {type: string, enum: [current, superseded, retired]}
+        manifestUrl: {type: string}
+        signatureUrl: {type: string}
+        bytes: {type: integer, minimum: 0}
+        partitions:
+          type: array
+          items:
+            type: object
+            properties:
+              id: {type: string}
+              title: {type: string}
+              documents: {type: integer}
+            required: [id, title]
+        entitled: {type: boolean}
+      required: [packId, edition, latestRevision, status, manifestUrl, signatureUrl]
+    InstallGrant:
+      type: object
+      properties:
+        grantId: {type: string}
+        baseUrl: {type: string}
+        expiresAt: {type: string, format: date-time}
+        files:
+          type: array
+          description: Content-addressed files to fetch (a delta when fromRevision was given)
+          items: {type: string}
+        leaseExpiresAt: {type: string, format: date-time}
+      required: [grantId, baseUrl, expiresAt, files]
+    PackUpdate:
+      type: object
+      properties:
+        packId: {type: string}
+        edition: {type: string}
+        fromRevision: {type: string}
+        toRevision: {type: string}
+        severity: {type: string, enum: [editorial, content, safety-critical]}
+        summary: {type: string}
+      required: [packId, edition, fromRevision, toRevision, severity]
+    PackCitation:
+      type: object
+      properties:
+        packId: {type: string}
+        edition: {type: string}
+        revision: {type: string}
+        documentId: {type: string}
+        headingPath:
+          type: array
+          items: {type: string}
+        startByte: {type: integer, minimum: 0}
+        endByte: {type: integer, minimum: 1}
+        quotedTextHash: {type: string}
+      required: [packId, edition, revision, documentId, startByte, endByte, quotedTextHash]
   responses:
     Forbidden:
       description: Caller lacks capability grant

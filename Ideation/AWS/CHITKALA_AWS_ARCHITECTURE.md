@@ -17,7 +17,9 @@ tags:
 
 > **What this is:** the AWS realisation of the *optional* cloud services described in
 > [`../CHITKALA_TECHNICAL_DESIGN.md`](../CHITKALA_TECHNICAL_DESIGN.md) (the "TDD"): identity, model relay, hosted
-> index, cloud agent runs, managed publishing, encrypted sync and (later) real-time collaboration.
+> index, cloud agent runs, managed publishing, encrypted sync, (later) real-time collaboration, and the **Knowledge
+> Library**: textbooks and large repositories built as signed Knowledge Packs that readers install into the app
+> ([`../CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md`](../CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md), "the Packs spec").
 >
 > **What this is not:** a move of CHITKALA into the cloud. The desktop app and the user's Markdown vault stay
 > canonical and complete on their own. Every service here is opt-in, has a local substitute, and **never writes to the
@@ -58,6 +60,7 @@ by milestone; editable draw.io files are in [`architecture/drawio/`](architectur
 19. [AWS architecture decision records](#19-aws-architecture-decision-records)
 20. [Open questions & spikes](#20-open-questions--spikes)
 21. [Traceability to the TDD](#21-traceability-to-the-tdd)
+22. [Knowledge packs, textbooks & large repositories](#22-knowledge-packs-textbooks--large-repositories)
 
 ---
 
@@ -72,6 +75,8 @@ with four things a single desktop cannot do well on its own:
 | Long or scheduled agent work | The laptop sleeps, closes, goes offline | **Cloud agent runs** on Step Functions (§10) |
 | Knowledge on more than one device | Files need a safe meeting point | **Encrypted sync** on S3 + DynamoDB (§8) |
 | Sharing with the world | Static hosting, TLS, CDN | **Managed publishing** on CodeBuild + CloudFront (§11) |
+
+| Textbooks and knowledge repositories for many readers | Signing, entitlements, distribution and hosting at scale | **Knowledge Library**: book pipeline, pack registry, hosted reader + "ask this book" (§22) |
 
 And two later conveniences: a **hosted index** for a browser companion (§9.3) and **live collaboration** (§12).
 
@@ -123,6 +128,9 @@ Each non-negotiable from the TDD and `CODE_ASSIST_HANDOFF.md`, and how AWS enfor
 | Collaboration | — | ECS Fargate Yjs relay (Later) | Plaintext CRDT state |
 | Secrets / keys | OS keychain | KMS (server-side layer only) | Vault encryption keys |
 | Telemetry | Local traces | Opt-in metrics in CloudWatch | Prompts, document bodies |
+| Book builds (site, PDF, EPUB, pack) | Local build worker | Step Functions book pipeline (§22.2) | Private notes of the author |
+| Installing books / packs | From file, USB, intranet or any static registry | Managed Library registry, entitlements, CloudFront delivery (§22.3) | Reader's annotations |
+| Large repositories, "ask this book" | Installed pack + local AI | Static edition sites + OpenSearch + Bedrock (§22.4) | Reader identity (anonymous by default) |
 
 ---
 
@@ -143,6 +151,7 @@ Network detail (VPCs, endpoints) is in the zoom-ins.
 | 4 | M4 | Step Functions agent runs + Fargate sandbox | [`stage-04`](architecture/svg/chitkala-aws-overview-stage-04.svg) |
 | 5 | M4 | Publishing: S3 + CodeBuild + CloudFront | [`stage-05`](architecture/svg/chitkala-aws-overview-stage-05.svg) |
 | 6 | M5 | Encrypted sync to other devices | [`stage-06`](architecture/svg/chitkala-aws-overview-stage-06.svg) |
+| 7 | K3–K6 | Knowledge library: pack store, registry, installs into learners' apps | [`stage-07`](architecture/svg/chitkala-aws-overview-stage-07.svg) |
 
 ### 4.1 Step walk-through
 
@@ -170,6 +179,10 @@ Network detail (VPCs, endpoints) is in the zoom-ins.
 22. Readers get the public-only site, search index and graph.
 23. Sync: the desktop encrypts committed revisions and uploads content-addressed ciphertext.
 24. Other devices are notified, fetch, verify, decrypt and reconcile locally.
+25. Textbook builds also produce a signed Knowledge Pack (Markdown + prebuilt indexes), PDF and EPUB.
+26. The Library registry lists the edition after signature, licence and profile checks.
+27. A learner browses the Library in the app and asks to install; the entitlement is checked.
+28. Pack files arrive through CloudFront; the app verifies them, mounts the book read-only and works offline.
 
 ---
 
@@ -195,6 +208,13 @@ Network detail (VPCs, endpoints) is in the zoom-ins.
 | Keys | **AWS KMS** (customer-managed key per tenant tier) | OS keychain | — | Server-side encryption, key policies, CloudTrail on every use |
 | Secrets | **AWS Secrets Manager** | OS keychain | Parameter Store | Only for platform secrets (e.g. third-party provider keys if a relay adapter ever needs one) |
 | IaC | **AWS CDK** (TypeScript) | — | Terraform | Same language as the app; constructs for every service above |
+| Book pipeline | **Step Functions** + Lambda + CodeBuild + Fargate | Local build worker | One big CodeBuild job | Validate / scan / render / pack / sign as auditable, retryable states; Distributed Map for very large books |
+| Pack signing | **AWS KMS asymmetric keys** (ECC_NIST_P256, `Sign`) per publisher | Author's local key | CloudHSM; Sigstore | Private key never leaves KMS; CloudTrail on every signature; key policy per publisher |
+| PHI detection (medical) | **Amazon Comprehend Medical** `DetectPHI` + **Macie** on outputs | Local regex/NER checks | Custom models | Managed detection for text; Macie for objects; both block release, neither is a guarantee |
+| Pack delivery | **S3** content-addressed store + **CloudFront** signed cookies | Any static host / USB | Direct S3 presigned URLs | Immutable files cache forever at the edge; one cookie covers a whole edition path |
+| Institution sign-in | **Cognito** federation (SAML 2.0 / OIDC) | — | IAM Identity Center | Universities and hospitals keep their own IdP; group claims become entitlements |
+| Hosted repository search | **OpenSearch Serverless** (vector + lexical collections) | Installed pack indexes | Aurora pgvector; Amazon S3 Vectors; Kendra | Public, read-heavy, multi-million-chunk corpora with many concurrent readers; Aurora stays the per-tenant private index (spike S12) |
+| Answer grounding | **Bedrock Guardrails** contextual grounding check | Local citation verifier | Custom verifier only | Second, model-independent check that the answer is supported by the retrieved passages |
 
 ---
 
@@ -497,13 +517,19 @@ Maps TDD §13.2 and `../api.openapi.yaml` onto AWS. The same capability checks a
 | Search | `POST /v1/search` | `index` (retriever) | Hosted mode only; returns `SearchHit` with `SourceCitation` |
 | Model call | `POST /v1/model/converse` | `relay` (streamed via Function URL) | Consent, budget, Guardrails |
 | Propose patch | `POST /v1/patches` | `agents` | Cloud runs only; stores proposal |
-| Apply patch | `POST /v1/patches/{id}/apply` | — | **Contract change:** the server cannot apply. Replaced by `…/apply-receipt` posted by the desktop after its local commit |
+| Apply patch | `POST /v1/patches/{id}/apply-receipt` | `agents` | The cloud never applies. `…/apply` stays for the local/self-hosted transport only; the desktop posts a receipt after its local commit (both in `../api.openapi.yaml`) |
 | Start agent run | `POST /v1/agent-runs` | `agents` | Idempotency key required |
 | Run events | `GET /v1/agent-runs/{id}/events?after=` + WebSocket | `agents` | Cursor replay from DynamoDB |
 | Publish preview | `POST /v1/publications/previews` | `publish` | Presigned bundle upload |
 | Publish deploy | `POST /v1/publications/deployments` | `publish` | KVS pointer write, receipt |
 | Sync | `POST /v1/sync/vaults/{id}/push`, `/commit`, `GET /pull?after=` | `sync` | See §8 |
 | Sync status | `GET /v1/sync/status` | `sync` | |
+| Library catalog | `GET /v1/library/catalog`, `GET /v1/library/packs/{id}/editions/{ed}` | `library` | Static `catalog.json` on CloudFront for the registry protocol; API adds search and entitlement status |
+| Install grant | `POST /v1/library/packs/{id}/editions/{ed}/install-grants` | `library` | Returns CloudFront signed cookies for the edition path + file list (delta when `fromRevision`) |
+| Update check | `POST /v1/library/updates` | `library` | Devices send installed revisions; returns revisions and erratum severity |
+| Ask this book | `POST /v1/library/packs/{id}/editions/{ed}/ask` | `repository` | Anonymous quota or entitlement; cited answer or abstention |
+| Publisher upload | `POST /v1/publishers/packs/{id}/editions/{ed}/uploads`, `…/submissions` | `publishers` | Presigned uploads of missing content-addressed files, then validation |
+| Book build | `POST /v1/books/{bookId}/builds` | `books` | Starts the book pipeline |
 
 All mutators require `Idempotency-Key` and, where relevant, revision preconditions; errors use the TDD's structured
 model (`code`, `message`, `details`, `requestId`, `retryable`).
@@ -594,6 +620,9 @@ design choices that keep idle cost near zero.
 | Agents | Step Functions state transitions, Lambda, Fargate vCPU/GB-s, Bedrock tokens | 0 |
 | Publishing | CodeBuild minutes, S3, CloudFront requests and egress, Macie scanned bytes | Storage |
 | Sync | S3 storage, requests, egress | Storage |
+| Book builds | Step Functions transitions, CodeBuild minutes (PDF rendering dominates), Fargate pack builds, Bedrock batch embedding tokens, Comprehend Medical units, Macie | 0 |
+| Library delivery | S3 storage, CloudFront egress (largest at scale; immutable files cache well), Lambda grants | Storage |
+| Hosted repositories | OpenSearch Serverless OCUs (**a fixed minimum per collection**: share collections across editions), Bedrock tokens for "ask", DynamoDB answer cache | **OCU minimum** |
 | Platform | KMS keys (per key per month) and requests, CloudWatch logs/metrics, VPC interface endpoints (hourly per AZ) | **Interface endpoints and KMS keys are the main fixed costs**; share endpoints across components, consider one KMS key per tenant tier rather than per tenant at small scale |
 
 Budget controls: per-tenant token budgets in DynamoDB; AWS Budgets alerts per capability (cost-allocation tags
@@ -651,6 +680,11 @@ a custom API base URL and Cognito issuer. Nothing in the desktop hard-codes the 
 | AWS-010 | Multi-account Organizations; CDK; GitHub OIDC | Blast radius, auditability, no stored keys | Proposed |
 | AWS-011 | Separate stores for sync (ciphertext) and intelligence (consented plaintext) | Consent model stays legible | **Invariant** |
 | AWS-012 | Collaboration on ECS Fargate relay with encrypted updates; client checkpoints | Keeps E2EE and canonical Markdown | Later (RFC) |
+| AWS-013 | Registry protocol is static and signed; the AWS registry is one implementation | Institutions and offline clinics need no AWS account | **Invariant** |
+| AWS-014 | Publisher signing keys in KMS (asymmetric), one key per publisher | Non-exportable keys, audit trail | Proposed |
+| AWS-015 | Entitlements gate downloads via CloudFront signed cookies; no DRM claims | Honest licensing; cacheable delivery | Proposed |
+| AWS-016 | OpenSearch Serverless for public large repositories; Aurora for private per-tenant index | Different access patterns and scale | Proposed (spike S12) |
+| AWS-017 | Book pipeline as Step Functions with blocking profile gates (PHI, reviews, Macie) | Auditable, resumable, enforceable medical rules | Proposed |
 
 ---
 
@@ -667,6 +701,10 @@ a custom API base URL and Cognito issuer. Nothing in the desktop hard-codes the 
 | S7 | Guardrails false-positive rate on technical notes (code, security docs) | Tuned thresholds, measured intervention rate |
 | S8 | VPC endpoint fixed cost vs Lambda outside VPC for indexer (Aurora Data API) | Choose the cheaper path that keeps no-NAT isolation |
 | S9 | Regions where all chosen Bedrock models, Guardrails and Aurora features are available | Region shortlist |
+| S10 | PDF engine at scale (Typst vs Paged.js) inside CodeBuild: time and memory for a 1,500-page book | p95 build < 15 min; deterministic output |
+| S11 | CloudFront signed cookies vs signed URLs for partial and delta installs | Correct scoping per edition and partition; works with the app's HTTP client on all OSes |
+| S12 | OpenSearch Serverless vs Aurora pgvector vs S3 Vectors for a 1M-document repository | Cost per month at idle and at 10 queries/s; recall@10; p95 latency |
+| S13 | Comprehend Medical PHI detection quality on textbook prose and image captions | Measured false-negative rate on a labelled fixture; reviewer workflow for findings |
 
 ---
 
@@ -686,6 +724,115 @@ a custom API base URL and Cognito issuer. Nothing in the desktop hard-codes the 
 | §19 CI/CD | §18 |
 | §20 Cost | §17 |
 | §21 Roadmap | [`CHITKALA_AWS_IMPLEMENTATION_PLAN.md`](CHITKALA_AWS_IMPLEMENTATION_PLAN.md) |
+| Packs spec (textbooks, packs, Library, registries, medical profile) | §22 |
 
 > **North star, unchanged:** it must always be possible to turn off the AI, unplug the network, delete the AWS
 > account, and still possess useful, readable knowledge files.
+
+---
+
+## 22. Knowledge packs, textbooks & large repositories
+
+The product spec is [`../CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md`](../CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md).
+In short: a **book project** in a vault builds into a hosted site, PDF, EPUB and a signed **Knowledge Pack**
+(`.ckpack`, still plain Markdown inside). Readers install packs into the app's **Library**, where each pack is mounted
+read-only, works offline, can be linked from personal notes and questioned with cited answers. Registries are static
+and signed, so any host (or a USB stick) can serve them. This section is the managed AWS implementation; every part of
+it has a local or static substitute.
+
+### 22.1 Invariants added
+
+| # | Invariant | AWS enforcement |
+|---|---|---|
+| K-I1 | A pack is portable Markdown plus a signed manifest | The pipeline stores the same files a local build would; no proprietary container |
+| K-I2 | Installed packs are read-only; reader overlays stay in the reader's vault | No AWS service receives annotations unless the reader syncs their own vault (E2EE, §8) |
+| K-I3 | Citations pin `packId@edition+revision` | Hosted answers and catalog entries carry edition + revision; old revisions stay retrievable until retired |
+| K-I4 | The publisher's `aiPolicy` is enforced before model context | Relay refuses chunks from `local-only` packs; `publisher-hosted-only` packs are answered only by §22.4 |
+| K-I5 | Signed ≠ safe | Pack content is zone-3 untrusted content in the app and in hosted rendering (sandboxed components, CSP) |
+| K-I6 | Release gates block, they don't warn | Step Functions fails the release on review-rule, PHI, Macie, accessibility or privacy findings unless an explicit, audited waiver exists |
+
+### 22.2 Book pipeline
+
+![Textbook pipeline](architecture/svg/chitkala-textbook-pipeline.svg)
+
+| State | Implementation | Blocking checks |
+|---|---|---|
+| `CheckReviews` | Books API Lambda + DynamoDB sign-offs | Rules from `book.yaml` (`review.rules`), no self-approval, sign-off hash = proposal hash |
+| `Validate` | Lambda (shared `packages/markdown` + book transforms) | Cross-refs, citations, figure alt text, private-document references, unit codes (medical) |
+| `ScanPHI` (medical) | Comprehend Medical `DetectPHI` over text chunks and image metadata (Map state) | Findings above threshold block; waiver needs two editors |
+| `Render` | Parallel CodeBuild builds: site (Astro), PDF (Typst or Paged.js), EPUB | EPUBCheck, accessibility checks, link check |
+| `BuildPack` | Fargate task (large books) or Lambda (small): chunks, FTS5 + graph SQLite, partitions, `files.json`; embeddings via Bedrock **batch inference** for big books | Index digests recorded |
+| `Sign` | KMS `Sign` (ECDSA P-256) over the manifest digest with the publisher key | Key policy allows only the pipeline role for that publisher |
+| `ScanOutputs` | Macie job on the new output prefix | High severity blocks |
+| `AwaitRelease` | `.waitForTaskToken`: the publisher approves in the app | Timeout → `EXPIRED` |
+| `Release` | Catalog write (DynamoDB), static `catalog.json` regenerated and signed, CloudFront invalidation of the catalog only | — |
+
+Author privacy is the same as managed publishing (§11): only the book's allowlisted files are uploaded.
+
+### 22.3 Library registry and installs
+
+![Library install](architecture/svg/chitkala-library-install.svg)
+
+**Catalog.** DynamoDB holds publishers, packs, editions, revisions, errata and entitlements. A Lambda regenerates the
+static `catalog.json` + signature on every release, so the **managed registry also speaks the static protocol**; the
+API adds search, entitlement status and update checks.
+
+**Entitlements.**
+
+| Entitlement | Check | Delivery |
+|---|---|---|
+| `open` | None | Public CloudFront path, no cookie |
+| `registered` | Cognito user | Signed cookie for `/packs/<id>/<edition>/*`, minutes-long |
+| `paid` | Purchase record in DynamoDB (payment provider out of scope) | Signed cookie + offline lease expiry |
+| `institutional` | Cognito federated IdP group → institution licence record | Signed cookie + lease bound to membership |
+
+**Install and update.** The app requests an install grant (partitions, `fromRevision` for deltas), downloads only
+missing content-addressed files, verifies signature → `files.json` digest → every hash on the device, then mounts the
+pack read-only. A new revision emits `pack.revision.published` on EventBridge; devices that opted in to install
+registration receive a WebSocket notice, the rest learn at their next `POST /v1/library/updates`. Safety-critical
+errata are flagged for a banner.
+
+**Privacy.** Install registration (which device has which pack) is **opt-in**; without it, the registry knows only
+that a grant was issued. No reading analytics.
+
+**Institutions and offline.** S3 replication (or a plain sync job) mirrors the pack store into an institution's
+account; the institution can also host the static registry on an intranet or copy it to USB. Signatures make every
+mirror safe. The CDK `LibraryStack` can be deployed in an institution's own account for a private registry.
+
+### 22.4 Hosted large repositories
+
+![Hosted repository](architecture/svg/chitkala-hosted-repository.svg)
+
+- **Reading is static.** Each edition is pre-rendered to S3 (`/<pack>/<edition>/…`) with a sharded keyword index, so
+  most traffic is CloudFront cache hits.
+- **"Ask this book"** goes to an API with WAF rate limits and anonymous quotas. Retrieval is restricted to the edition
+  (and partitions) asked about: OpenSearch Serverless hybrid search (lexical + k-NN), one index per edition in a shared
+  collection, RRF fusion. Bedrock Guardrails check the context (prompt attacks) and the answer (contextual grounding);
+  the answer must cite edition + section or abstain. The medical profile adds stricter abstention (no patient-specific
+  or unsupported dosing answers) and a fixed disclaimer.
+- **Answer cache:** DynamoDB keyed by `(edition, normalised question hash)` with a TTL; cached answers keep their
+  citations.
+- **Indexing:** a published edition triggers the indexer; vectors shipped in the pack are reused when their namespace
+  matches the hosted model, otherwise Bedrock batch inference embeds the edition.
+- **Scale targets** (proposed, to be measured in spike S12): 1M+ documents per repository, p95 search < 200 ms, ask
+  first token < 3 s.
+
+### 22.5 Stacks and data
+
+| Stack | Resources | Phase |
+|---|---|---|
+| `BooksStack` | Books API, sign-off rules, book pipeline (Step Functions, CodeBuild projects, Fargate pack builder), Comprehend Medical access, Macie job, KMS publisher keys | C8 |
+| `LibraryStack` | Pack store (S3, versioned), catalog table, catalog generator, Library API, CloudFront distribution with key group for signed cookies, EventBridge rules, update notifier, Cognito federation config | C9 |
+| `RepositoryStack` | Edition-site buckets, OpenSearch Serverless collection, indexer, ask Lambda, answer cache, WAF rules | C10 |
+
+DynamoDB additions (same single-table pattern as §7.2):
+
+| Entity | PK | SK |
+|---|---|---|
+| Publisher | `PUBLISHER#p` | `PROFILE` (verified status, KMS key ARN) |
+| Pack | `PACK#id` | `META` |
+| Edition revision | `PACK#id` | `ED#<edition>#REV#<rev>` (manifest hash, status, errata severity) |
+| Entitlement | `TENANT#t` | `ENT#<packId>` (type, lease expiry, source: purchase or institution) |
+| Institution licence | `INST#i` | `LIC#<packId>` (seats, valid until, IdP group) |
+| Install (opt-in) | `TENANT#t` | `INSTALL#<device>#<packId>` |
+| Answer cache | `ASK#<packId>@<edition>` | `Q#<hash>` (TTL) |

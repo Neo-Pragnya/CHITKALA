@@ -218,8 +218,7 @@
 <rect class="halo" x="287.6" y="396.8" width="68" height="68" rx="10"/>
 <use href="#chitkala-aws-overview-s4-ic-client" x="294.6" y="403.8"/>
 <text x="321.6" y="472.8" font-size="12" font-weight="700" text-anchor="middle">CHITKALA desktop</text>
-<text x="321.6" y="485.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">Tauri · vault ·</text>
-<text x="321.6" y="497.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">SQLite/FTS5</text>
+<text x="321.6" y="485.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">Rust core · React UI</text>
 </g>
 <g class="nd future" data-id="dev2" data-stage="6">
 <rect class="halo" x="287.6" y="729.6" width="68" height="68" rx="10"/>
@@ -249,7 +248,7 @@
 <rect class="halo" x="774.8" y="396.8" width="68" height="68" rx="10"/>
 <use href="#chitkala-aws-overview-s4-ic-lambda" x="781.8" y="403.8"/>
 <text x="808.8" y="472.8" font-size="12" font-weight="700" text-anchor="middle">API handlers</text>
-<text x="808.8" y="485.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">capability checks</text>
+<text x="808.8" y="485.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">Rust · capability checks</text>
 </g>
 <g class="nd built" data-id="ddb" data-stage="1">
 <rect class="halo" x="774.8" y="230.4" width="68" height="68" rx="10"/>
@@ -273,7 +272,7 @@
 <rect class="halo" x="1010.0" y="396.8" width="68" height="68" rx="10"/>
 <use href="#chitkala-aws-overview-s4-ic-lambda-fn" x="1017.0" y="403.8"/>
 <text x="1044.0" y="472.8" font-size="12" font-weight="700" text-anchor="middle">Model relay</text>
-<text x="1044.0" y="485.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">consent · budget</text>
+<text x="1044.0" y="485.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">Rust · consent · budget</text>
 </g>
 <g class="nd built" data-id="bedrock" data-stage="2">
 <rect class="halo" x="1245.2" y="396.8" width="68" height="68" rx="10"/>
@@ -291,7 +290,7 @@
 <rect class="halo" x="1480.4" y="563.2" width="68" height="68" rx="10"/>
 <use href="#chitkala-aws-overview-s4-ic-lambda-fn" x="1487.4" y="570.2"/>
 <text x="1514.4" y="639.2" font-size="12" font-weight="700" text-anchor="middle">Indexer</text>
-<text x="1514.4" y="652.2" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">SQS-driven chunker</text>
+<text x="1514.4" y="652.2" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">Rust chunker · SQS</text>
 </g>
 <g class="nd new" data-id="sfn" data-stage="4">
 <rect class="halo" x="774.8" y="563.2" width="68" height="68" rx="10"/>

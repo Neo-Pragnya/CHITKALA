@@ -67,12 +67,12 @@ team. They are planning placeholders, not commitments; re-estimate after C0.
 |---|---|---|
 | C0.1 | AWS Organizations: management, security, log-archive, tooling, staging, production accounts; SCPs (Region allowlist, protect CloudTrail/GuardDuty, deny IAM user keys) | Account map, SCP JSON in repo |
 | C0.2 | Org CloudTrail → log archive (Object Lock); GuardDuty, Config, Security Hub, IAM Access Analyzer delegated to security | Findings visible in one place |
-| C0.3 | `infra/` CDK app (TypeScript) in the monorepo; `cdk-nag` checks in CI; tagging (`capability`, `stage`, `tenant-tier`) | `pnpm infra:synth` passes |
+| C0.3 | `infra/` CDK app (TypeScript) in the monorepo; Rust Lambda build via `cargo-lambda` (ARM64) wired into CDK; `cdk-nag` checks in CI; tagging (`capability`, `stage`, `tenant-tier`) | `pnpm infra:synth` passes |
 | C0.4 | GitHub Actions OIDC → tooling deploy role; per-environment deploy roles; pinned actions; branch protection; environments with required reviewers | No stored AWS keys anywhere |
 | C0.5 | `NetworkStack` (isolated subnets ×2 AZ, gateway + interface endpoints) and `SecurityStack` (KMS keys, WAF ACL skeleton) | Deployed to staging |
 | C0.6 | AWS Budgets + cost anomaly detection per account; cost-allocation tags activated | Alerts to maintainers |
 | C0.7 | ADR AWS-001…011 recorded as Markdown ADRs in `docs/adr/` | Reviewed ADRs |
-| C0.8 | Spikes S2 (Lambda language), S8 (endpoint cost), S9 (Region shortlist) | Spike reports |
+| C0.8 | Spikes S-R7 (Rust Lambda cold start/size per function), S8 (endpoint cost), S9 (Region shortlist) | Spike reports |
 
 **Exit gate:** clean `cdk deploy` to staging from a PR merge; Security Hub foundational standard with no critical
 findings; a teardown script removes staging completely and a re-deploy works.
@@ -88,9 +88,10 @@ findings; a teardown script removes staging completely and a re-deploy works.
 | C1.1 | `IdentityStack`: Cognito user pool, passkeys/MFA, desktop app client (PKCE, loopback redirect), web app client | Spike S1 resolved |
 | C1.2 | Desktop: sign-in flow, tokens in OS keychain, "Cloud features" settings page (all off by default) | Desktop PR |
 | C1.3 | `ControlDataStack`: DynamoDB single table (§7.2 of the AWS design), TTL, PITR, Streams | Table + access-pattern tests |
-| C1.4 | `ApiStack`: HTTP API with JWT authorizer, WebSocket API, Lambda handler skeletons per domain (`identity`, `agents`, `index`, `publish`, `sync`), structured errors, idempotency middleware | OpenAPI `v1` updated |
+| C1.4 | `ApiStack`: HTTP API with JWT authorizer, WebSocket API, Rust handler skeletons in `chitkala-lambda` over `chitkala-services`, per domain (`identity`, `agents`, `index`, `publish`, `sync`), structured errors, idempotency middleware | OpenAPI `v1` updated |
 | C1.5 | Tenant-scoped sessions: STS `AssumeRole` with `tenant` session tag; IAM ABAC on DynamoDB `LeadingKeys` and S3 prefixes | Isolation library + tests |
-| C1.6 | Capability-grant evaluator shared with the desktop (`packages/domain` grant model), used by every handler | Same test vectors pass locally and in Lambda |
+| C1.6 | Capability-grant evaluator = the `chitkala-policy` crate the desktop uses, called by every handler | Same test vectors pass in Tauri, the Axum server and Lambda |
+| C1.10 | `chitkala-server` (Axum) self-host image built from the same handlers; contract tests run against both Lambda and server | Docker image + compose example |
 | C1.7 | Device registry: `POST /v1/devices`, list, revoke; WebSocket connect/disconnect handlers storing connections | Device management UI |
 | C1.8 | `ObservabilityStack`: EMF metrics, X-Ray/ADOT tracing, log retention, redaction middleware, dashboards, alarms | Dashboard links in runbook |
 | C1.9 | WAF rules (rate-based, managed common rules) on API and CloudFront | WAF metrics |
@@ -133,7 +134,7 @@ changes; network-off fallback message.
 | C3.1 | Spike S3: Aurora Serverless v2 (min 0 ACU) with pgvector HNSW + tsvector; benchmark vs local SQLite on 10k/50k fixtures | Spike report, go/no-go |
 | C3.2 | `IndexStack`: corpus bucket (SSE-KMS tenant key), SQS + DLQ, indexer and retriever Lambdas in isolated subnets, RDS Proxy or Data API | Deployed stack |
 | C3.3 | Aurora migrations ported from `schema.sql` (tenant + scope columns, RLS policies, HNSW + GIN indexes) | Migration runner |
-| C3.4 | Indexer: reuse `packages/markdown` + `packages/retrieval`; heading-aware chunks; idempotent upserts; embedding namespaces | Golden-vault parity test |
+| C3.4 | Indexer (Rust Lambda): reuse `chitkala-markdown` + `chitkala-retrieval`; heading-aware chunks; idempotent upserts; embedding namespaces | Golden-vault parity test |
 | C3.5 | Retriever: lexical, vector and graph channels, RRF, optional rerank, budget; `POST /v1/search` per `SearchHit` contract | Retrieval API |
 | C3.6 | Consent lifecycle: desktop folder picker → upload; revoke → delete propagation; nightly reconciler | Revoke tests |
 | C3.7 | Web companion (read-only): sign in, search, ask with citations (no vault access, no editing) | Minimal web app on CloudFront |
@@ -234,8 +235,8 @@ encrypted update log in DynamoDB, encrypted snapshots in S3, client-written Mark
 | C8.1 | `BooksStack`: Books API, editions and sign-off records in DynamoDB, book bundle bucket | Stack |
 | C8.2 | Review rules engine shared with the desktop (`book.yaml` `review.rules`), sign-offs bound to proposal hashes; web review view for editors | Rules library + review UI |
 | C8.3 | Book pipeline state machine: CheckReviews → Validate → (ScanPHI) → Render (parallel) → BuildPack → Sign → ScanOutputs → AwaitRelease → Release | ASL in repo |
-| C8.4 | Render projects in CodeBuild: Astro book theme, PDF engine (spike S10), EPUB builder; pinned builder images | Images in ECR |
-| C8.5 | Pack builder on Fargate: chunks, FTS5/graph SQLite, partitions, `files.json`, Bedrock batch embeddings | Pack builder image |
+| C8.4 | Render projects in CodeBuild: `chitkala build-book` for PDF (Typst) and EPUB; Astro book theme in the isolated JS worker; pinned builder images | Images in ECR |
+| C8.5 | Pack builder on Fargate: `chitkala build-book --pack` (Rust): chunks, FTS5/graph SQLite, partitions, `files.json`, Bedrock batch embeddings | Pack builder image |
 | C8.6 | Publisher KMS keys (ECC_NIST_P256), key policies per publisher, signature format matching local signing | Signing ADR |
 | C8.7 | Macie and accessibility gates; audited waivers | Gate reports |
 
@@ -344,5 +345,5 @@ medical publisher goes live.
 1. Create the Organization and accounts (C0.1–C0.2).
 2. Scaffold `infra/` with `NetworkStack` and `SecurityStack`; wire GitHub OIDC; deploy to staging (C0.3–C0.5).
 3. Write ADRs AWS-001…011 (C0.7).
-4. Run spikes S1 (Cognito desktop sign-in) and S2 (Lambda language).
+4. Run spikes S1 (Cognito desktop sign-in) and S-R7 (Rust Lambda cold start), and stand up `chitkala-lambda` + `chitkala-server` skeletons over one `chitkala-services` crate.
 5. Demo: a signed-in desktop calls `GET /v1/me` on staging; the same build used signed-out is unchanged.

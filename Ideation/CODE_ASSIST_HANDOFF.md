@@ -16,13 +16,16 @@ Build the first thin, safe, local-first vertical slice of **CHITKALA: Creative H
 8. Privacy scopes apply *before* constructing model contexts, not only in the UI.
 9. No commercial or production-licensed SDK dependency without a documented ADR.
 10. Do not claim a feature is working until tests and a manual workflow prove it.
+11. **Rust backend, TypeScript frontend** (ADR-016): all file, index, policy, parsing and network logic is Rust; the TypeScript app only calls generated, capability-scoped bindings. See `CHITKALA_PRIOR_ART_AND_STACK.md`.
+12. Never hand-edit generated bindings, OpenAPI or JSON Schemas; change the Rust types and regenerate.
 
 ## First delivery: M0 + early M1
 
 ### Task 1 — Scaffold
 
-- pnpm monorepo with Tauri 2, React/TypeScript, Rust core crates and package boundaries from section 6.
-- CI: Rust unit tests, TS unit/typecheck, lint, license scan, Playwright smoke.
+- Cargo workspace + pnpm workspace with the layout in `CHITKALA_PRIOR_ART_AND_STACK.md` §4: `chitkala-domain`, `chitkala-files`, `chitkala-markdown`, `chitkala-index`, `chitkala-policy`, `chitkala-services`, `chitkala-tauri`, `chitkala-cli`; `apps/desktop`, `packages/ui`, `packages/editor`, `packages/bindings`.
+- Generated TS bindings via `tauri-specta`; `pnpm bindings:check` fails CI on drift.
+- CI: `cargo nextest`, `clippy -D warnings`, `cargo deny` (licences + advisories), TS unit/typecheck, lint, Playwright smoke.
 - Three design themes and four-pane shell, including tabbed + stacked documents.
 - Simple command palette and keyboard navigation.
 
@@ -30,7 +33,7 @@ Build the first thin, safe, local-first vertical slice of **CHITKALA: Creative H
 
 ### Task 2 — File integrity core
 
-- `openVault`, `readDocument`, `writeDocumentAtomic`, `listDocuments`, `scanVault`.
+- `openVault`, `readDocument`, `writeDocumentAtomic`, `listDocuments`, `scanVault` in `chitkala-files` / `chitkala-services`, exposed as Tauri commands and as `chitkala-cli` subcommands.
 - Path policy broker with symlink checks and vault-root scoping.
 - SHA-256 current revision; stable document ID sidecar; file transaction journal.
 - Original directory remains unmodified for scan/import copy mode.
@@ -40,7 +43,7 @@ Build the first thin, safe, local-first vertical slice of **CHITKALA: Creative H
 
 ### Task 3 — Markdown editor
 
-- CodeMirror with safe preview, frontmatter and wikilink syntax adapters.
+- CodeMirror 6 with a Lezer grammar for frontmatter and wikilinks (highlighting/autocomplete only); preview HTML rendered and sanitised by `chitkala-markdown` (Rust, `ammonia`).
 - Explorer, command palette, tabs, stacked reading mode, outline.
 - Autosave and undo/redo; rich content does not execute arbitrary code.
 
@@ -49,14 +52,15 @@ Build the first thin, safe, local-first vertical slice of **CHITKALA: Creative H
 ### Task 4 — Deterministic indexing
 
 - Integrate starter `schema.sql` as a reviewed migration (it is not production-ready as supplied).
-- Build file scanner, AST link/heading extraction, FTS5 index, backlinks, aliases and broken link report.
+- Build file scanner, Rust AST link/heading/object extraction (spike S-R1 picks the parser), FTS5 index via `rusqlite`, backlinks, aliases and broken link report.
+- Conformance fixtures: the editor grammar and the Rust parser agree on links, headings and blocks.
 - Idempotent event replay, watcher dedupe, graph neighborhood query.
 
 **Exit:** adding/renaming/deleting a note updates search, backlinks and graph correctly; `rebuild-index` yields same projections.
 
 ### Task 5 — Read-only intelligence spike
 
-- Source-aware chunker, deterministic citation model, hybrid retrieval adapters with lexical fallback.
+- Source-aware chunker, deterministic citation model, hybrid retrieval adapters with lexical fallback (`chitkala-retrieval`).
 - Mock model to verify context scopes/citation contracts; optional external/local model config.
 - Read-only Q&A; no agent writing yet.
 

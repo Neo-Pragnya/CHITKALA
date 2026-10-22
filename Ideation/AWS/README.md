@@ -9,7 +9,7 @@ AWS, without giving up the local-first core.
 | [`CHITKALA_AWS_ARCHITECTURE.md`](CHITKALA_AWS_ARCHITECTURE.md) | Detailed design: invariants, service choices, data model, each capability's flow, security, observability, DR, cost drivers, ADRs, spikes |
 | [`CHITKALA_AWS_IMPLEMENTATION_PLAN.md`](CHITKALA_AWS_IMPLEMENTATION_PLAN.md) | Phased plan C0–C11, sequenced behind desktop milestones M1–M5, with work items, tests, exit gates and risks |
 | [`architecture/index.html`](architecture/index.html) | Interactive docs page: play each numbered flow, build the overview up stage by stage (M0 → M5) |
-| `architecture/svg/` | Animated SVGs (overview, 8 stage maps, 10 zoom-ins) |
+| `architecture/svg/` | Animated SVGs (overview, 8 stage maps, 11 zoom-ins and concept diagrams) |
 | `architecture/drawio/` | Editable draw.io files |
 | [`diagrams/arch_specs.py`](diagrams/arch_specs.py) | The diagrams as code: the source of truth for every picture |
 
@@ -28,6 +28,7 @@ AWS, without giving up the local-first core.
 | `chitkala-textbook-pipeline` | Reviews → validate → PHI scan → render site/PDF/EPUB → build pack → KMS signing → release |
 | `chitkala-library-install` | Catalog, entitlements, institution SSO, signed-cookie delivery, verify-and-mount, errata, mirrors, USB |
 | `chitkala-hosted-repository` | Static edition sites at scale, OpenSearch hybrid search, "ask this book" with grounding checks |
+| `chitkala-code-architecture` | TypeScript frontend → generated contracts → Tauri / Axum / Lambda hosts → one Rust service layer → crates |
 
 ## Rebuild
 
@@ -39,7 +40,8 @@ The engine (`diagrams/tools/archlib.py`, `build_arch.py`) and the icons it uses 
 *Marvellous AWS Architectures Docs* skill, so the repo builds on its own. AWS icons are from the official AWS
 Architecture Icons (see `diagrams/tools/icons/SOURCE.md`).
 
-The product side of textbooks and packs is specified in
+All backend services are Rust (shared crates with the desktop and self-host server); see
+[`../CHITKALA_PRIOR_ART_AND_STACK.md`](../CHITKALA_PRIOR_ART_AND_STACK.md). The product side of textbooks and packs is specified in
 [`../CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md`](../CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md).
 
 **Status:** proposed design. Nothing here is implemented.

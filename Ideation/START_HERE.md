@@ -17,6 +17,7 @@
 | `sample_publish.yaml`            | Private-by-default static publishing configuration example                                                         |
 | `diagrams/*.mmd`                 | 14 individually reusable Mermaid source diagrams                                                                   |
 | `CODE_ASSIST_HANDOFF.md`         | Practical task brief for a coding agent to begin a safe vertical slice                                             |
+| `CHITKALA_PRIOR_ART_AND_STACK.md` | Lessons from Foam, SilverBullet, Logseq, OpenKnowledge, Zettlr, Trilium, Joplin, SiYuan, AppFlowy; Rust backend + TypeScript frontend split, crate map, contracts |
 | `CHITKALA_KNOWLEDGE_PACKS_AND_TEXTBOOKS.md` | Textbooks (incl. medical), Knowledge Packs, the in-app Library, registries and large hosted repositories |
 | `sample_book.yaml` · `sample_pack.yaml` · `sample_catalog.json` | Book project manifest, Knowledge Pack manifest and static registry catalog examples |
 | `AWS/`                           | Optional cloud services on AWS: detailed design, implementation plan (C0–C11), interactive architecture diagrams   |

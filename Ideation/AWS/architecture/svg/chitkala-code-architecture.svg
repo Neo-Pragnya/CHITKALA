@@ -1,0 +1,243 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2310 834" width="2310" height="834" font-family="Amazon Ember, Inter, Arial, Helvetica, sans-serif" class="archviz-svg" data-uid="chitkala-code-architecture" role="img" aria-label="Code architecture — TypeScript frontend, Rust backend, one service layer">
+<title>Code architecture — TypeScript frontend, Rust backend, one service layer</title>
+<defs>
+<image id="chitkala-code-architecture-is-client" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEUAAAAlMkEiLj0iLj0iLj0+Pj4kKTQjLT4iLT4iLj0jMTwWNDUAVVUkKz0fHz8AAH8nLEwdKTsiLkAAf38jMD4jMD0jMD4kMD8fLz8kMEAfMT4AAFUiMD0lMUAjL0EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADNv0ixAAAAQHRSTlMA/vaw2QQUTIh8KwkDKggCDxVNAv55iaogPykDXoIrAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEo43UQAAAXpJREFUeNrtl9uWgjAMRdNQ6H2kiHed//9MU9QFC11CozNPbF7JoaRNcwJAuJKFg6/R6K3OZqube7grBJMi/YSHQiATUVA4lCjk4RhssBnQ68eDFFjSEioUhpc6IzDcBU5RF5noeCKB+rEClZ9BlVZQ9QKIEuVM6FV8EhDKZaCeVyCarKP3QkDB7LPtQL0U8HMF/CKwCCwCi8Ai8PcCH17rnzYWlDm9WT73xjavN7cjgf381vxo0PuBwCYl5ieLlPDNTSCSR4rOVZk4F8kjRYB159Ikg86lrekJkusTZaDwlIVLweJSfc8sV5ZB/3274zndnU3RK7DITSJaCk/b2EozzdjuG9l229iZ7ZqTuHpotqeHnqjOqqcxoUq1sH8IlJN3kB6XY4Ch2Z4WGI8lo3L+F4E3dn/ja1i9xa3Cbjxw+Pt9UKPQvALQtySm7TRhmt/hWJZmNHM7QB7O6VByhj5ByfOpGAy3FgwFdwTDGX1N6PeISR/IG/+70CuIdTA/09xmkgAAAABJRU5ErkJggg=="/>
+<image id="chitkala-code-architecture-is-lambda" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEXldwzaaRHvhAf+/PrhbALUXQ3pmVPmhi3tqGf21bf55dPuo1kAAADwuojwtHv43cTecBPzxJnmnGb0y6f8fgLji0XifSPrkzvldQz+kwV/fwDldg3odw31jATcdA3QXRX77eL3jwTYYBbqrYLfgkDSXRb/AADMZhHXYBbziwDXYBfzigP4kQbVXhfFXBf/mQDacCYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADoxzDxAAAAQHRSTlP+/v7///3///////8A/////////wP///+n/gJIyacTpf/JrP//RAEPwBZNRE3SFg//AAAAAAAAAAAAAAAAAAAAE6QUIAAAAtlJREFUeNqll9eWozAMQKVIEEJzek9mZnvf/f+vW9k0E2wzJ+ghh+Tg62tZVgDyc55fruCKWTjefuX5Nodtfj+CJ8KA0+n2Pd/C+X4FeI4wO7393cKXI8DzhFsOF4AphJ9whCmE0w1GY8QBphLGB48QACY6OG6fZ70YIQzH84J6kUFwFQ6DBSVtZCWl4VU4AcC2T6wVvARAxxLm1teYFsFMAmIYAIoORgG8AAwDskYBvAAMAiAVBT/BADAIyGgTqKgKgCGAKMz9hBpgEVjVFdQsHRJa+au6AXQETpRK01QwsUMBvACLoAP4QKr5pbQUwAvAYUW2CkQzH8ECPNZD3GWhpMJ3um3Ao4PqCqCnAF6AvRdsFOpTxQWVng7TB7QELkq2sz8n8vSoB0BNYBkwB5YabA72ihI34RFQEXBDtHpQSN19cgDQBJTb9VhODMbEhjInYQgQAq4oTqgIK4AXsERzM9FeKxTc1lXmIjgBBSXIpRlLrcJhoAAeAO71njGYz9JWiF1/XE6BUieiqBUG7bVHcCVRxmhApSA0HpS2RXAAJHEIlYKY7FsFdimAYwmSflmHMPa1QsKOxuIHaIGlWYqUQ4JWAbDVXgOAVASqYJmRDSakMBRYNbsR0wbNwWoVrNL2AmQS+7I6WXEz7FUOiVJxAKBnbS8XWJ9tS0FHwX6AJaBoh0tzy6JTMAVV+gF61jp2crmsTveOFNvNNgDQs9Yh05rtHCgEANGuE5iT6vpDk44xg2jRCUjqrQ6jdEWMAkRAdQKpdbyw6/ChJUQb2kUmMNJVbBHY7I7515Rd9QCiT0TrOhJ67fcIUYjrJ7/CVwfRR/v5Mulvjyh04VvCv/U6bmPQaOvf9dPv3i7lyE5CF8NG16johwcfIBRL36M8Ru9FoBsQTSW8YDSFcITPGE0hXCB/4QmEYw7nr7+fJ1y3Z3n5/vMBn8zD8S4v3/r1/8e3ZxyuF/36/x8W+ySIVog88AAAAABJRU5ErkJggg=="/>
+<image id="chitkala-code-architecture-is-react" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEUAAAAAvNQAwtsAyOEA//8Au9QAu9QAuNEAvNQAu9MAvr4AvNQAqqoAvNQAqv8Ays0Af38AwNkAf/8AAP8AwNgAvvwAqs0AwNcAmcwAkbYAf7EAyOsA/wAA/38A0OcA1NQAwNgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC9YKz4AAAAQHRSTlMA+/3+Aa4sEtFwBJEDTQMHAtECAbAEBywFBwUHAQILBn4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAq8c+KgAAA2xJREFUeNrtV9l24yAMFTvGxkucrcss//+VIwmcOIlxnHbeZjg9PS5F+9VFAPxfC6sJrQ7N465uH3cXltbTx7i0qZ/J9wC2NnV1+kSjF+soaSvctvjxxD64vVS4pK/eoOHTuoFQ+bRr3LoG3TuvBC+phsgO4U8clEy7yrt+TUMDtSJZRVqkrN+haaCpJYmTA/i7hpVM7sCSoK8qI0iFGhxA8kkJU2Ec+GXJp8IKUCmU/wWUSTKrBmsHxc5g/uCIGlSFx8oRGMUnqOBJkn9QDwGB9SuzFgOQk5aK3QdwJudTGaxDTyCwFGBZeoQPVpCCbAEqzr2s+A+qByvoipVEEJACl7OEPqSCuhx1TxvSl6EwQiAFJ6xGxkTywLsf+lIk6d9hfJKDZCFQRgXXwiQXNDzJAZ5AGRl114ZwpJQjbghZWJhjCG2noyRtegUHNZeRV5ScMY5D2rRHZaxXcNBpLvTZRmw9keHPaRDYoNGeGSa6KwWAtSIoCz91w2xxJ3jBUIZ2KYgdbrpokr3C4n+YiA2id/fyZL0W2a5US+K5pfEMNUZ76/0Idi+uYikB0eUVUxquqsTewqjn5UPUqotpaW3q/MtiluDd7IgifOsZhE1iEF9ZQx1LcPCuxXp1GHBof1IfG+p1Y3/7xC/7C6S1/vCMORMDlzrlIWK94yDEwB8TpaHhEE3CZ5c5OvMYUSAiwWV5AlxN7kqMBSGaNXSMgjjM2G3iMcdASNooYg1x4oMIY46fZVrmbobE7spjDg7JHT7K/TMRtPK5swjSbPTAjZ/Zrc081l0aipWjlQlREilC2ymuBPrMbu2CgnFJwahPRQXlEKbESbMaQk4ilnV3k8TxkkSsKNwkcQduuCaxWMZA8JSSQBfWylgGUgfReG/4Ywak8wSk43TZU1kXoHxoMCsOoXxo3AzKVYby/KK+b6bTi830ajtjWoy9H1ZeIBQp6tM9ofwFSvs+qc5o/VCi9cM6rd9dLJYvFvfSxfLtq+27l+sIh/n1/uN6ve/m13soXu+ap6iHAUNsHjCygq+POOUhy20bsu7GPH8d8/zGMS+zG0V8+tKg+TDqehp1h+2j7sOwfaZh+337sA39fNz3i+N+1+ttD45h/uB4mx4ce/fsydJT/rD1LNw+eT5P2548hffVuP3R9f1n3z+4/gDTryjyU3uBWgAAAABJRU5ErkJggg=="/>
+<image id="chitkala-code-architecture-is-server" width="22" height="22" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAwFBMVEUAAAAlMkIiLj09Pj4iLT4iLTwlMT4iKjwAAH8lLj0iMD4eLj0iM0UkMUAAAP8nJ04jMD4AVVUfKj8hLjwhL0AkK0EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEPUqMAAAAQHRSTlMA/vUFeYUpHAIkeiASewEGjwMYTGsjAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4t+CzwAAAMFJREFUeNrtl1sLhCAQRsfGNC9p2+X//9XtvdEdVhGCOa/agThEfACd2dFWwb329AcONf1AHfe1EgizmlSVSc33tapg0xU2hgBrL4kMgcFcOs9oOAJI0QX3ILiYgCcATbZQGrgCTxfwbIFbqQKr4wqW0vkyTBCNIzCRK4CTrnAOrOC1f6D9qypcgeDiV5BvoYPARuqXEO17KqRShTSuApIMzCgCEYhABCIQQUcBZizAmzzNo6t59rUMz+bp2zy+/+EL5f4Wq75u1LAAAAAASUVORK5CYII="/>
+<marker id="chitkala-code-architecture-ma" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#545B64"/></marker>
+<marker id="chitkala-code-architecture-mn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#E7157B"/></marker>
+<marker id="chitkala-code-architecture-mh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#FF9900"/></marker>
+<marker id="chitkala-code-architecture-mc0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0B8A6F"/></marker>
+<filter id="chitkala-code-architecture-glow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#FF9900" flood-opacity=".9"/></filter>
+<filter id="chitkala-code-architecture-shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F1B2D" flood-opacity=".12"/></filter>
+</defs>
+<style>
+.chitkala-code-architecture text{fill:#232F3E}
+.chitkala-code-architecture .fl .ln{fill:none;stroke:#545B64;stroke-width:1.7}
+.chitkala-code-architecture .fl.dsh .ln{stroke-dasharray:5 4}
+.chitkala-code-architecture .fl .ant{fill:none;stroke:#FF9900;stroke-width:3;stroke-dasharray:7 11;opacity:0}
+.chitkala-code-architecture .bdg circle{fill:#232F3E}
+.chitkala-code-architecture .bdg text{fill:#fff;font-weight:700;font-size:12px}
+.chitkala-code-architecture .future{opacity:.13;filter:grayscale(1)}
+.chitkala-code-architecture .deleted{opacity:.35;filter:grayscale(1)}
+.chitkala-code-architecture .new .ln{stroke:#E7157B;stroke-width:2.4}
+.chitkala-code-architecture .new .ant{opacity:1;stroke:#E7157B;animation:chitkala-code-architecture-ants 1.1s linear infinite}
+.chitkala-code-architecture .new .bdg circle{fill:#E7157B}
+.chitkala-code-architecture .nd.new .halo{opacity:1;animation:chitkala-code-architecture-pulse 1.6s ease-in-out infinite}
+.chitkala-code-architecture .nd .halo{opacity:0;fill:none;stroke:#E7157B;stroke-width:3}
+.chitkala-code-architecture .lg.new text{fill:#E7157B}
+.chitkala-code-architecture .lg.future{opacity:.25}
+.chitkala-code-architecture .cap text{fill:#fff}
+@keyframes chitkala-code-architecture-ants{to{stroke-dashoffset:-36}}
+@keyframes chitkala-code-architecture-pulse{0%,100%{stroke-opacity:.25}50%{stroke-opacity:1}}
+@media (prefers-reduced-motion:reduce){.chitkala-code-architecture *{animation:none!important}}
+.chitkala-code-architecture .fl.c0 .ln{stroke:#0B8A6F;stroke-width:2.2}.chitkala-code-architecture .fl .ant{animation:chitkala-code-architecture-ants 1.1s linear infinite}</style>
+<g class="chitkala-code-architecture">
+<rect x="0" y="0" width="2310" height="834" fill="#FFFFFF"/>
+<text x="36" y="44" font-size="22" font-weight="700">Code architecture — TypeScript frontend, Rust backend, one service layer</text>
+<text x="36" y="68" font-size="13" fill="#5F6B7A">The UI only calls generated, typed clients. The same Rust services run in the desktop, the self-host server, AWS Lambda and the CLI.</text>
+<g class="cap"><rect x="36" y="82" width="1777" height="32" rx="7" fill="#232F3E"/>
+<rect x="36" y="110" width="0" height="4" rx="2" fill="#FF9900"><animate attributeName="width" values="0;1777" dur="26.40s" repeatCount="indefinite"/></rect>
+<text x="48" y="103" font-size="13" font-weight="700" style="fill:#FF9900">▶ NOW</text>
+<text x="108" y="103" font-size="13.5" opacity="0">1 · The UI calls generated, typed clients only, never raw files or databases.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="0.00s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">2 · Desktop: Tauri IPC commands, limited by the app&#x27;s capability set.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="2.40s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">3 · Web companion and self-host: HTTP + WebSocket through the generated OpenAPI client.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="4.80s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">4 · Managed cloud: the same OpenAPI contract on API Gateway.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="7.20s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">5 · Every host calls the same service layer…<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="9.60s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">6 · …the self-host server…<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="12.00s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">7 · …the Lambda handlers…<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="14.40s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">8 · …and the CLI, language server and MCP server that publishers, CI, other editors and external agents use.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="16.80s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">9 · Every call passes chitkala-policy (grants, consent, budgets) and is audited; all logic lives in the crates.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="19.20s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">10 · Rust drives JS-only builds (MDX, Astro) in sandboxed workers and checks their output.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="21.60s" repeatCount="indefinite"/></text>
+<text x="108" y="103" font-size="13.5" opacity="0">11 · Rust types generate the bindings, OpenAPI and JSON Schemas; CI fails on drift.<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0036;0.0873;0.0909;1" dur="26.40s" begin="24.00s" repeatCount="indefinite"/></text>
+</g>
+<g class="fl f1 built " data-n="1" data-stage="0">
+<path class="ln" d="M451.0,305.8 L595.4,305.8" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M451.0,305.8 L595.4,305.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="0.00s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="482.8" cy="305.8" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="0.00s" repeatCount="indefinite"/></circle><text x="482.8" y="309.8" text-anchor="middle">1</text></g></g>
+<g class="fl f2 built " data-n="2" data-stage="0">
+<path class="ln" d="M904.6,305.8 L968.4,305.8 L968.4,222.6 L1032.2,222.6" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M904.6,305.8 L968.4,305.8 L968.4,222.6 L1032.2,222.6" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="2.40s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="990.0" cy="222.6" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="2.40s" repeatCount="indefinite"/></circle><text x="990.0" y="226.6" text-anchor="middle">2</text></g></g>
+<g class="fl f3 built " data-n="3" data-stage="0">
+<path class="ln" d="M904.6,305.8 L968.4,305.8 L968.4,357.0 L1032.2,357.0" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M904.6,305.8 L968.4,305.8 L968.4,357.0 L1032.2,357.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="4.80s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="996.4" cy="357.0" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="4.80s" repeatCount="indefinite"/></circle><text x="996.4" y="361.0" text-anchor="middle">3</text></g></g>
+<g class="fl f4 built " data-n="4" data-stage="0">
+<path class="ln" d="M904.6,305.8 L968.4,305.8 L968.4,491.4 L1032.2,491.4" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M904.6,305.8 L968.4,305.8 L968.4,491.4 L1032.2,491.4" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="7.20s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="969.6" cy="491.4" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="7.20s" repeatCount="indefinite"/></circle><text x="969.6" y="495.4" text-anchor="middle">4</text></g></g>
+<g class="fl f5 built " data-n="5" data-stage="0">
+<path class="ln" d="M1341.4,222.6 L1409.4,222.6 L1409.4,333.0 L1477.4,333.0" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M1341.4,222.6 L1409.4,222.6 L1409.4,333.0 L1477.4,333.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="9.60s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1395.6" cy="222.6" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="9.60s" repeatCount="indefinite"/></circle><text x="1395.6" y="226.6" text-anchor="middle">5</text></g></g>
+<g class="fl f6 built " data-n="6" data-stage="0">
+<path class="ln" d="M1341.4,357.0 L1409.4,357.0 L1409.4,349.0 L1477.4,349.0" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M1341.4,357.0 L1409.4,357.0 L1409.4,349.0 L1477.4,349.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="12.00s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1373.1" cy="357.0" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="12.00s" repeatCount="indefinite"/></circle><text x="1373.1" y="361.0" text-anchor="middle">6</text></g></g>
+<g class="fl f7 built " data-n="7" data-stage="0">
+<path class="ln" d="M1341.4,491.4 L1409.4,491.4 L1409.4,365.0 L1477.4,365.0" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M1341.4,491.4 L1409.4,491.4 L1409.4,365.0 L1477.4,365.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="14.40s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1399.1" cy="491.4" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="14.40s" repeatCount="indefinite"/></circle><text x="1399.1" y="495.4" text-anchor="middle">7</text></g></g>
+<g class="fl f8 built " data-n="8" data-stage="0">
+<path class="ln" d="M1358.2,709.0 L1396.8,709.0 L1396.8,381.0 L1477.4,381.0" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M1358.2,709.0 L1396.8,709.0 L1396.8,381.0 L1477.4,381.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="16.80s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1396.8" cy="649.2" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="16.80s" repeatCount="indefinite"/></circle><text x="1396.8" y="653.2" text-anchor="middle">8</text></g></g>
+<g class="fl f9 built " data-n="9" data-stage="0">
+<path class="ln" d="M1632.0,398.0 L1632.0,564.0" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M1632.0,398.0 L1632.0,564.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="19.20s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1632.0" cy="434.5" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="19.20s" repeatCount="indefinite"/></circle><text x="1632.0" y="438.5" text-anchor="middle">9</text></g></g>
+<g class="fl f10 built  dsh" data-n="10" data-stage="0">
+<path class="ln" d="M1452.2,613.0 L451.0,613.0" marker-end="url(#chitkala-code-architecture-ma)"/>
+<path class="ant" d="M1452.2,613.0 L451.0,613.0" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="21.60s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1231.9" cy="613.0" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="21.60s" repeatCount="indefinite"/></circle><text x="1231.9" y="617.0" text-anchor="middle">10</text></g></g>
+<g class="fl f11 built c0 dsh" data-n="11" data-stage="0">
+<path class="ln" d="M1632.0,662.0 L1632.0,805.0 L750.0,805.0 L750.0,354.8" marker-end="url(#chitkala-code-architecture-mc0)"/>
+<path class="ant" d="M1632.0,662.0 L1632.0,805.0 L750.0,805.0 L750.0,354.8" opacity="0"><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="24.00s" repeatCount="indefinite"/></path>
+<g class="bdg"><circle cx="1450.5" cy="805.0" r="11"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="24.00s" repeatCount="indefinite"/></circle><text x="1450.5" y="809.0" text-anchor="middle">11</text></g></g>
+<g class="nd built" data-id="fe" data-stage="0">
+<rect class="halo" x="123.0" y="254.8" width="330.0" height="102.0" rx="12"/>
+<rect x="129.0" y="260.8" width="318.0" height="90.0" rx="9" fill="#FFFFFF" stroke="#3178C6" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M129.0,288.8 V269.8 Q129.0,260.8 138.0,260.8 H438.0 Q447.0,260.8 447.0,269.8 V288.8 Z" fill="#3178C6"/>
+<rect x="134.0" y="263.8" width="22" height="22" rx="4" fill="#FFFFFF"/>
+<use href="#chitkala-code-architecture-is-react" x="134.0" y="263.8"/>
+<text x="163.0" y="279.8" font-size="13" font-weight="700" style="fill:#FFFFFF">TypeScript frontend</text>
+<text x="139.0" y="306.8" font-size="12.3">apps/desktop · apps/web (PWA)</text>
+<text x="139.0" y="322.8" font-size="12.3">editor: CodeMirror 6 + Lezer</text>
+<text x="139.0" y="338.8" font-size="12.3">canvas · graph-view · ui</text>
+</g>
+<g class="nd built" data-id="workers" data-stage="0">
+<rect class="halo" x="123.0" y="570.0" width="330.0" height="86.0" rx="12"/>
+<rect x="129.0" y="576.0" width="318.0" height="74.0" rx="9" fill="#FFFFFF" stroke="#64748B" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M129.0,604.0 V585.0 Q129.0,576.0 138.0,576.0 H438.0 Q447.0,576.0 447.0,585.0 V604.0 Z" fill="#64748B"/>
+<text x="139.0" y="595.0" font-size="13" font-weight="700" style="fill:#FFFFFF">Isolated JS workers</text>
+<text x="139.0" y="622.0" font-size="12.3">MDX compile · Astro site/book theme</text>
+<text x="139.0" y="638.0" font-size="12.3">no privileged bridge, no network</text>
+</g>
+<g class="nd built" data-id="bind" data-stage="0">
+<rect class="halo" x="593.4" y="254.8" width="313.2" height="102.0" rx="12"/>
+<rect x="599.4" y="260.8" width="301.2" height="90.0" rx="9" fill="#FFFFFF" stroke="#0B8A6F" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M599.4,288.8 V269.8 Q599.4,260.8 608.4,260.8 H891.6 Q900.6,260.8 900.6,269.8 V288.8 Z" fill="#0B8A6F"/>
+<text x="609.4" y="279.8" font-size="13" font-weight="700" style="fill:#FFFFFF">Generated contracts</text>
+<text x="609.4" y="306.8" font-size="12.3">tauri-specta IPC client</text>
+<text x="609.4" y="322.8" font-size="12.3">OpenAPI client (utoipa)</text>
+<text x="609.4" y="338.8" font-size="12.3">JSON Schemas (schemars)</text>
+</g>
+<g class="nd built" data-id="tauri" data-stage="0">
+<rect class="halo" x="1030.2" y="187.6" width="313.2" height="70.0" rx="12"/>
+<rect x="1036.2" y="193.6" width="301.2" height="58.0" rx="9" fill="#FFFFFF" stroke="#B7410E" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M1036.2,221.6 V202.6 Q1036.2,193.6 1045.2,193.6 H1328.4 Q1337.4,193.6 1337.4,202.6 V221.6 Z" fill="#B7410E"/>
+<rect x="1041.2" y="196.6" width="22" height="22" rx="4" fill="#FFFFFF"/>
+<use href="#chitkala-code-architecture-is-client" x="1041.2" y="196.6"/>
+<text x="1070.2" y="212.6" font-size="13" font-weight="700" style="fill:#FFFFFF">Tauri desktop host</text>
+<text x="1046.2" y="239.6" font-size="12.3">commands, permission-scoped</text>
+</g>
+<g class="nd built" data-id="server" data-stage="0">
+<rect class="halo" x="1030.2" y="322.0" width="313.2" height="70.0" rx="12"/>
+<rect x="1036.2" y="328.0" width="301.2" height="58.0" rx="9" fill="#FFFFFF" stroke="#B7410E" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M1036.2,356.0 V337.0 Q1036.2,328.0 1045.2,328.0 H1328.4 Q1337.4,328.0 1337.4,337.0 V356.0 Z" fill="#B7410E"/>
+<rect x="1041.2" y="331.0" width="22" height="22" rx="4" fill="#FFFFFF"/>
+<use href="#chitkala-code-architecture-is-server" x="1041.2" y="331.0"/>
+<text x="1070.2" y="347.0" font-size="13" font-weight="700" style="fill:#FFFFFF">Axum self-host server</text>
+<text x="1046.2" y="374.0" font-size="12.3">single binary · Docker</text>
+</g>
+<g class="nd built" data-id="lambda" data-stage="0">
+<rect class="halo" x="1030.2" y="456.4" width="313.2" height="70.0" rx="12"/>
+<rect x="1036.2" y="462.4" width="301.2" height="58.0" rx="9" fill="#FFFFFF" stroke="#B7410E" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M1036.2,490.4 V471.4 Q1036.2,462.4 1045.2,462.4 H1328.4 Q1337.4,462.4 1337.4,471.4 V490.4 Z" fill="#B7410E"/>
+<rect x="1041.2" y="465.4" width="22" height="22" rx="4" fill="#FFFFFF"/>
+<use href="#chitkala-code-architecture-is-lambda" x="1041.2" y="465.4"/>
+<text x="1070.2" y="481.4" font-size="13" font-weight="700" style="fill:#FFFFFF">Rust Lambda (AWS)</text>
+<text x="1046.2" y="508.4" font-size="12.3">cargo-lambda · ARM64</text>
+</g>
+<g class="nd built" data-id="cli" data-stage="0">
+<rect class="halo" x="1013.4" y="666.0" width="346.8" height="86.0" rx="12"/>
+<rect x="1019.4" y="672.0" width="334.8" height="74.0" rx="9" fill="#FFFFFF" stroke="#B7410E" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M1019.4,700.0 V681.0 Q1019.4,672.0 1028.4,672.0 H1345.2 Q1354.2,672.0 1354.2,681.0 V700.0 Z" fill="#B7410E"/>
+<text x="1029.4" y="691.0" font-size="13" font-weight="700" style="fill:#FFFFFF">CLI · LSP · MCP server</text>
+<text x="1029.4" y="718.0" font-size="12.3">build-book · verify-pack · query</text>
+<text x="1029.4" y="734.0" font-size="12.3">editors (VS Code, Zed) · external agents</text>
+</g>
+<g class="nd built" data-id="svc" data-stage="0">
+<rect class="halo" x="1475.4" y="314.0" width="313.2" height="86.0" rx="12"/>
+<rect x="1481.4" y="320.0" width="301.2" height="74.0" rx="9" fill="#FFFFFF" stroke="#B7410E" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M1481.4,348.0 V329.0 Q1481.4,320.0 1490.4,320.0 H1773.6 Q1782.6,320.0 1782.6,329.0 V348.0 Z" fill="#B7410E"/>
+<text x="1491.4" y="339.0" font-size="13" font-weight="700" style="fill:#FFFFFF">chitkala-services</text>
+<text x="1491.4" y="366.0" font-size="12.3">one service layer</text>
+<text x="1491.4" y="382.0" font-size="12.3">every call → policy → audit</text>
+</g>
+<g class="nd built" data-id="crates" data-stage="0">
+<rect class="halo" x="1450.2" y="562.0" width="363.6" height="102.0" rx="12"/>
+<rect x="1456.2" y="568.0" width="351.6" height="90.0" rx="9" fill="#FFFFFF" stroke="#B7410E" stroke-width="1.5" filter="url(#chitkala-code-architecture-shadow)"/>
+<path d="M1456.2,596.0 V577.0 Q1456.2,568.0 1465.2,568.0 H1798.8 Q1807.8,568.0 1807.8,577.0 V596.0 Z" fill="#B7410E"/>
+<text x="1466.2" y="587.0" font-size="13" font-weight="700" style="fill:#FFFFFF">Rust crates</text>
+<text x="1466.2" y="614.0" font-size="12.3">domain · files · markdown · index</text>
+<text x="1466.2" y="630.0" font-size="12.3">retrieval · policy · patch · agents</text>
+<text x="1466.2" y="646.0" font-size="12.3">models · sync · collab · books · packs</text>
+</g>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><rect x="-24.5" y="-27" width="49.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">typed</text><animateMotion path="M451.0,305.8 L595.4,305.8" dur="26.40s" begin="0.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="0.00s" repeatCount="indefinite"/></g>
+<circle cx="595.4" cy="305.8" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="0.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="0.00s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><rect x="-17.5" y="-27" width="35.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">IPC</text><animateMotion path="M904.6,305.8 L968.4,305.8 L968.4,222.6 L1032.2,222.6" dur="26.40s" begin="2.40s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="2.40s" repeatCount="indefinite"/></g>
+<circle cx="1032.2" cy="222.6" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="2.40s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="2.40s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><rect x="-21.0" y="-27" width="42.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">HTTP</text><animateMotion path="M904.6,305.8 L968.4,305.8 L968.4,357.0 L1032.2,357.0" dur="26.40s" begin="4.80s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="4.80s" repeatCount="indefinite"/></g>
+<circle cx="1032.2" cy="357.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="4.80s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="4.80s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><rect x="-21.0" y="-27" width="42.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">HTTP</text><animateMotion path="M904.6,305.8 L968.4,305.8 L968.4,491.4 L1032.2,491.4" dur="26.40s" begin="7.20s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="7.20s" repeatCount="indefinite"/></g>
+<circle cx="1032.2" cy="491.4" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="7.20s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="7.20s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><animateMotion path="M1341.4,222.6 L1409.4,222.6 L1409.4,333.0 L1477.4,333.0" dur="26.40s" begin="9.60s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="9.60s" repeatCount="indefinite"/></g>
+<circle cx="1477.4" cy="333.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="9.60s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="9.60s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><animateMotion path="M1341.4,357.0 L1409.4,357.0 L1409.4,349.0 L1477.4,349.0" dur="26.40s" begin="12.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="12.00s" repeatCount="indefinite"/></g>
+<circle cx="1477.4" cy="349.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="12.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="12.00s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><animateMotion path="M1341.4,491.4 L1409.4,491.4 L1409.4,365.0 L1477.4,365.0" dur="26.40s" begin="14.40s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="14.40s" repeatCount="indefinite"/></g>
+<circle cx="1477.4" cy="365.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="14.40s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="14.40s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><animateMotion path="M1358.2,709.0 L1396.8,709.0 L1396.8,381.0 L1477.4,381.0" dur="26.40s" begin="16.80s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="16.80s" repeatCount="indefinite"/></g>
+<circle cx="1477.4" cy="381.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="16.80s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="16.80s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><rect x="-24.5" y="-27" width="49.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">grant</text><animateMotion path="M1632.0,398.0 L1632.0,564.0" dur="26.40s" begin="19.20s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="19.20s" repeatCount="indefinite"/></g>
+<circle cx="1632.0" cy="564.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="19.20s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="19.20s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#FF9900" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><rect x="-24.5" y="-27" width="49.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">build</text><animateMotion path="M1452.2,613.0 L451.0,613.0" dur="26.40s" begin="21.60s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="21.60s" repeatCount="indefinite"/></g>
+<circle cx="451.0" cy="613.0" r="10" fill="none" stroke="#FF9900" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="21.60s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="21.60s" repeatCount="indefinite"/></circle>
+<g opacity="0"><circle r="7.5" fill="#0B8A6F" stroke="#FFFFFF" stroke-width="2.5" filter="url(#chitkala-code-architecture-glow)"/><rect x="-31.5" y="-27" width="63.0" height="17" rx="8.5" fill="#232F3E"/><text x="0" y="-14.5" font-size="10.5" font-weight="700" text-anchor="middle" style="fill:#FFFFFF">codegen</text><animateMotion path="M1632.0,662.0 L1632.0,805.0 L750.0,805.0 L750.0,354.8" dur="26.40s" begin="24.00s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;0.0745;1"/><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.0001;0.0745;0.0747;1" dur="26.40s" begin="24.00s" repeatCount="indefinite"/></g>
+<circle cx="750.0" cy="354.8" r="10" fill="none" stroke="#0B8A6F" stroke-width="3" opacity="0"><animate attributeName="r" values="10;10;34;34" keyTimes="0;0.0723;0.1081;1" dur="26.40s" begin="24.00s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;0.0722;0.0723;0.1081;1" dur="26.40s" begin="24.00s" repeatCount="indefinite"/></circle>
+<rect x="1836.6000000000001" y="0" width="473.39999999999986" height="834" fill="#F2F3F3"/>
+<text x="1848.6000000000001" y="44" font-size="15" font-weight="700">How it flows</text>
+<g class="lg l1 built" data-n="1"><g class="lb"><circle cx="1859.6000000000001" cy="72" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="0.00s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="76" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">1</text></g>
+<text x="1878.6000000000001" y="76" font-size="12.5">The UI calls generated, typed clients only, never raw</text>
+<text x="1878.6000000000001" y="91" font-size="12.5">files or databases.</text>
+</g>
+<g class="lg l2 built" data-n="2"><g class="lb"><circle cx="1859.6000000000001" cy="111" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="2.40s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="115" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">2</text></g>
+<text x="1878.6000000000001" y="115" font-size="12.5">Desktop: Tauri IPC commands, limited by the app&#x27;s</text>
+<text x="1878.6000000000001" y="130" font-size="12.5">capability set.</text>
+</g>
+<g class="lg l3 built" data-n="3"><g class="lb"><circle cx="1859.6000000000001" cy="150" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="4.80s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="154" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">3</text></g>
+<text x="1878.6000000000001" y="154" font-size="12.5">Web companion and self-host: HTTP + WebSocket through the</text>
+<text x="1878.6000000000001" y="169" font-size="12.5">generated OpenAPI client.</text>
+</g>
+<g class="lg l4 built" data-n="4"><g class="lb"><circle cx="1859.6000000000001" cy="189" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="7.20s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="193" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">4</text></g>
+<text x="1878.6000000000001" y="193" font-size="12.5">Managed cloud: the same OpenAPI contract on API Gateway.</text>
+</g>
+<g class="lg l5 built" data-n="5"><g class="lb"><circle cx="1859.6000000000001" cy="213" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="9.60s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="217" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">5</text></g>
+<text x="1878.6000000000001" y="217" font-size="12.5">Every host calls the same service layer…</text>
+</g>
+<g class="lg l6 built" data-n="6"><g class="lb"><circle cx="1859.6000000000001" cy="237" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="12.00s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="241" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">6</text></g>
+<text x="1878.6000000000001" y="241" font-size="12.5">…the self-host server…</text>
+</g>
+<g class="lg l7 built" data-n="7"><g class="lb"><circle cx="1859.6000000000001" cy="261" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="14.40s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="265" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">7</text></g>
+<text x="1878.6000000000001" y="265" font-size="12.5">…the Lambda handlers…</text>
+</g>
+<g class="lg l8 built" data-n="8"><g class="lb"><circle cx="1859.6000000000001" cy="285" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="16.80s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="289" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">8</text></g>
+<text x="1878.6000000000001" y="289" font-size="12.5">…and the CLI, language server and MCP server that</text>
+<text x="1878.6000000000001" y="304" font-size="12.5">publishers, CI, other editors and external agents use.</text>
+</g>
+<g class="lg l9 built" data-n="9"><g class="lb"><circle cx="1859.6000000000001" cy="324" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="19.20s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="328" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">9</text></g>
+<text x="1878.6000000000001" y="328" font-size="12.5">Every call passes chitkala-policy (grants, consent,</text>
+<text x="1878.6000000000001" y="343" font-size="12.5">budgets) and is audited; all logic lives in the crates.</text>
+</g>
+<g class="lg l10 built" data-n="10"><g class="lb"><circle cx="1859.6000000000001" cy="363" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="21.60s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="367" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">10</text></g>
+<text x="1878.6000000000001" y="367" font-size="12.5">Rust drives JS-only builds (MDX, Astro) in sandboxed</text>
+<text x="1878.6000000000001" y="382" font-size="12.5">workers and checks their output.</text>
+</g>
+<g class="lg l11 built" data-n="11"><g class="lb"><circle cx="1859.6000000000001" cy="402" r="11" fill="#232F3E"><animate attributeName="fill" values="#FF9900;#FF9900;#232F3E;#232F3E" keyTimes="0;0.0882;0.0909;1" dur="26.40s" begin="24.00s" repeatCount="indefinite"/></circle><text x="1859.6000000000001" y="406" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" style="fill:#fff">11</text></g>
+<text x="1878.6000000000001" y="406" font-size="12.5">Rust types generate the bindings, OpenAPI and JSON</text>
+<text x="1878.6000000000001" y="421" font-size="12.5">Schemas; CI fails on drift.</text>
+</g>
+</g></svg>

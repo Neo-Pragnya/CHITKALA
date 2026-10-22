@@ -44,19 +44,19 @@ OVERVIEW = Spec(
     ],
     nodes=[
         Node("author", "user", "Author", "writer · researcher", 0, 1.3, 0),
-        Node("desk", "client", "CHITKALA desktop", "Tauri · vault · SQLite/FTS5", 1.2, 1.3, 0),
+        Node("desk", "client", "CHITKALA desktop", "Rust core · React UI", 1.2, 1.3, 0),
         Node("dev2", "client", "Other device", "E2EE replica", 1.2, 3.9, 6),
         Node("readers", "users", "Public readers", "static site", 9.75, 5.2, 5),
         Node("cognito", "cognito", "Amazon Cognito", "users · devices · JWT", 2.7, 0, 1),
         Node("apigw", "api-gateway", "API Gateway", "HTTP /v1 + WebSocket", 2.7, 1.3, 1),
-        Node("api", "lambda", "API handlers", "capability checks", 4.1, 1.3, 1),
+        Node("api", "lambda", "API handlers", "Rust · capability checks", 4.1, 1.3, 1),
         Node("ddb", "dynamodb", "DynamoDB", "grants · runs · ledger", 4.1, 0, 1),
         Node("kms", "kms", "AWS KMS", "per-tenant keys", 5.5, 0, 1),
         Node("cw", "cloudwatch", "CloudWatch · X-Ray", "no document bodies", 6.9, 0, 1),
-        Node("relay", "lambda-fn", "Model relay", "consent · budget", 5.5, 1.3, 2),
+        Node("relay", "lambda-fn", "Model relay", "Rust · consent · budget", 5.5, 1.3, 2),
         Node("bedrock", "bedrock", "Amazon Bedrock", "chat · embed · guardrails", 6.9, 1.3, 2),
         Node("aurora", "aurora", "Aurora PostgreSQL", "pgvector · FTS · edges", 8.3, 1.3, 3),
-        Node("indexer", "lambda-fn", "Indexer", "SQS-driven chunker", 8.3, 2.6, 3),
+        Node("indexer", "lambda-fn", "Indexer", "Rust chunker · SQS", 8.3, 2.6, 3),
         Node("sfn", "step-functions", "Step Functions", "agent run state machine", 4.1, 2.6, 4),
         Node("sandbox", "fargate", "Tool sandbox", "Fargate · no egress", 5.5, 2.6, 4),
         Node("s3sync", "s3", "Sync objects", "ciphertext only", 2.7, 3.9, 6),
@@ -283,7 +283,7 @@ COLLAB = Spec(
         Node("a", "client", "Author A", "session leader", 0, 0.45),
         Node("b", "client", "Author B", "peer", 0, 2.05),
         Node("alb", "alb", "Application LB", "WebSocket · TLS", 1.6, 1.25),
-        Node("relay", "fargate", "Yjs relay", "room per document", 3.1, 1.25),
+        Node("relay", "fargate", "Rust relay", "Yjs protocol · rooms", 3.1, 1.25),
         Node("redis", "elasticache", "ElastiCache", "pub/sub · presence", 4.6, 0.0),
         Node("ddb", "dynamodb", "Update log", "doc · seq · ciphertext", 4.6, 1.25),
         Node("s3", "s3", "State snapshots", "compacted · encrypted", 4.6, 2.5),
@@ -498,4 +498,38 @@ REPO = Spec(
     ],
 )
 
-SPECS = [OVERVIEW, SYNC, INTEL, AGENT, PUBLISH, COLLAB, TRUST, DELIVERY, TEXTBOOK, LIBRARY, REPO]
+# ===================================================================================================== code architecture (concept)
+TS, RUST, GEN, JSW = "#3178C6", "#B7410E", "#0B8A6F", "#64748B"
+
+CODE = Spec(
+    id="chitkala-code-architecture",
+    title="Code architecture — TypeScript frontend, Rust backend, one service layer",
+    subtitle="The UI only calls generated, typed clients. The same Rust services run in the desktop, the self-host server, AWS Lambda and the CLI.",
+    cols=10.2, rows=4.4,
+    nodes=[
+        card("fe", "TypeScript frontend", ["apps/desktop · apps/web (PWA)", "editor: CodeMirror 6 + Lezer", "canvas · graph-view · ui"], 1.0, 0.45, TS, w=2.0, icon="react"),
+        card("workers", "Isolated JS workers", ["MDX compile · Astro site/book theme", "no privileged bridge, no network"], 1.0, 2.85, JSW, w=2.0),
+        card("bind", "Generated contracts", ["tauri-specta IPC client", "OpenAPI client (utoipa)", "JSON Schemas (schemars)"], 3.75, 0.45, GEN, w=1.9),
+        card("tauri", "Tauri desktop host", ["commands, permission-scoped"], 6.35, -0.2, RUST, w=1.9, icon="client"),
+        card("server", "Axum self-host server", ["single binary · Docker"], 6.35, 0.85, RUST, w=1.9, icon="server"),
+        card("lambda", "Rust Lambda (AWS)", ["cargo-lambda · ARM64"], 6.35, 1.9, RUST, w=1.9, icon="lambda"),
+        card("cli", "CLI · LSP · MCP server", ["build-book · verify-pack · query", "editors (VS Code, Zed) · external agents"], 6.35, 3.6, RUST, w=2.1),
+        card("svc", "chitkala-services", ["one service layer", "every call → policy → audit"], 9.0, 0.85, RUST, w=1.9),
+        card("crates", "Rust crates", ["domain · files · markdown · index", "retrieval · policy · patch · agents", "models · sync · collab · books · packs"], 9.0, 2.85, RUST, w=2.2),
+    ],
+    flows=[
+        Flow(1, "fe", "bind", "The UI calls generated, typed clients only, never raw files or databases.", packet="typed"),
+        Flow(2, "bind", "tauri", "Desktop: Tauri IPC commands, limited by the app's capability set.", sp="r", dp="l", packet="IPC", badge_at=.8),
+        Flow(3, "bind", "server", "Web companion and self-host: HTTP + WebSocket through the generated OpenAPI client.", sp="r", dp="l", packet="HTTP", badge_at=.8),
+        Flow(4, "bind", "lambda", "Managed cloud: the same OpenAPI contract on API Gateway.", sp="r", dp="l", packet="HTTP", badge_at=.8),
+        Flow(5, "tauri", "svc", "Every host calls the same service layer…", sp="r", dp="l", do=-24),
+        Flow(6, "server", "svc", "…the self-host server…", do=-8),
+        Flow(7, "lambda", "svc", "…the Lambda handlers…", sp="r", dp="l", do=8),
+        Flow(8, "cli", "svc", "…and the CLI, language server and MCP server that publishers, CI, other editors and external agents use.", sp="r", dp="l", via=7.6, do=24),
+        Flow(9, "svc", "crates", "Every call passes chitkala-policy (grants, consent, budgets) and is audited; all logic lives in the crates.", packet="grant"),
+        Flow(10, "crates", "workers", "Rust drives JS-only builds (MDX, Astro) in sandboxed workers and checks their output.", sp="l", dp="r", dashed=True, packet="build"),
+        Flow(11, "crates", "bind", "Rust types generate the bindings, OpenAPI and JSON Schemas; CI fails on drift.", sp="b", dp="b", via=4.35, dashed=True, color=GEN, packet="codegen"),
+    ],
+)
+
+SPECS = [OVERVIEW, SYNC, INTEL, AGENT, PUBLISH, COLLAB, TRUST, DELIVERY, TEXTBOOK, LIBRARY, REPO, CODE]

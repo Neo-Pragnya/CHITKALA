@@ -114,8 +114,8 @@
 <g class="nd built" data-id="relay" data-stage="0">
 <rect class="halo" x="606.8" y="434.8" width="68" height="68" rx="10"/>
 <use href="#chitkala-collab-ic-fargate" x="613.8" y="441.8"/>
-<text x="640.8" y="510.8" font-size="12" font-weight="700" text-anchor="middle">Yjs relay</text>
-<text x="640.8" y="523.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">room per document</text>
+<text x="640.8" y="510.8" font-size="12" font-weight="700" text-anchor="middle">Rust relay</text>
+<text x="640.8" y="523.8" font-size="10.5" font-style="italic" text-anchor="middle" fill="#5F6B7A">Yjs protocol · rooms</text>
 </g>
 <g class="nd built" data-id="redis" data-stage="0">
 <rect class="halo" x="858.8" y="274.8" width="68" height="68" rx="10"/>

@@ -32,7 +32,7 @@ tags:
 | Launch shape | Local-first desktop app; optional self-hosted services; web companion later |
 | Canonical content | Plain `.md` / `.mdx` / assets stored in user-owned vaults |
 | Default security | No autonomous file, shell, remote-network, or publish privileges without explicit grants |
-| Main languages | TypeScript/React + Rust; optional Python worker SDK, not a mandatory local runtime |
+| Main languages | **Rust backend** (core, indexing, agents, sync, packs, self-host server, Lambda) + **TypeScript/React frontend**; JS-only build tools (MDX, Astro) in isolated workers. See [`CHITKALA_PRIOR_ART_AND_STACK.md`](CHITKALA_PRIOR_ART_AND_STACK.md) |
 | Intended audience | Writers, researchers, developers, educators, knowledge workers, and agent builders |
 | Document status | Proposed design, *not* a claim of implemented functionality |
 
@@ -345,11 +345,11 @@ The arrows above represent logical calls. **All external, user-script, and agent
 | UI styling | Tailwind + shadcn/ui + design tokens | Radix primitives, custom CSS | Accessible primitives, customization |
 | Docking | Custom pane tree or maintained layout library behind adapter | Golden Layout | Stacked panes and tabs should be portable across themes |
 | Source editing | **CodeMirror 6** | Monaco (code-heavy), Lexical (rich editing) | Markdown-first text fidelity and plugin ecosystem |
-| Markdown parser | unified/remark/rehype stack | markdown-it | Extensible AST transforms and sanitized output |
+| Markdown parser | **One Rust parser** (`markdown`/markdown-rs or `comrak`, spike S-R1) + `ammonia` sanitising; CodeMirror Lezer grammar for editing UX only | unified/remark (only inside the MDX worker) | Links, chunks and citations must mean the same thing in desktop, server, Lambda and pack builder (ADR-019) |
 | Syntax compatibility | Dedicated Obsidian syntax adapter | Parser customizations | Avoid lossy regex-only conversions |
-| Local core | Rust/Tauri commands + typed RPC bridge | JS service host | File transactions and permissions |
+| Local core | Rust/Tauri commands + **generated** TS bindings (`tauri-specta`) | JS service host | File transactions and permissions; Rust types are the contract (ADR-017) |
 | Metadata/index | **SQLite + FTS5** | DuckDB for analytics later | Local transactions, mature search, graph relational tables |
-| Vectors | Adapter: sqlite-vec pilot / embedded vector index | LanceDB local, specialized ANN | sqlite-vec is pre-v1; isolate behind interface |
+| Vectors | Rust trait: sqlite-vec via `rusqlite` pilot | LanceDB (Rust), tantivy for large lexical packs (S-R2) | sqlite-vec is pre-v1; isolate behind interface |
 | Graph display | Cytoscape.js or Sigma.js | D3 custom | Graph exploration/large-network layouts |
 | Directed visual flows | **React Flow (`@xyflow/react`)** | Custom SVG | MIT license, editable nodes/edges |
 | Whiteboard | **Excalidraw embedded** as optional adapter | Custom open-source canvas | MIT code; check current third-party terms |
@@ -357,12 +357,13 @@ The arrows above represent logical calls. **All external, user-script, and agent
 | Diagrams | Mermaid with restricted/sanitized rendering | Graphviz | Native docs authoring and export |
 | Local model | Ollama-compatible endpoint adapter | llama.cpp, other OpenAI-compatible hosts | BYO models; no AI dependency for editing |
 | Hosted models | OpenAI-compatible endpoint + provider-specific adapter | Any supported API | Capability discovery, redaction, user consent |
-| Agent workflows | Durable custom state machine + optional LangGraph adapter | Microsoft Agent Framework / PydanticAI adapter | Core should not depend on one fast-changing agent SDK |
-| Tool protocol | Versioned local tool contract + MCP adapter | Direct local tools | Standardized capability access with policy guard |
+| Agent workflows | Durable state machine in Rust (`chitkala-agents`); Step Functions in the managed cloud | External framework adapters behind the tool contract | Core should not depend on one fast-changing agent SDK |
+| Tool protocol | Versioned local tool contract + MCP via `rmcp` (Rust SDK); scripts sandboxed in `wasmtime` | Direct local tools | Standardized capability access with policy guard (ADR-020) |
 | Static publishing | **Astro build worker** | Eleventy, custom renderer | Strong Markdown/MDX content publishing |
-| Sync | File/object sync with journal, conflict revision policy | Git, WebDAV, S3 | CRDT collaboration is separate feature |
+| Sync | Rust sync protocol + reconciliation (`chitkala-sync`); collaboration later with `yrs` (Rust) ↔ Yjs (editor) | Git, WebDAV, S3 | CRDT collaboration is separate feature |
+| Server | **Axum** self-host single binary and **Rust Lambda** handlers over one service layer (ADR-018) | — | Same grants and code in every host; self-host stays in the main repo |
 | Telemetry | Optional OpenTelemetry signals; local by default | Structured JSONL | Privacy-respecting traceability |
-| Test stack | Vitest, Playwright, Rust cargo tests, property-based tests | Others | Browser + core + compatibility coverage |
+| Test stack | `cargo-nextest`, `proptest`, `insta`, `criterion`; Vitest, Playwright; cross-language conformance fixtures; `cargo-deny` licence/advisory gate | Others | Browser + core + compatibility coverage |
 
 ### 5.4 Dependency licensing flags
 
@@ -382,6 +383,9 @@ A single-user local-first app gains little from running many microservices. Star
 ## 6. 🗂️ Repository, Vault Layout & Portability
 
 ### 6.1 Suggested monorepo layout
+
+> [!note] Superseded
+> The Rust-backend layout with the full crate map is in [`CHITKALA_PRIOR_ART_AND_STACK.md` §4](CHITKALA_PRIOR_ART_AND_STACK.md#4-repository-layout). The tree below is the original draft.
 
 ```text
 chitkala/
@@ -1412,8 +1416,8 @@ Use real mixed-format vault copies containing research articles, code fences, la
 
 ### 19.1 Local developer onboarding
 
-- Required: supported Node LTS + pnpm, Rust toolchain, platform dependencies for Tauri.
-- `pnpm install`, `pnpm dev`, `cargo test`, `pnpm test`, `pnpm lint`, `pnpm typecheck`.
+- Required: stable Rust toolchain (pinned in `rust-toolchain.toml`), Node LTS + pnpm, platform dependencies for Tauri; `cargo-lambda` only for AWS work.
+- `cargo nextest run`, `cargo clippy -- -D warnings`, `cargo deny check`, `pnpm install`, `pnpm dev`, `pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm bindings:check` (regenerates TS bindings/OpenAPI/JSON Schemas and fails on drift).
 - `pnpm test:fixtures` loads synthetic vaults; `pnpm test:e2e` boots a temporary, isolated workspace.
 - Optional local model via configured endpoint; tests have deterministic mock model.
 - Optional packaging: signed/notarized macOS; signed Windows; Linux AppImage/deb/rpm as applicable.
@@ -1589,6 +1593,20 @@ Do not begin the next milestone before its data-loss and security exit gates pas
 | ADR-013 | Knowledge Packs are signed Markdown, installed read-only; reader overlays live in the reader's vault | Portability, safe updates, no lock-in | Proposed |
 | ADR-014 | Static, signed registry protocol; managed registry optional | Institutions and offline use without accounts | **Recommended invariant** |
 | ADR-015 | Pack `aiPolicy` enforced before model context | Publisher rights and reader trust | **Recommended invariant** |
+| ADR-016 | Rust backend everywhere; TypeScript frontend | Speed, memory safety, one codebase for desktop/server/cloud | **Accepted direction** |
+| ADR-017 | Rust domain types are the source of truth; TS bindings, OpenAPI, JSON Schemas generated | No contract drift across the language boundary | Proposed |
+| ADR-018 | One service layer, three hosts (Tauri, Axum self-host, Lambda) | Identical authorization everywhere; self-host stays open | Proposed |
+| ADR-019 | Markdown semantics parsed only in Rust | One meaning for links, chunks, citations | Proposed |
+| ADR-020 | Scripts and queries sandboxed in Rust (WASM first), own vault only, under grants | SilverBullet-style power without zone-3 risk | Proposed |
+| ADR-021 | Learn from AGPL/GPL tools by design only; Pandoc only as optional external tool | Apache-2.0 hygiene | **Recommended invariant** |
+| ADR-022 | Rust language server (`chitkala-lsp`) so vaults work in VS Code, Zed, Neovim | Foam lesson: meet writers in their editor | Proposed |
+| ADR-023 | Vault exposed to external agents via MCP; reads by grant, writes only as patch proposals | OpenKnowledge lesson, with CHITKALA's safety model | Proposed |
+| ADR-024 | Exports, publishing and packs add link reference definitions for wikilinks | Foam lesson: links work on GitHub and in other tools | Proposed |
+
+> [!note] Prior art
+> Lessons from Foam (closest to Obsidian), SilverBullet, Logseq, OpenKnowledge, Zettlr, Trilium, Joplin, SiYuan and
+> AppFlowy, and the full Rust/TypeScript split, are in
+> [`CHITKALA_PRIOR_ART_AND_STACK.md`](CHITKALA_PRIOR_ART_AND_STACK.md).
 
 ### 22.1 Major open technical decisions requiring spikes
 

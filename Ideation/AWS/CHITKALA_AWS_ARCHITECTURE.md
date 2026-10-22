@@ -93,6 +93,10 @@ The governing rules:
    chosen bills per request or scales to zero, except where a stateful connection forces otherwise (§12).
 6. **Modular monolith in the cloud too** (TDD §5.5, ADR-010): one API codebase, deployed as a few Lambda functions
    grouped by blast radius, not a fleet of microservices.
+7. **Rust backend, same crates everywhere** (TDD ADR-016/018, [`../CHITKALA_PRIOR_ART_AND_STACK.md`](../CHITKALA_PRIOR_ART_AND_STACK.md)):
+   every Lambda, the indexer, the pack builder and the sync and collaboration services are Rust, built from the same
+   `chitkala-services` crates as the desktop core and the self-host Axum server. TypeScript in the cloud is limited to
+   the CDK app and the isolated Astro/MDX build workers.
 
 ---
 
@@ -193,7 +197,7 @@ Network detail (VPCs, endpoints) is in the zoom-ins.
 | Identity | **Amazon Cognito** user pools (+ device records in DynamoDB) | None needed (no account) | IAM Identity Center (workforce, not consumers); self-hosted Keycloak | Managed consumer identity, OIDC/JWT, MFA, passkeys, social federation; pay per MAU |
 | Public API | **API Gateway HTTP API** (REST `/v1`) | Tauri IPC | REST API (more features, higher price); ALB | JWT authorizer built in; cheap; Lambda proxy |
 | Push channel | **API Gateway WebSocket API** | Local event emitter | AppSync Events; IoT Core | One connection per device for run events and sync notices; pay per message/minute |
-| Business logic | **AWS Lambda** (Node.js/TypeScript or Rust) | Rust core | ECS services | Scale to zero; matches modular-monolith with per-domain functions |
+| Business logic | **AWS Lambda in Rust** (`lambda_runtime`/`lambda_http`, built with `cargo-lambda`, ARM64/Graviton) | Rust core (Tauri) / Axum self-host server | Node.js Lambdas; ECS services | Rust on Lambda is GA (Nov 2025); small binaries and fast cold starts; one codebase with the desktop and self-host (ADR AWS-018) |
 | Control data | **Amazon DynamoDB** (on-demand) | SQLite | Aurora for everything | Conditional writes give CAS for the sync head and idempotency keys; Streams drive notifications; zero idle cost |
 | Hosted index | **Aurora PostgreSQL Serverless v2** with `pgvector`, `tsvector`, edge tables, RLS | SQLite FTS5 + sqlite-vec | OpenSearch Serverless; Amazon S3 Vectors; Kendra | One engine mirrors the local design (FTS + vectors + relational graph), RLS for tenants, scales to zero (minimum 0 ACU, resume latency to be measured). Revisit S3 Vectors for very large, cold corpora |
 | Models | **Amazon Bedrock** (Converse API, embeddings, rerank, Guardrails) | Ollama-compatible local endpoint | Direct third-party APIs via relay | Provider-neutral surface (ADR-012), IAM-native, no keys on devices, Guardrails for prompt-attack and PII filtering |
@@ -384,8 +388,8 @@ Control and WAF), because API Gateway HTTP APIs buffer responses. Non-streamed c
 - **Ingest:** the desktop uploads consented files to `s3://corpus/t/<tenant>/v/<vault>/…` (SSE-KMS tenant key). An S3
   event goes to SQS (DLQ after 5 attempts).
 - **Index:** the indexer Lambda (in a VPC, private subnets, no NAT, endpoints for S3, SQS, Bedrock, KMS, Secrets
-  Manager) parses Markdown with the **same TypeScript parser package** as the desktop (`packages/markdown`,
-  `packages/retrieval`), chunks by heading (target 350–650 tokens, max 900, overlap 50 within a section), embeds with
+  Manager) parses Markdown with the **same Rust crates** as the desktop (`chitkala-markdown`,
+  `chitkala-retrieval`), chunks by heading (target 350–650 tokens, max 900, overlap 50 within a section), embeds with
   Bedrock, and upserts in one transaction. Idempotent by `(document_id, revision, projection)`.
 - **Retrieve:** the retriever runs lexical (`tsvector`), vector (`pgvector` HNSW) and graph (edge CTE) channels
   separately under RLS, fuses them with **RRF**, optionally reranks with a Bedrock rerank model, applies the token
@@ -493,8 +497,9 @@ The free path stays: local Astro build to a folder or GitHub Pages (TDD §15.6).
 
 Out of scope for M0–M5; included so earlier choices don't block it.
 
-- **Relay:** a Yjs-protocol relay (e.g. Hocuspocus or y-websocket-compatible) on ECS Fargate behind an ALB, tasks across
-  two AZs, sticky connections per document room. ElastiCache (Valkey/Redis) pub/sub fans updates across tasks.
+- **Relay:** a Rust relay (`chitkala-server` in collab mode: tokio + axum WebSockets, Yjs sync protocol) on ECS
+  Fargate behind an ALB, tasks across two AZs, sticky connections per document room. `yrs` runs in the clients' Rust
+  core for checkpoints and, for any future non-E2EE team workspace, server-side merge and compaction (AppFlowy-style). ElastiCache (Valkey/Redis) pub/sub fans updates across tasks.
 - **E2EE-compatible:** clients encrypt Yjs update payloads with a per-document session key; the relay orders, stores
   (DynamoDB update log, S3 compacted snapshots) and forwards ciphertext. It cannot merge, so compaction stores
   encrypted snapshots produced by clients.
@@ -642,7 +647,7 @@ Budget controls: per-tenant token budgets in DynamoDB; AWS Budgets alerts per ca
 | `SecurityStack` | KMS keys, WAF web ACLs, IAM boundaries, Macie config | M2 |
 | `IdentityStack` | Cognito user pool, app clients (desktop PKCE, web), hosted UI domain | M2 |
 | `ControlDataStack` | DynamoDB `control` table, streams, TTL, PITR | M2 |
-| `ApiStack` | HTTP API, WebSocket API, Lambda handlers, JWT authorizer | M2 |
+| `ApiStack` | HTTP API, WebSocket API, Rust Lambda handlers (`chitkala-lambda`, ARM64), JWT authorizer | M2 |
 | `RelayStack` | Relay Lambda + Function URL + CloudFront, Guardrail config, budgets | M2 |
 | `IndexStack` | S3 corpus, SQS + DLQ, indexer, retriever, Aurora Serverless v2, RDS Proxy | M3 |
 | `AgentsStack` | Step Functions, broker, MCP adapter, ECS cluster + sandbox task definition, runs + audit buckets | M4 |
@@ -659,8 +664,14 @@ Desktop releases: signed and notarised installers + signed Tauri update manifest
 
 ### 18.3 Self-hosting
 
-The same CDK app deploys into any user's AWS account (`npx cdk deploy --all -c profile=selfhost`); the desktop accepts
-a custom API base URL and Cognito issuer. Nothing in the desktop hard-codes the managed endpoint.
+Two self-host shapes, both from the main Apache-2.0 repository:
+
+1. **Single binary / Docker image** (`chitkala-server`, Axum): API, WebSocket push, sync, Library registry and relay to
+   a configured model endpoint, with SQLite or Postgres and a local or S3-compatible object store. Runs on a laptop,
+   NAS, Raspberry Pi-class device or any VM. Same crates and grant checks as the Lambdas.
+2. **Own AWS account:** the same CDK app (`npx cdk deploy --all -c profile=selfhost`).
+
+The desktop accepts a custom API base URL and token issuer; nothing hard-codes the managed endpoint.
 
 ---
 
@@ -684,6 +695,7 @@ a custom API base URL and Cognito issuer. Nothing in the desktop hard-codes the 
 | AWS-014 | Publisher signing keys in KMS (asymmetric), one key per publisher | Non-exportable keys, audit trail | Proposed |
 | AWS-015 | Entitlements gate downloads via CloudFront signed cookies; no DRM claims | Honest licensing; cacheable delivery | Proposed |
 | AWS-016 | OpenSearch Serverless for public large repositories; Aurora for private per-tenant index | Different access patterns and scale | Proposed (spike S12) |
+| AWS-018 | All cloud compute in Rust from shared crates (Lambda, Fargate tasks, relay); TS only for CDK and isolated JS build workers | One implementation of grants and parsing across desktop, self-host and cloud | **Accepted direction** (TDD ADR-016) |
 | AWS-017 | Book pipeline as Step Functions with blocking profile gates (PHI, reviews, Macie) | Auditable, resumable, enforceable medical rules | Proposed |
 
 ---
@@ -693,7 +705,7 @@ a custom API base URL and Cognito issuer. Nothing in the desktop hard-codes the 
 | ID | Question | Spike exit criterion |
 |---|---|---|
 | S1 | Cognito for desktop: PKCE loopback vs custom URI scheme on each OS; passkey support | Sign-in works on macOS/Windows/Linux; refresh token in keychain |
-| S2 | Lambda language: TypeScript (share `packages/*`) vs Rust (share `crates/*`) | Cold-start and code-sharing comparison; pick per function |
+| S2 | ~~Lambda language~~ **Resolved: Rust** (ADR AWS-018). Remaining: per-function binary size and cold start on ARM64 (TDD spike S-R7) | p95 cold start and package size recorded per domain function |
 | S3 | Aurora Serverless v2 at 0 ACU: resume latency, pgvector HNSW recall/latency at 10k/50k notes, FTS tokenizer parity with FTS5 | Retrieval benchmark within 5 % of local recall; p95 warm < 400 ms; resume latency documented |
 | S4 | Relay streaming path: Lambda Function URL + CloudFront vs API Gateway REST streaming | First-token latency and WAF coverage |
 | S5 | Sync crypto library and manifest format; key-wrap UX; recovery | Independent review of the design before any E2EE claim |
@@ -758,10 +770,10 @@ it has a local or static substitute.
 | State | Implementation | Blocking checks |
 |---|---|---|
 | `CheckReviews` | Books API Lambda + DynamoDB sign-offs | Rules from `book.yaml` (`review.rules`), no self-approval, sign-off hash = proposal hash |
-| `Validate` | Lambda (shared `packages/markdown` + book transforms) | Cross-refs, citations, figure alt text, private-document references, unit codes (medical) |
+| `Validate` | Rust Lambda (`chitkala-markdown` + `chitkala-books`, same code as `chitkala build-book`) | Cross-refs, citations, figure alt text, private-document references, unit codes (medical) |
 | `ScanPHI` (medical) | Comprehend Medical `DetectPHI` over text chunks and image metadata (Map state) | Findings above threshold block; waiver needs two editors |
 | `Render` | Parallel CodeBuild builds: site (Astro), PDF (Typst or Paged.js), EPUB | EPUBCheck, accessibility checks, link check |
-| `BuildPack` | Fargate task (large books) or Lambda (small): chunks, FTS5 + graph SQLite, partitions, `files.json`; embeddings via Bedrock **batch inference** for big books | Index digests recorded |
+| `BuildPack` | Fargate task running `chitkala build-book --pack` (large books) or a Rust Lambda (small): chunks, FTS5 + graph SQLite, partitions, `files.json`; embeddings via Bedrock **batch inference** for big books | Index digests recorded |
 | `Sign` | KMS `Sign` (ECDSA P-256) over the manifest digest with the publisher key | Key policy allows only the pipeline role for that publisher |
 | `ScanOutputs` | Macie job on the new output prefix | High severity blocks |
 | `AwaitRelease` | `.waitForTaskToken`: the publisher approves in the app | Timeout → `EXPIRED` |

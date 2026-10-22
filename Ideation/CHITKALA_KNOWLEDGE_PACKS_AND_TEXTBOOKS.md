@@ -147,7 +147,7 @@ Books/Clinical Cardiology/
 | `contributors[]` | Authors, editors, reviewers with roles (`author`, `editor`, `peer-reviewer`, `clinical-reviewer`) and ORCID |
 | `structure` | `front`, `parts[] { title, chapters[] }`, `back`; each chapter refers to a document by path or id |
 | `numbering` | Chapter, section, figure, table, equation numbering schemes |
-| `references` | Bibliography file + CSL style (e.g. Vancouver for medicine, APA) |
+| `references` | Bibliography file + CSL style (e.g. Vancouver for medicine, APA). Point it at a live CSL JSON/BibTeX export (e.g. Zotero Better BibTeX "keep updated"); the core watches it and re-resolves citations |
 | `glossary`, `index` | Glossary source; index-term collection from `{index: term}` markers |
 | `outputs` | Which of `site`, `pdf`, `epub`, `pack` to build and their options |
 | `review` | Required approvals per content type (e.g. `dosage: 2 clinical-reviewer`) |
@@ -208,9 +208,10 @@ draft → in-review → frozen (edition N, content hash) → published (site/PDF
 | Output | Built by | Notes |
 |---|---|---|
 | **Hosted reader site** | Astro (TDD §15) with book theme | Chapter navigation, numbered figures, glossary popovers, back-of-book index, sharded search, "Open in CHITKALA" install button, per-edition URLs `/3e/…` |
-| **PDF** | Typesetting engine (Typst or Paged.js; spike K2) | Print layout, running heads, footnotes/endnotes, PDF/UA tagging target |
+| **PDF** | **Typst** embedded in `chitkala-books` (Rust) preferred; Paged.js fallback (spikes K2, S-R6) | Print layout, running heads, footnotes/endnotes, PDF/UA tagging target |
+| **DOCX / journal LaTeX** | Optional "Pandoc profile" using the user's own Pandoc install (Zettlr-style defaults files) | Not bundled (GPL); for submissions to journals and publishers |
 | **EPUB 3** | EPUB builder | Reflowable, MathML, EPUB Accessibility 1.1 metadata |
-| **Knowledge Pack** | Pack builder (§7) | Content + manifest + signatures + optional prebuilt indexes |
+| **Knowledge Pack** | `chitkala-packs` (Rust) via `chitkala build-book` / `chitkala verify-pack` (§7) | Content + manifest + signatures + optional prebuilt indexes; the same code runs on the desktop, in CI and in the AWS pipeline |
 | **Metadata** | JSON-LD (`Book`, `Chapter`), ONIX later | Discovery and library cataloguing |
 
 Builds run locally by default (desktop build worker, TDD §15). The managed AWS pipeline runs the same builders in
@@ -534,7 +535,7 @@ file, registry or mirror, *then* verification fails and nothing is mounted.
 | ID | Question |
 |---|---|
 | K1 | Pack container: ZIP vs directory-of-content-addressed-files only (ZIP is friendlier for email/USB; files are better for deltas). Proposal: both, same manifest |
-| K2 | Typesetting engine: Typst (fast, open source, own markup) vs Paged.js/WeasyPrint (HTML/CSS) for PDF |
+| K2 | Typesetting engine: Typst (Rust, embeddable; **preferred** given ADR-016) vs Paged.js/WeasyPrint (HTML/CSS) for PDF; decide with spike S-R6 |
 | K3 | Embedding namespace portability: which open embedding models should packs ship by default so most readers can reuse vectors |
 | K4 | Edition naming and SemVer mapping; how errata map to versions |
 | K5 | Transparency log (Sigstore-style) vs registry-signed history |
